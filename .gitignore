@@ -1,19 +1,13 @@
+# Xcode
+build/
+DerivedData/
+*.xcodeproj/*.activepcor
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
 .DS_Store
-project.xcworkspace/xcuserdata/petermurphy*
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/petermurphy*
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/petermurphy.xcuserdatad/UserInterfaceState.xcuserstate
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/petermurphy.xcuserdatad/UserInterfaceState.xcuserstate
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/petermurphy.xcuserdatad/UserInterfaceState.xcuserstate
-DodgeThePotholes.xcodeproj/xcuserdata/petermurphy.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
-DodgeThePotholes.xcworkspace/xcuserdata/petermurphy.xcuserdatad/UserInterfaceState.xcuserstate
-project.xcworkspace/xcuserdata/jonbuie*
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/jonbuie*
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/jonbuie.xcuserdatad/UserInterfaceState.xcuserstate
-DodgeThePotholes.xcodeproj/xcuserdata/jonbuie.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
-project.xcworkspace/xcuserdata/colbystanley*
-jypc-ece590-hw6.xcodeproj/project.xcworkspace/xcuserdata/colbystanley*
-jypc-ece590-hw6.xcodeproj/project.xcworkspace/xcuserdata/colbystanley.xcuserdatad/UserInterfaceState.xcuserstate
-jypc-ece590-hw6.xcodeproj/xcuserdata/colbystanley.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
-DodgeThePotholes.xcodeproj/project.xcworkspace/xcuserdata/
-DodgeThePotholes.xcodeproj/xcuserdata/ece.xcuserdata/
-DodgeThePotholes.xcworkspace/xcuserdata/Colby.xcuserdatad/
+*.swp
+*.lock
+
+# Temporary/Cache files
+legacy_source/
