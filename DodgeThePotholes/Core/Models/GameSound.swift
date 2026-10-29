@@ -1,7 +1,7 @@
 import Foundation
 
 /// All audio cues the engine can request, keyed to bundled file names.
-enum GameSound: String {
+enum GameSound: String, CaseIterable {
     // MARK: SFX
     case carSkid      = "carskid.wav"
     case carHonk      = "car_honk.mp3"

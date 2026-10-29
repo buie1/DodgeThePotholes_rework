@@ -51,3 +51,32 @@ targets:
         UIStatusBarHidden: true
         UIViewControllerBasedStatusBarAppearance: false
         ITSAppUsesNonExemptEncryption: false
+        UIAppFonts:
+          - PressStart2P.ttf
+
+  DodgeThePotholesTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: DodgeThePotholesTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: edu.duke.DodgeThePotholesTests
+        GENERATE_INFOPLIST_FILE: true
+        SWIFT_VERSION: 5.10
+    dependencies:
+      - target: DodgeThePotholes
+
+schemes:
+  DodgeThePotholes:
+    build:
+      targets:
+        DodgeThePotholes: all
+        DodgeThePotholesTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - DodgeThePotholesTests

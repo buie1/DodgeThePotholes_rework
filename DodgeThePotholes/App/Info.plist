@@ -22,6 +22,10 @@
 	<false/>
 	<key>NSMotionUsageDescription</key>
 	<string>Used for tilt-based steering controls.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>PressStart2P.ttf</string>
+	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchScreen</key>
