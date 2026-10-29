@@ -2,11 +2,6 @@ import Foundation
 import CoreGraphics
 import Observation
 
-// MARK: - CGVector convenience
-extension CGVector {
-    static let zero = CGVector(dx: 0, dy: 0)
-}
-
 /// Pure-Swift game simulation engine.
 ///
 /// **Responsibilities**
@@ -153,8 +148,9 @@ final class GameEngine {
     /// Advance the simulation by `dt` seconds. Capped at 50 ms to prevent
     /// large jumps after backgrounding.
     func update(deltaTime dt: Double) {
+        // Cleared even when idle so a renderer never replays last frame's effects.
+        if !frameEvents.isEmpty { frameEvents.removeAll(keepingCapacity: true) }
         guard state == .playing else { return }
-        frameEvents.removeAll(keepingCapacity: true)
         let dt = min(dt, 0.05)
 
         updatePlayer(dt: dt)

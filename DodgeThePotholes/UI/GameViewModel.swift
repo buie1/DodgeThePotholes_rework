@@ -63,9 +63,12 @@ final class GameViewModel: GameEngineDelegate {
     private(set) var finalMoney: Int     = 0
     private(set) var isNewHighScore: Bool = false
 
-    // MARK: - Engine reference (read by GameView Canvas for rendering)
+    // MARK: - Engine & renderer
 
     private(set) var engine: GameEngine?
+
+    /// SpriteKit scene that draws `engine` and drives its clock; shown by `GameView`.
+    private(set) var scene: GameRenderScene?
 
     /// Music track for this run; restored after monster-truck mode.
     private var currentTrack: GameSound = .hotPursuit
@@ -111,9 +114,10 @@ final class GameViewModel: GameEngineDelegate {
     /// - Parameter carSkin: The player's currently selected car skin.
     func startGame(screenSize: CGSize, carSkin: CarSkin = .blue) {
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
-        let eng = GameEngine(worldSize: worldSize, carSkin: carSkin)
+        let eng = GameEngine(worldSize: worldSize, carSkin: carSkin, drivesOwnLoop: false)
         eng.delegate = self
         engine = eng
+        scene = GameRenderScene(engine: eng)
 
         // Reset HUD
         score            = 0
@@ -135,16 +139,19 @@ final class GameViewModel: GameEngineDelegate {
 
     func pauseGame() {
         engine?.pause()
+        scene?.isPaused = true
     }
 
     func resumeGame() {
         engine?.resume()
+        scene?.isPaused = false
     }
 
     /// Called from `GameOverView` "Main Menu" button.
     func returnToMenu() {
         engine?.forceStop()
         engine = nil
+        scene  = nil
         audioService.stopMusic()
         route  = .mainMenu
     }

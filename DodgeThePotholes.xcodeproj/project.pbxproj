@@ -13,6 +13,7 @@
 		06E8AE56CB01B2E5FF320F5A /* money_pattern2.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C497DE4BD3900EE444FAAA5 /* money_pattern2.json */; };
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
 		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
+		1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */; };
 		16CA9CE5CC4E698A7596B524 /* PowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7360B0D3114A51FC85EF1C38 /* PowerUpState.swift */; };
 		18023AD667715171009C20D6 /* money_pattern4.json in Resources */ = {isa = PBXBuildFile; fileRef = A5D6094F52D834222B995365 /* money_pattern4.json */; };
 		1D2990EABC35E4BD4AC6343C /* scream_in_pain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7CE345658CAC454CC2FA8516 /* scream_in_pain.mp3 */; };
@@ -38,6 +39,8 @@
 		6BD895D428C968E9B7415D1F /* GameEngineDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB22DABA61FA6B18DE9A036E /* GameEngineDelegate.swift */; };
 		6C018280E4C3363366BDD985 /* urban_chase.wav in Resources */ = {isa = PBXBuildFile; fileRef = 71F873B23E3A9681490EB626 /* urban_chase.wav */; };
 		7359D13880FC9BB285F45B4A /* GameSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */; };
+		73DD4F47B90AC35F9C220E5B /* PlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7922CB280A4A8C1C244034B6 /* PlayerNode.swift */; };
+		7CB5C804E871FFB23C37FFAC /* GameRenderScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDA19FE3EA0592B2675D594 /* GameRenderScene.swift */; };
 		7E3D4CBB5294E8B508AD0BDE /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 043C8A01C890EE2D173D93AF /* SpriteKit.framework */; };
 		81D2EE13AC3DF6F0734FB0A6 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8190660069AA56E2865F6832 /* CoreHaptics.framework */; };
 		81DBC5742DA40697F3AFEFBD /* police_s.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3D6098674B5E16EB4CAFF8E8 /* police_s.wav */; };
@@ -102,11 +105,13 @@
 		4C5D58300ACD0288C014A856 /* RAMPAGE.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = RAMPAGE.mp3; sourceTree = "<group>"; };
 		4D7F00B13162068BA9A2EBE7 /* ShopItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopItem.swift; sourceTree = "<group>"; };
 		4FF9F16B03415C2D66A8073C /* CarSkin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSkin.swift; sourceTree = "<group>"; };
+		5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityNodeFactory.swift; sourceTree = "<group>"; };
 		68EADB6093E04FB8412BC4D3 /* crash1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = crash1.mp3; sourceTree = "<group>"; };
 		71DDDC917D1D2C98EE932009 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		71F873B23E3A9681490EB626 /* urban_chase.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = urban_chase.wav; sourceTree = "<group>"; };
 		7360B0D3114A51FC85EF1C38 /* PowerUpState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerUpState.swift; sourceTree = "<group>"; };
 		78A6A9515BF2297AA8078AD2 /* money_pattern3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern3.json; sourceTree = "<group>"; };
+		7922CB280A4A8C1C244034B6 /* PlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNode.swift; sourceTree = "<group>"; };
 		7CE345658CAC454CC2FA8516 /* scream_in_pain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = scream_in_pain.mp3; sourceTree = "<group>"; };
 		7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteCatalog.swift; sourceTree = "<group>"; };
 		8190660069AA56E2865F6832 /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
@@ -149,6 +154,7 @@
 		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F64EE81291DC53CB8A17F059 /* start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = start.wav; sourceTree = "<group>"; };
 		FB62D00C5B1F9D8E6D03952C /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
+		FFDA19FE3EA0592B2675D594 /* GameRenderScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRenderScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -282,6 +288,9 @@
 		AFB029B39A42014EF38A90B7 /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */,
+				FFDA19FE3EA0592B2675D594 /* GameRenderScene.swift */,
+				7922CB280A4A8C1C244034B6 /* PlayerNode.swift */,
 				7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */,
 			);
 			path = Rendering;
@@ -508,12 +517,14 @@
 				0270AB5277CDE1DB51FEDD95 /* AudioService.swift in Sources */,
 				B4A3FD7BE02FDEC58AA48B7F /* CarSkin.swift in Sources */,
 				C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */,
+				1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */,
 				9105E0A214DBCBD7CD92209E /* EntitySpawner.swift in Sources */,
 				2CAED9D2DC57A018E470614C /* GameConfig.swift in Sources */,
 				A75499FA8264E36E2C3A4252 /* GameEngine.swift in Sources */,
 				6BD895D428C968E9B7415D1F /* GameEngineDelegate.swift in Sources */,
 				D96D1F69C68A0C533738682B /* GameEvent.swift in Sources */,
 				AB456E1F74A669F65F63E16E /* GameOverView.swift in Sources */,
+				7CB5C804E871FFB23C37FFAC /* GameRenderScene.swift in Sources */,
 				7359D13880FC9BB285F45B4A /* GameSound.swift in Sources */,
 				F44440FD70A07397B2CD1075 /* GameState.swift in Sources */,
 				ACAFF3FA751C664A9D466963 /* GameView.swift in Sources */,
@@ -523,6 +534,7 @@
 				E1FF6932DF189159FF2E6A95 /* Obstacle.swift in Sources */,
 				241547B0308CF23F62DB7AE2 /* ObstacleType.swift in Sources */,
 				A0D9BEE46B0C0274075D7A1A /* Player.swift in Sources */,
+				73DD4F47B90AC35F9C220E5B /* PlayerNode.swift in Sources */,
 				4B26B1A4367743CB3F26824F /* PlayerState.swift in Sources */,
 				0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */,
 				16CA9CE5CC4E698A7596B524 /* PowerUpState.swift in Sources */,
