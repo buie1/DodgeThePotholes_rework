@@ -11,11 +11,13 @@
 		028B30B70D070FC463375436 /* hot-pursuit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 87A2839F3279837E8E5A64B4 /* hot-pursuit.wav */; };
 		02B76A6AABF35CDE43DCCEB9 /* car_honk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9AFE4367F246F0DC7C3D6B39 /* car_honk.mp3 */; };
 		06E8AE56CB01B2E5FF320F5A /* money_pattern2.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C497DE4BD3900EE444FAAA5 /* money_pattern2.json */; };
+		09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */; };
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
 		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
 		1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */; };
 		16CA9CE5CC4E698A7596B524 /* PowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7360B0D3114A51FC85EF1C38 /* PowerUpState.swift */; };
 		18023AD667715171009C20D6 /* money_pattern4.json in Resources */ = {isa = PBXBuildFile; fileRef = A5D6094F52D834222B995365 /* money_pattern4.json */; };
+		1B1BAD430296D3ACD7633102 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB09546504848C1B4237D8 /* MotionService.swift */; };
 		1D2990EABC35E4BD4AC6343C /* scream_in_pain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7CE345658CAC454CC2FA8516 /* scream_in_pain.mp3 */; };
 		241547B0308CF23F62DB7AE2 /* ObstacleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498FBB401194B789C3369283 /* ObstacleType.swift */; };
 		25B4C92C2FCE3F90AADDD27A /* ambulance_s.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 190C2416A53A6BABC01774BD /* ambulance_s.mp3 */; };
@@ -95,6 +97,7 @@
 		1C497DE4BD3900EE444FAAA5 /* money_pattern2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern2.json; sourceTree = "<group>"; };
 		22D94FA505301C94F69978C3 /* PressStart2P.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PressStart2P.ttf; sourceTree = "<group>"; };
 		273EEEC2C427D6038DB2AD6E /* TilePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilePattern.swift; sourceTree = "<group>"; };
+		2CCB09546504848C1B4237D8 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
 		2D822AEFC9043DB8386D575A /* torpedo.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = torpedo.mp3; sourceTree = "<group>"; };
 		317114713DEF96BCEAA15D60 /* money_pattern1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern1.json; sourceTree = "<group>"; };
 		37ECF6E6F884D64E311AF977 /* dog_wimper.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dog_wimper.mp3; sourceTree = "<group>"; };
@@ -119,6 +122,7 @@
 		87A2839F3279837E8E5A64B4 /* hot-pursuit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "hot-pursuit.wav"; sourceTree = "<group>"; };
 		8823CD508FC9765BB862F196 /* Explosion.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Explosion.sks; sourceTree = "<group>"; };
 		91079949E0AE64E60F81967E /* GameConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConfig.swift; sourceTree = "<group>"; };
+		91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModelInputTests.swift; sourceTree = "<group>"; };
 		946F1202D54B6150731E0036 /* text_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = text_tone.mp3; sourceTree = "<group>"; };
 		9937C7BDA93AF4C8CDA05513 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		9A7E8D47CC73B3A7A5630D31 /* pew-pew-lei.caf */ = {isa = PBXFileReference; path = "pew-pew-lei.caf"; sourceTree = "<group>"; };
@@ -197,6 +201,7 @@
 			children = (
 				D49E3D29718D85EA988C3FE1 /* AudioService.swift */,
 				CF124AB9399306BA9CDEBE48 /* HapticService.swift */,
+				2CCB09546504848C1B4237D8 /* MotionService.swift */,
 				E7BFE347B1C56CF647C9A688 /* ScoreService.swift */,
 			);
 			path = Services;
@@ -225,6 +230,7 @@
 			isa = PBXGroup;
 			children = (
 				4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */,
+				91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */,
 				B33D5585DBEFEA579129409D /* ResourceTests.swift */,
 			);
 			path = DodgeThePotholesTests;
@@ -505,6 +511,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */,
+				09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */,
 				91E0F084971ACB4C51486D24 /* ResourceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -531,6 +538,7 @@
 				5524644435F9480491F8D435 /* GameViewModel.swift in Sources */,
 				40BFF8504740F037B9E2EEF3 /* HapticService.swift in Sources */,
 				2BD2576D18BF82B544BB114A /* MainMenuView.swift in Sources */,
+				1B1BAD430296D3ACD7633102 /* MotionService.swift in Sources */,
 				E1FF6932DF189159FF2E6A95 /* Obstacle.swift in Sources */,
 				241547B0308CF23F62DB7AE2 /* ObstacleType.swift in Sources */,
 				A0D9BEE46B0C0274075D7A1A /* Player.swift in Sources */,

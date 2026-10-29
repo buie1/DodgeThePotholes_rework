@@ -78,6 +78,14 @@ final class GameViewModel: GameEngineDelegate {
     private let audioService:  any AudioServiceProtocol
     private let hapticService: any HapticServiceProtocol
     private let scoreService:  any ScoreServiceProtocol
+    private let motionService: any MotionServiceProtocol
+
+    // MARK: - Steering input
+
+    /// Latest tilt steering in [-1, 1]; `0` when no accelerometer.
+    private var tiltInput: Double = 0
+    /// Drag steering while a finger is down; overrides tilt. `nil` when not dragging.
+    private var dragInput: Double? = nil
 
     /// Background music tracks that can be randomly selected on game start.
     /// The user's chosen track will be wired here in the Settings phase.
@@ -92,11 +100,13 @@ final class GameViewModel: GameEngineDelegate {
     init(
         audio:  any AudioServiceProtocol  = AudioService(),
         haptics: any HapticServiceProtocol = HapticService(),
-        scores:  any ScoreServiceProtocol  = UserDefaultsScoreService()
+        scores:  any ScoreServiceProtocol  = UserDefaultsScoreService(),
+        motion:  any MotionServiceProtocol = MotionService()
     ) {
         self.audioService  = audio
         self.hapticService = haptics
         self.scoreService  = scores
+        self.motionService = motion
         highScore = scores.highScore
     }
 
@@ -134,6 +144,13 @@ final class GameViewModel: GameEngineDelegate {
         audioService.startMusic(currentTrack)
         audioService.play(.gameStart)
 
+        tiltInput = 0
+        dragInput = nil
+        motionService.start { [weak self] tilt in
+            self?.tiltInput = tilt
+            self?.applySteering()
+        }
+
         eng.start(carSkin: carSkin)
     }
 
@@ -152,26 +169,38 @@ final class GameViewModel: GameEngineDelegate {
         engine?.forceStop()
         engine = nil
         scene  = nil
+        motionService.stop()
         audioService.stopMusic()
         route  = .mainMenu
     }
 
     // MARK: - Input
 
-    /// Forward normalised horizontal input [-1, 1] to the engine.
-    /// Positive = right. Called from `DragGesture.onChanged`.
-    func setHorizontalInput(_ value: Double) {
-        engine?.setHorizontalInput(value)
+    /// `true` when tilting the device steers the car.
+    var isTiltAvailable: Bool { motionService.isAvailable }
+
+    /// Drag steering in [-1, 1] while a finger is down (positive = right).
+    /// Overrides tilt until `endDrag(wasTap:)`. Called from `DragGesture.onChanged`.
+    func updateDrag(_ value: Double) {
+        dragInput = max(-1, min(1, value))
+        applySteering()
     }
 
-    /// Stop lateral movement. Called from `DragGesture.onEnded`.
-    func stopHorizontalInput() {
-        engine?.setHorizontalInput(0)
+    /// Ends drag steering and hands control back to tilt.
+    /// A touch that barely moved is a tap, which sounds the horn.
+    func endDrag(wasTap: Bool) {
+        dragInput = nil
+        applySteering()
+        if wasTap { honk() }
     }
 
     /// Sound the horn (or fire a missile in monster-truck mode).
     func honk() {
         engine?.honk()
+    }
+
+    private func applySteering() {
+        engine?.setHorizontalInput(dragInput ?? tiltInput)
     }
 
     // MARK: - GameEngineDelegate
@@ -245,6 +274,7 @@ final class GameViewModel: GameEngineDelegate {
         highScore      = scoreService.highScore
 
         audioService.stopMusic()
+        motionService.stop()
         route = .gameOver
     }
 

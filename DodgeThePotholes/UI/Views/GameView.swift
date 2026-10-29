@@ -7,8 +7,8 @@ import SpriteKit
 /// engine's clock. The world is 750 units wide with the screen's aspect ratio,
 /// so the scene fills the screen exactly. HUD and effect overlays are SwiftUI.
 ///
-/// Input: `DragGesture(minimumDistance: 0)` maps horizontal translation to
-///   a normalised [-1, 1] value forwarded to `GameViewModel`.
+/// Input: tilt steers by default (`MotionService`). `DragGesture(minimumDistance: 0)`
+///   maps horizontal translation to a [-1, 1] override; a tap honks the horn.
 struct GameView: View {
 
     @Bindable var viewModel: GameViewModel
@@ -63,14 +63,16 @@ struct GameView: View {
 
     // MARK: - Steering gesture
 
+    /// Drag sideways to steer (overrides tilt while the finger is down);
+    /// a touch that barely moves is a tap, which honks the horn.
     private func steeringGesture(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
-                let norm = Double(value.translation.width) / Double(width / 2)
-                viewModel.setHorizontalInput(max(-1, min(1, norm)))
+                viewModel.updateDrag(Double(value.translation.width) / Double(width / 2))
             }
-            .onEnded { _ in
-                viewModel.stopHorizontalInput()
+            .onEnded { value in
+                let travel = hypot(value.translation.width, value.translation.height)
+                viewModel.endDrag(wasTap: travel < GameConfig.tapMaxTravel)
             }
     }
 

@@ -30,6 +30,17 @@ enum GameConfig {
     /// Pixels the player re-enters from the opposite edge while wrapping.
     static let wrapInset: Double = 20
 
+    // MARK: - Controls
+
+    /// Steering input per g of sideways tilt. Legacy moved `accel.x × 37.5` units per
+    /// frame (2,250 units/s per g); 2.5 × `playerMaxSpeed` reproduces that speed,
+    /// reaching full speed at about 24° of tilt.
+    static let tiltSensitivity: Double = 2.5
+    /// Seconds between accelerometer samples (legacy 0.2 s felt laggy; 60 Hz instead).
+    static let tiltUpdateInterval: Double = 1.0 / 60
+    /// A touch that moves less than this many points is a tap (honk), not a drag.
+    static let tapMaxTravel: Double = 10
+
     // MARK: - Lives
 
     static let beginningLifeCount: Int = 3
