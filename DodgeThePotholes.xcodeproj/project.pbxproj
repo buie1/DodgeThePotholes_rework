@@ -12,6 +12,7 @@
 		02B76A6AABF35CDE43DCCEB9 /* car_honk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9AFE4367F246F0DC7C3D6B39 /* car_honk.mp3 */; };
 		06E8AE56CB01B2E5FF320F5A /* money_pattern2.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C497DE4BD3900EE444FAAA5 /* money_pattern2.json */; };
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
+		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
 		16CA9CE5CC4E698A7596B524 /* PowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7360B0D3114A51FC85EF1C38 /* PowerUpState.swift */; };
 		18023AD667715171009C20D6 /* money_pattern4.json in Resources */ = {isa = PBXBuildFile; fileRef = A5D6094F52D834222B995365 /* money_pattern4.json */; };
 		1D2990EABC35E4BD4AC6343C /* scream_in_pain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7CE345658CAC454CC2FA8516 /* scream_in_pain.mp3 */; };
@@ -41,6 +42,7 @@
 		81D2EE13AC3DF6F0734FB0A6 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8190660069AA56E2865F6832 /* CoreHaptics.framework */; };
 		81DBC5742DA40697F3AFEFBD /* police_s.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3D6098674B5E16EB4CAFF8E8 /* police_s.wav */; };
 		8D5BEC90B3E415F3DC7F8EE5 /* cone_pattern1.json in Resources */ = {isa = PBXBuildFile; fileRef = D6B77B07A57D31294EBCA7D3 /* cone_pattern1.json */; };
+		9105E0A214DBCBD7CD92209E /* EntitySpawner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8A3631F5D056AA94F8BC28 /* EntitySpawner.swift */; };
 		91E0F084971ACB4C51486D24 /* ResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33D5585DBEFEA579129409D /* ResourceTests.swift */; };
 		921F33DBA32CAD02C9304D53 /* crash1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 68EADB6093E04FB8412BC4D3 /* crash1.mp3 */; };
 		9334FC4BA2727B79201F1FC3 /* TilePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273EEEC2C427D6038DB2AD6E /* TilePattern.swift */; };
@@ -60,6 +62,7 @@
 		BEF29EBFABC42CCCC3F9996B /* Array2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D53B029975DF13D6E8D645 /* Array2D.swift */; };
 		C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */; };
 		CF4C5D6A7C8D3E944E329CE5 /* ScoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BFE347B1C56CF647C9A688 /* ScoreService.swift */; };
+		D96D1F69C68A0C533738682B /* GameEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0E07D893AA06895BD8DE9D /* GameEvent.swift */; };
 		DB2D3066B95921762DAC088D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2C9291713F4579B279BD3D4 /* Assets.xcassets */; };
 		E1FF6932DF189159FF2E6A95 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2117657443EDAACD0D935FD /* Obstacle.swift */; };
 		E2D935BCC79E636218BEF18D /* Explosion.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8823CD508FC9765BB862F196 /* Explosion.sks */; };
@@ -82,6 +85,7 @@
 /* Begin PBXFileReference section */
 		043C8A01C890EE2D173D93AF /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		0C1AE0D100CE14E6EEF9517C /* monster_truck_jam.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = monster_truck_jam.mp3; sourceTree = "<group>"; };
+		0E0E07D893AA06895BD8DE9D /* GameEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEvent.swift; sourceTree = "<group>"; };
 		10D53B029975DF13D6E8D645 /* Array2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array2D.swift; sourceTree = "<group>"; };
 		159EAA11EFF1C06577E182D9 /* PowerUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		190C2416A53A6BABC01774BD /* ambulance_s.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ambulance_s.mp3; sourceTree = "<group>"; };
@@ -94,6 +98,7 @@
 		3A81341E67EC2645EC447D6B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		3D6098674B5E16EB4CAFF8E8 /* police_s.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = police_s.wav; sourceTree = "<group>"; };
 		498FBB401194B789C3369283 /* ObstacleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstacleType.swift; sourceTree = "<group>"; };
+		4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngineTests.swift; sourceTree = "<group>"; };
 		4C5D58300ACD0288C014A856 /* RAMPAGE.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = RAMPAGE.mp3; sourceTree = "<group>"; };
 		4D7F00B13162068BA9A2EBE7 /* ShopItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopItem.swift; sourceTree = "<group>"; };
 		4FF9F16B03415C2D66A8073C /* CarSkin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSkin.swift; sourceTree = "<group>"; };
@@ -136,6 +141,7 @@
 		D2EAAAB47588F01E88C73032 /* GameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngine.swift; sourceTree = "<group>"; };
 		D49E3D29718D85EA988C3FE1 /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
 		D6B77B07A57D31294EBCA7D3 /* cone_pattern1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cone_pattern1.json; sourceTree = "<group>"; };
+		DA8A3631F5D056AA94F8BC28 /* EntitySpawner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitySpawner.swift; sourceTree = "<group>"; };
 		E2C9291713F4579B279BD3D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSound.swift; sourceTree = "<group>"; };
 		E7BFE347B1C56CF647C9A688 /* ScoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreService.swift; sourceTree = "<group>"; };
@@ -212,6 +218,7 @@
 		7709047DE5E62B7300D658ED /* DodgeThePotholesTests */ = {
 			isa = PBXGroup;
 			children = (
+				4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */,
 				B33D5585DBEFEA579129409D /* ResourceTests.swift */,
 			);
 			path = DodgeThePotholesTests;
@@ -348,8 +355,10 @@
 		ED3B1A3A4A61A48E5B255FC0 /* GameEngine */ = {
 			isa = PBXGroup;
 			children = (
+				DA8A3631F5D056AA94F8BC28 /* EntitySpawner.swift */,
 				D2EAAAB47588F01E88C73032 /* GameEngine.swift */,
 				AB22DABA61FA6B18DE9A036E /* GameEngineDelegate.swift */,
+				0E0E07D893AA06895BD8DE9D /* GameEvent.swift */,
 			);
 			path = GameEngine;
 			sourceTree = "<group>";
@@ -412,7 +421,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					A455FBA3C3CC474D6326047D = {
 						DevelopmentTeam = "";
@@ -486,6 +495,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */,
 				91E0F084971ACB4C51486D24 /* ResourceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -498,9 +508,11 @@
 				0270AB5277CDE1DB51FEDD95 /* AudioService.swift in Sources */,
 				B4A3FD7BE02FDEC58AA48B7F /* CarSkin.swift in Sources */,
 				C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */,
+				9105E0A214DBCBD7CD92209E /* EntitySpawner.swift in Sources */,
 				2CAED9D2DC57A018E470614C /* GameConfig.swift in Sources */,
 				A75499FA8264E36E2C3A4252 /* GameEngine.swift in Sources */,
 				6BD895D428C968E9B7415D1F /* GameEngineDelegate.swift in Sources */,
+				D96D1F69C68A0C533738682B /* GameEvent.swift in Sources */,
 				AB456E1F74A669F65F63E16E /* GameOverView.swift in Sources */,
 				7359D13880FC9BB285F45B4A /* GameSound.swift in Sources */,
 				F44440FD70A07397B2CD1075 /* GameState.swift in Sources */,

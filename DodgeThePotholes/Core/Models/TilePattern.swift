@@ -36,6 +36,11 @@ struct TilePattern: Decodable, Equatable {
         return try JSONDecoder().decode(TilePattern.self, from: Data(contentsOf: url))
     }
 
+    /// Loads every bundled pattern in `names`, skipping any that fail to load.
+    static func loadAll(_ names: [Name], in bundle: Bundle = .main) -> [TilePattern] {
+        names.compactMap { try? load($0, in: bundle) }
+    }
+
     /// Converts the JSON rows into an `Array2D` indexed bottom-up (row 0 = bottom),
     /// matching the legacy `currRow = NumRows - row - 1` convention.
     var grid: Array2D<Int> {

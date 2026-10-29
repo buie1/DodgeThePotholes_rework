@@ -19,7 +19,10 @@ protocol GameEngineDelegate: AnyObject {
     /// Fired when a timed power-up expires.
     func engine(_ engine: GameEngine, didDeactivatePowerUp type: PowerUpType)
     /// Fired when the player hits a TextMessage obstacle (rickroll easter egg).
+    /// `index` advances one lyric per phone and wraps after `GameConfig.textMessageCount`.
     func engine(_ engine: GameEngine, didTriggerTextMessageAt index: Int)
+    /// Fired when a banner message should fly across the screen.
+    func engine(_ engine: GameEngine, didRaiseAlert alert: GameAlert)
     /// Fired once when all lives reach zero.
     func engineDidEnd(_ engine: GameEngine, finalScore: Int, moneyEarned: Int)
     /// Requests an audio cue to be played by the AudioManager.

@@ -6,7 +6,7 @@ struct GameOverView: View {
 
     let viewModel: GameViewModel
     /// Canvas size from `GameView`'s `GeometryReader`, used for "Play Again" restarts.
-    let worldSize: CGSize
+    let screenSize: CGSize
 
     /// Drives the "NEW HIGH SCORE" flash animation.
     @State private var highScoreGlow = false
@@ -73,7 +73,7 @@ struct GameOverView: View {
     private var buttonStack: some View {
         VStack(spacing: 14) {
             GameOverButton(title: "PLAY AGAIN", color: .yellow) {
-                viewModel.startGame(worldSize: worldSize)
+                viewModel.startGame(screenSize: screenSize)
             }
             GameOverButton(title: "MAIN MENU", color: .gray) {
                 viewModel.returnToMenu()
@@ -123,5 +123,5 @@ private struct GameOverButton: View {
 }
 
 #Preview {
-    GameOverView(viewModel: GameViewModel(), worldSize: CGSize(width: 390, height: 844))
+    GameOverView(viewModel: GameViewModel(), screenSize: CGSize(width: 390, height: 844))
 }

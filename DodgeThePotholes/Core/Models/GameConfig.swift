@@ -2,77 +2,111 @@ import Foundation
 
 /// Central configuration for all game constants.
 /// Replaces the scattered global `let` values in legacy GlobalConstants.swift.
+///
+/// All sizes and positions are in **world units**. The legacy game ran in a
+/// fixed 750 × 1334 scene, so the world is always 750 units wide and as tall
+/// as the screen's aspect ratio requires.
 enum GameConfig {
 
     // MARK: - World / Layout
-    /// Fraction of world width used as the player lane boundary.
-    static let laneHalfWidthFraction: Double = 0.45
+
+    /// Logical world width, matching the legacy 750-wide scene.
+    static let worldWidth: Double = 750
+
+    /// World size for a screen, keeping the 750-unit width and the screen's aspect ratio.
+    static func worldSize(forScreen screen: CGSize) -> CGSize {
+        guard screen.width > 0 else { return CGSize(width: worldWidth, height: 1334) }
+        return CGSize(width: worldWidth, height: worldWidth * screen.height / screen.width)
+    }
 
     // MARK: - Player
+
     static let playerSize          = CGSize(width: 64, height: 125)
     static let monsterTruckSize    = CGSize(width: 300, height: 301)
-    /// Maximum lateral speed in points per second.
-    static let playerMaxSpeed: Double = 420
-    /// Bottom margin above the world edge where the player sits.
-    static let playerBottomMargin: Double = 80
+    /// Maximum lateral speed in world units per second at full input.
+    static let playerMaxSpeed: Double = 900
+    /// Player centre sits this far above the bottom edge (legacy: 1.5 × car height).
+    static let playerBottomOffset: Double = 187.5
+    /// Pixels the player re-enters from the opposite edge while wrapping.
+    static let wrapInset: Double = 20
 
     // MARK: - Lives
+
     static let beginningLifeCount: Int = 3
     static let maxLifeCount: Int       = 4
 
     // MARK: - Scoring
-    /// Score points awarded per second of survival.
+
+    /// Score points awarded per second of survival (legacy: +1 per frame at 60 fps).
     static let scoreRatePerSecond: Double = 60
 
     // MARK: - Speed ramp
-    /// Starting movement duration (seconds to cross full screen height).
-    static let startObstacleInterval: Double = 2.0
-    /// Minimum obstacle interval (fastest the game ever gets).
-    static let minObstacleInterval: Double   = 0.2
-    /// How often (seconds) the speed steps down.
-    static let speedRampInterval: Double     = 10.0
-    /// How much the interval decreases each ramp step.
-    static let speedRampStep: Double         = 0.1
+    // Legacy `gameSpeed`: the seconds an obstacle takes to cross the screen.
+
+    /// Starting travel duration (seconds to cross the full world height).
+    static let startTravelDuration: Double = 2.0
+    /// Fastest the game ever gets.
+    static let minTravelDuration: Double   = 0.2
+    /// How often (seconds) the travel duration steps down.
+    static let speedRampInterval: Double   = 10.0
+    /// How much the travel duration decreases each ramp step.
+    static let speedRampStep: Double       = 0.1
 
     // MARK: - Spawn intervals (seconds between spawns)
-    static let obstacleSpawnInterval: Double  = 1.75
+
+    static let obstacleSpawnInterval: Double    = 1.75
     static let environmentSpawnInterval: Double = 1.0
-    static let powerUpSpawnInterval: Double   = 5.0
+    static let powerUpSpawnInterval: Double     = 5.0
 
-    // MARK: - Obstacle sizes (points)
-    static let potholeSize      = CGSize(width: 66,    height: 65)
-    static let blackIceSize     = CGSize(width: 66,    height: 65)
-    static let coneSize         = CGSize(width: 20,    height: 20)
-    static let barricadeSize    = CGSize(width: 40,    height: 40)
-    static let plantSize        = CGSize(width: 101,   height: 100)
-    static let phoneSize        = CGSize(width: 40,    height: 80)
-    static let movingCarSize    = CGSize(width: 62.5,  height: 125)
-    static let ambulanceSize    = CGSize(width: 62.5,  height: 125)
-    static let policeCarSize    = CGSize(width: 62.5,  height: 125)
-    static let dogSize          = CGSize(width: 51,    height: 50)
-    static let humanSize        = CGSize(width: 40,    height: 80)
+    // MARK: - Spawn X ranges (fraction of world width, legacy GlobalConstants)
 
-    // MARK: - Collectible / power-up sizes
-    static let coinTileSize     = CGSize(width: 25,    height: 50)
-    static let coneTileSize     = CGSize(width: 40,    height: 40)
-    static let powerUpSize      = CGSize(width: 50,    height: 51)
+    /// Potholes and black ice spawn within ±this fraction of the width.
+    static let centralSpawnFraction: Double = 0.25
+    /// Phones spawn within ±this fraction of the width.
+    static let phoneSpawnFraction: Double   = 0.4
+    /// Plants spawn at ±this fraction of the width (road side).
+    static let plantSpawnFraction: Double   = 0.4375
+    /// Dogs and humans start at ±this fraction of the width.
+    static let pedestrianSpawnFraction: Double = 0.375
+    /// Moving cars drift between these fractions of the half-width.
+    static let movingCarLanes: (near: Double, far: Double) = (0.2, 0.3375)
+    /// Cone patterns' left edge range, as fractions of the width.
+    static let conePatternRange: (low: Double, high: Double) = (-0.375, 0.25)
 
-    // MARK: - Spawn X ranges (fraction of world half-width)
-    /// Potholes and black ice spawn in this fraction of half-width.
-    static let centralSpawnHalfFraction: Double = 0.25
-    /// Phone (TextMessage) spawn fraction.
-    static let phoneSpawnHalfFraction: Double   = 0.40
-    /// Plants spawn at this fixed fraction (side of road).
-    static let plantSpawnFraction: Double       = 0.4375
+    // MARK: - Patterns
+
+    static let coinTileSize = CGSize(width: 25, height: 50)
+    static let coneTileSize = CGSize(width: 40, height: 40)
+    /// Patterns taller than this many rows travel proportionally slower (legacy `minRows`).
+    static let patternBaseRows: Int = 9
+    /// Seconds (at start speed) the obstacle spawner pauses for a cone pattern.
+    static let conePatternPause: Double = 25
+
+    // MARK: - Horn
+
+    /// Seconds the horn blast / missile takes to reach its target height.
+    static let hornTravelDuration: Double = 1.0
+    /// Horn hit box is this many times wider than its sprite.
+    static let hornHitboxWidthMultiplier: Double = 5
+    static let hornSize    = CGSize(width: 32, height: 32)
+    static let missileSize = CGSize(width: 47, height: 121)
+
+    // MARK: - Pedestrian reactions
+
+    /// Seconds a scared or dying pedestrian takes for its reaction (legacy `runAway` duration).
+    static let fleeDuration: Double = 2.0
 
     // MARK: - Powerup durations (seconds)
+
     static let wrapDuration: Double         = 15
     static let multiplierDuration: Double   = 30
     static let monsterTruckDuration: Double = 18
     static let boozeDuration: Double        = 15
 
     // MARK: - Recovery (post-collision invincibility, seconds)
-    static let recoveryDuration: Double = 2.5
+
+    /// Legacy flash: 8 × (0.3 s fade out + 0.3 s fade in).
+    static let recoveryDuration: Double = 4.8
 
     // MARK: - Shop costs
     // Note: car and song intentionally share the same price (500),
@@ -86,30 +120,62 @@ enum GameConfig {
     }
 
     // MARK: - Text messages (rickroll easter egg)
-    static let maxTextMessageIndex: Int = 57
 
-    // MARK: - Obstacle spawn weights
-    /// Weighted pool mirroring the legacy `possibleObstacles` array.
-    static let obstacleWeights: [(ObstacleType, Int)] = [
-        (.pothole,     4),
-        (.movingCar,   3),
-        (.blackIce,    3),
-        (.ambulance,   2),
-        (.policeCar,   2),
-        (.textMessage, 1),
-        (.dog,         1),
-        (.human,       1),
+    /// Number of lyric lines shown in order before wrapping back to the first.
+    static let textMessageCount: Int = 57
+
+    // MARK: - Spawn tables
+
+    /// Obstacle pool mirroring the legacy `possibleObstacles` array
+    /// (its "coin" entries fell through to pothole, hence 7).
+    static let obstacleWeights: [(ObstacleSpawn, Int)] = [
+        (.single(.pothole),   7),
+        (.single(.human),     4),
+        (.single(.dog),       3),
+        (.single(.movingCar), 3),
+        (.single(.blackIce),  3),
+        (.single(.policeCar), 2),
+        (.single(.ambulance), 2),
+        (.conePattern,        1),
     ]
 
-    /// Environment obstacle weights (90 % plant, 10 % coin pattern).
-    static let envWeights: [(EnvSpawnType, Int)] = [
+    /// Environment pool (legacy: 9 in 10 plant, otherwise a coin pattern).
+    static let environmentWeights: [(EnvSpawnType, Int)] = [
         (.plant,       9),
         (.coinPattern, 1),
     ]
+
+    /// Power-up pool. Reproduces the odds the legacy `addPowerUp()` actually
+    /// produced (it re-rolled the die in every `else if`), as an explicit table.
+    static let powerUpWeights: [(PowerUpSpawn, Int)] = [
+        (.powerUp(.oneUp),        14),
+        (.powerUp(.monsterTruck), 13),
+        (.powerUp(.wrap),         12),
+        (.multiplier,             10),
+        (.phone,                   9),
+        (.powerUp(.booze),         8),
+        (.nothing,                34),
+    ]
 }
 
-/// Discriminates environment-only spawn events (not physics obstacles).
-enum EnvSpawnType {
+/// One roll of the obstacle spawner.
+enum ObstacleSpawn: Equatable {
+    case single(ObstacleType)
+    case conePattern
+}
+
+/// One roll of the environment spawner.
+enum EnvSpawnType: Equatable {
     case plant
     case coinPattern
+}
+
+/// One roll of the power-up spawner.
+enum PowerUpSpawn: Equatable {
+    case powerUp(PowerUpType)
+    /// x2 or x3, chosen 50/50.
+    case multiplier
+    /// The phone is a power-*down* obstacle.
+    case phone
+    case nothing
 }

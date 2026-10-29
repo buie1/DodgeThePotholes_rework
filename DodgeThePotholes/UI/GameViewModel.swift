@@ -45,8 +45,14 @@ final class GameViewModel: GameEngineDelegate {
     private(set) var lives: Int  = GameConfig.beginningLifeCount
     private(set) var highScore: Int
     private(set) var playerState: PlayerState = .normal
-    private(set) var activePowerUp: PowerUpState? = nil
     private(set) var isDrunkMode: Bool = false
+
+    /// The most recently activated timed power-up still running, read live from
+    /// the engine so its countdown stays current.
+    var activePowerUp: PowerUpState? { engine?.activePowerUps.last }
+
+    /// Banner currently flying across the screen, or `nil`.
+    private(set) var activeAlert: GameAlert? = nil
 
     /// Non-nil while the text-message (rickroll) overlay should be visible.
     private(set) var textMessageIndex: Int? = nil
@@ -60,6 +66,9 @@ final class GameViewModel: GameEngineDelegate {
     // MARK: - Engine reference (read by GameView Canvas for rendering)
 
     private(set) var engine: GameEngine?
+
+    /// Music track for this run; restored after monster-truck mode.
+    private var currentTrack: GameSound = .hotPursuit
 
     // MARK: - Services
 
@@ -97,9 +106,11 @@ final class GameViewModel: GameEngineDelegate {
     }
 
     /// Start (or restart) a new game session.
-    /// - Parameter worldSize: The logical canvas size in points, from `GeometryReader`.
+    /// - Parameter screenSize: The on-screen canvas size in points, from `GeometryReader`.
+    ///   It is converted to the 750-unit-wide game world.
     /// - Parameter carSkin: The player's currently selected car skin.
-    func startGame(worldSize: CGSize, carSkin: CarSkin = .blue) {
+    func startGame(screenSize: CGSize, carSkin: CarSkin = .blue) {
+        let worldSize = GameConfig.worldSize(forScreen: screenSize)
         let eng = GameEngine(worldSize: worldSize, carSkin: carSkin)
         eng.delegate = self
         engine = eng
@@ -108,15 +119,15 @@ final class GameViewModel: GameEngineDelegate {
         score            = 0
         money            = 0
         lives            = GameConfig.beginningLifeCount
-        activePowerUp    = nil
         isDrunkMode      = false
         textMessageIndex = nil
+        activeAlert      = nil
         playerState      = .normal
         route            = .playing
 
         // Audio: start a random music track then play the game-start SFX.
-        let track = Self.musicTracks.randomElement() ?? .hotPursuit
-        audioService.startMusic(track)
+        currentTrack = Self.musicTracks.randomElement() ?? .hotPursuit
+        audioService.startMusic(currentTrack)
         audioService.play(.gameStart)
 
         eng.start(carSkin: carSkin)
@@ -151,6 +162,11 @@ final class GameViewModel: GameEngineDelegate {
         engine?.setHorizontalInput(0)
     }
 
+    /// Sound the horn (or fire a missile in monster-truck mode).
+    func honk() {
+        engine?.honk()
+    }
+
     // MARK: - GameEngineDelegate
 
     func engine(_ engine: GameEngine, didUpdateScore score: Int) {
@@ -167,16 +183,42 @@ final class GameViewModel: GameEngineDelegate {
 
     func engine(_ engine: GameEngine, didChangePlayerState state: PlayerState) {
         playerState = state
-        isDrunkMode = (state == .drunk)
-        audioService.setDrunkMode(isDrunkMode)
     }
 
     func engine(_ engine: GameEngine, didActivatePowerUp powerUp: PowerUpState) {
-        activePowerUp = powerUp
+        switch powerUp.type {
+        case .booze:
+            isDrunkMode = true
+            audioService.setDrunkMode(true)
+        case .monsterTruck:
+            // Legacy swapped the background music for the monster-truck theme.
+            audioService.stopMusic()
+            audioService.play(.rampage)
+            audioService.play(.monsterTruck)
+        default:
+            break
+        }
     }
 
     func engine(_ engine: GameEngine, didDeactivatePowerUp type: PowerUpType) {
-        activePowerUp = nil
+        switch type {
+        case .booze:
+            isDrunkMode = false
+            audioService.setDrunkMode(false)
+        case .monsterTruck:
+            audioService.startMusic(currentTrack)
+        default:
+            break
+        }
+    }
+
+    func engine(_ engine: GameEngine, didRaiseAlert alert: GameAlert) {
+        activeAlert = alert
+        // Auto-dismiss after the fly-in / hold / fly-out sequence.
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            if self?.activeAlert == alert { self?.activeAlert = nil }
+        }
     }
 
     func engine(_ engine: GameEngine, didTriggerTextMessageAt index: Int) {

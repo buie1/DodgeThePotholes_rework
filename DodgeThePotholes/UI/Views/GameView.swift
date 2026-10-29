@@ -33,13 +33,13 @@ struct GameView: View {
                 }
 
                 if viewModel.route == .gameOver {
-                    GameOverView(viewModel: viewModel, worldSize: geo.size)
+                    GameOverView(viewModel: viewModel, screenSize: geo.size)
                 }
             }
             .onAppear {
                 guard !hasStarted else { return }
                 hasStarted = true
-                viewModel.startGame(worldSize: geo.size)
+                viewModel.startGame(screenSize: geo.size)
             }
             .onChange(of: viewModel.route) { _, newRoute in
                 // When Play Again resets route to .playing, re-enable the start guard.
@@ -74,10 +74,13 @@ struct GameView: View {
 
         let w = size.width
         let h = size.height
-
-        // World → canvas coordinate transform (origin at centre, Y-up).
-        let cx: (CGFloat) -> CGFloat = { w / 2 + $0 }
-        let cy: (CGFloat) -> CGFloat = { h / 2 - $0 }
+        // World units → canvas points (world is 750 wide, origin at centre, Y-up).
+        let scale = w / engine.worldSize.width
+        func rect(_ center: CGPoint, _ entitySize: CGSize) -> CGRect {
+            CGRect(x: w / 2 + (center.x - entitySize.width / 2) * scale,
+                   y: h / 2 - (center.y + entitySize.height / 2) * scale,
+                   width: entitySize.width * scale, height: entitySize.height * scale)
+        }
 
         // -- Road background --
         ctx.fill(
@@ -88,44 +91,30 @@ struct GameView: View {
 
         // -- Coins --
         for coin in engine.coins where !coin.isCollected {
-            let r = CGRect(
-                x: cx(coin.position.x) - coin.size.width  / 2,
-                y: cy(coin.position.y) - coin.size.height / 2,
-                width: coin.size.width, height: coin.size.height
-            )
-            ctx.fill(Path(ellipseIn: r), with: .color(.yellow))
+            ctx.fill(Path(ellipseIn: rect(coin.position, coin.size)), with: .color(.yellow))
         }
 
         // -- Power-up pickups --
         for pu in engine.powerUpEntities where !pu.isCollected {
-            let r = CGRect(
-                x: cx(pu.position.x) - pu.size.width  / 2,
-                y: cy(pu.position.y) - pu.size.height / 2,
-                width: pu.size.width, height: pu.size.height
-            )
-            ctx.fill(Path(ellipseIn: r), with: .color(powerUpColor(pu.type)))
+            ctx.fill(Path(ellipseIn: rect(pu.position, pu.size)), with: .color(powerUpColor(pu.type)))
         }
 
-        // -- Obstacles --
+        // -- Obstacles (faded while fleeing or dying) --
         for obs in engine.obstacles where !obs.isRemoved {
-            let r = CGRect(
-                x: cx(obs.position.x) - obs.size.width  / 2,
-                y: cy(obs.position.y) - obs.size.height / 2,
-                width: obs.size.width, height: obs.size.height
-            )
             ctx.fill(
-                RoundedRectangle(cornerRadius: 4).path(in: r),
-                with: .color(obstacleColor(obs.type))
+                RoundedRectangle(cornerRadius: 4).path(in: rect(obs.position, obs.size)),
+                with: .color(obstacleColor(obs.type).opacity(obs.phase == .moving ? 1 : 0.4))
             )
+        }
+
+        // -- Horn blasts / missiles --
+        for horn in engine.horns where !horn.isRemoved {
+            ctx.fill(Path(rect(horn.position, horn.size)), with: .color(horn.isMissile ? .red : .white))
         }
 
         // -- Player --
         let player = engine.player
-        let pr = CGRect(
-            x: cx(player.position.x) - player.size.width  / 2,
-            y: cy(player.position.y) - player.size.height / 2,
-            width: player.size.width, height: player.size.height
-        )
+        let pr = rect(player.position, player.size)
         let playerColor: Color = player.state == .recovering  ? .white.opacity(0.4)
                                : player.state == .monsterTruck ? .orange
                                : .cyan

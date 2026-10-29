@@ -3,13 +3,19 @@ import CoreGraphics
 
 /// Value-type snapshot of the player's simulation state.
 /// Owned and mutated exclusively by `GameEngine`.
+///
+/// Monster-truck mode, drunk driving, and post-crash recovery are independent
+/// (legacy allowed them to overlap); `state` reports the most visible one.
 struct PlayerEntity {
     var position: CGPoint
     var velocity: CGVector
     var size: CGSize
-    var state: PlayerState
     var carSkin: CarSkin
     var lives: Int
+    var isMonsterTruck: Bool = false
+    var isDrunk: Bool = false
+    /// Seconds of post-collision invincibility left; `0` when not recovering.
+    var recoveryRemaining: Double = 0
 
     // MARK: - Geometry
 
@@ -23,20 +29,24 @@ struct PlayerEntity {
         )
     }
 
-    /// Slightly inset rect used for physics contacts.
-    /// Mirrors the legacy polygon body that covered only the front half.
+    /// Hit box. The car's legacy polygon body covered only its front half;
+    /// the monster truck used its whole frame.
     var collisionRect: CGRect {
-        let insetX = size.width  * 0.12
-        let insetYBottom = size.height * 0.30   // shorten rear of car
-        return CGRect(
-            x: position.x - size.width  / 2 + insetX,
-            y: position.y - size.height / 2 + insetYBottom,
-            width:  size.width  - insetX * 2,
-            height: size.height - insetYBottom
-        )
+        guard !isMonsterTruck else { return boundingRect }
+        return CGRect(x: position.x - size.width / 2, y: position.y,
+                      width: size.width, height: size.height / 2)
     }
 
     // MARK: - State helpers
 
-    var isInvincible: Bool { state.isInvincible }
+    var isRecovering: Bool { recoveryRemaining > 0 }
+
+    var state: PlayerState {
+        if isMonsterTruck { return .monsterTruck }
+        if isRecovering   { return .recovering }
+        if isDrunk        { return .drunk }
+        return .normal
+    }
+
+    var isInvincible: Bool { isMonsterTruck || isRecovering }
 }

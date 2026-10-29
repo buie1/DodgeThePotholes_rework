@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 /// Discriminates every power-up the engine can activate.
 enum PowerUpType: Equatable {
@@ -7,6 +8,23 @@ enum PowerUpType: Equatable {
     case monsterTruck            // 18 s — invincible, destroys obstacles
     case booze                   // 15 s — inverted controls
     case oneUp                   // instant — +1 life
+
+    /// `true` when both values are the same power-up, ignoring a multiplier's value.
+    func isSameKind(as other: PowerUpType) -> Bool {
+        switch (self, other) {
+        case (.multiplier, .multiplier): return true
+        default: return self == other
+        }
+    }
+
+    /// Pickup sprite size in world units (legacy per-class sizes).
+    var spawnSize: CGSize {
+        switch self {
+        case .wrap, .multiplier: return CGSize(width: 50, height: 50)
+        case .oneUp, .monsterTruck: return CGSize(width: 50, height: 51)
+        case .booze: return CGSize(width: 30, height: 60)
+        }
+    }
 }
 
 /// Snapshot of an active power-up, including its countdown.

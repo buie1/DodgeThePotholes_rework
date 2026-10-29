@@ -11,15 +11,16 @@ extension CGVector {
 ///
 /// **Responsibilities**
 /// - Delta-time game loop (internal Task loop or external drive via `update(deltaTime:)`)
-/// - Obstacle / power-up / coin spawning with weighted random selection
-/// - AABB bounding-box collision detection
+/// - Obstacle / environment / power-up spawning from weighted `SpawnTables`
+/// - AABB collision detection, horn blasts, and power-up timers
 /// - Player movement, screen clamping, and edge wrapping
-/// - Speed ramp-up every 10 s
+/// - Speed ramp: obstacles cross the screen faster every 10 s
 /// - Score accumulation, life management, and game-over signalling
 ///
-/// **No coupling** to UIKit, SpriteKit, or SwiftUI.
-/// The caller reads `@Observable` published state for rendering,
-/// and receives event callbacks via `GameEngineDelegate`.
+/// **No coupling** to UIKit, SpriteKit, or SwiftUI. All coordinates are world
+/// units with the origin at the centre and Y pointing up (see `GameConfig`).
+/// The caller reads `@Observable` state for rendering, `frameEvents` for one-shot
+/// effects, and receives gameplay callbacks via `GameEngineDelegate`.
 @Observable
 @MainActor
 final class GameEngine {
@@ -33,8 +34,16 @@ final class GameEngine {
     private(set) var obstacles: [ObstacleEntity] = []
     private(set) var powerUpEntities: [PowerUpEntity] = []
     private(set) var coins: [CoinEntity] = []
-    private(set) var activePowerUp: PowerUpState? = nil
-    private(set) var currentObstacleInterval: Double = GameConfig.startObstacleInterval
+    private(set) var horns: [HornEntity] = []
+    /// Timed power-ups currently running, oldest first.
+    private(set) var activePowerUps: [PowerUpState] = []
+    /// Seconds a newly spawned obstacle takes to cross the screen (legacy `gameSpeed`).
+    private(set) var travelDuration: Double = GameConfig.startTravelDuration
+    /// One-shot visual effects emitted during the most recent `update`.
+    private(set) var frameEvents: [GameEvent] = []
+
+    /// Road scroll speed in world units per second.
+    var roadSpeed: Double { worldSize.height / travelDuration }
 
     // MARK: - Configuration
 
@@ -44,28 +53,54 @@ final class GameEngine {
 
     weak var delegate: (any GameEngineDelegate)?
 
-    // MARK: - Private timing state
+    // MARK: - Private state
 
-    private var obstacleSpawnAccumulator: Double = 0
-    private var envSpawnAccumulator: Double      = 0
-    private var powerUpSpawnAccumulator: Double  = 0
-    private var speedRampAccumulator: Double     = 0
-    private var scoreAccumulator: Double         = 0
+    @ObservationIgnored private let spawner: EntitySpawner
+    @ObservationIgnored private let tables: SpawnTables
+    @ObservationIgnored private let coinPatterns: [TilePattern]
+    @ObservationIgnored private let conePatterns: [TilePattern]
+    @ObservationIgnored private let drivesOwnLoop: Bool
+    @ObservationIgnored private var rng: AnyRandomGenerator
 
-    // MARK: - Private loop state
+    @ObservationIgnored private var obstacleSpawnAccumulator: Double = 0
+    @ObservationIgnored private var envSpawnAccumulator: Double      = 0
+    @ObservationIgnored private var powerUpSpawnAccumulator: Double  = 0
+    @ObservationIgnored private var speedRampAccumulator: Double     = 0
+    @ObservationIgnored private var scoreAccumulator: Double         = 0
+    /// Seconds the obstacle spawner stays quiet after a cone pattern.
+    @ObservationIgnored private var obstacleSpawnPause: Double       = 0
+    /// Next rickroll lyric to show.
+    @ObservationIgnored private var nextTextMessageIndex: Int        = 0
 
-    private var loopTask: Task<Void, Never>?
-    private var lastUpdateDate: Date = .now
-
-    // MARK: - Input (set by ViewModel from gesture/accelerometer)
+    @ObservationIgnored private var loopTask: Task<Void, Never>?
+    @ObservationIgnored private var lastUpdateDate: Date = .now
 
     /// Normalised horizontal input in [-1, 1]. Positive = right.
-    private var horizontalInput: Double = 0
+    @ObservationIgnored private var horizontalInput: Double = 0
 
     // MARK: - Init
 
-    init(worldSize: CGSize, carSkin: CarSkin = .blue) {
+    /// - Parameters:
+    ///   - worldSize: World size in world units; see `GameConfig.worldSize(forScreen:)`.
+    ///   - carSkin: The player's car.
+    ///   - tables: Spawn pools to roll on.
+    ///   - rng: Random source; pass a seeded generator for deterministic tests.
+    ///   - drivesOwnLoop: `true` to tick on an internal ~60 fps task;
+    ///     `false` when the caller calls `update(deltaTime:)` itself.
+    init(
+        worldSize: CGSize,
+        carSkin: CarSkin = .blue,
+        tables: SpawnTables = .standard,
+        rng: some RandomNumberGenerator = SystemRandomNumberGenerator(),
+        drivesOwnLoop: Bool = true
+    ) {
         self.worldSize = worldSize
+        self.spawner = EntitySpawner(world: worldSize)
+        self.tables = tables
+        self.coinPatterns = TilePattern.loadAll(TilePattern.Name.money)
+        self.conePatterns = TilePattern.loadAll(TilePattern.Name.cone)
+        self.rng = AnyRandomGenerator(rng)
+        self.drivesOwnLoop = drivesOwnLoop
         self.player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin)
     }
 
@@ -75,67 +110,71 @@ final class GameEngine {
     func start(carSkin: CarSkin = .blue) {
         resetState(carSkin: carSkin)
         state = .playing
-        lastUpdateDate = .now
         startLoop()
     }
 
     func pause() {
         guard state == .playing else { return }
         state = .paused
-        loopTask?.cancel()
-        loopTask = nil
+        stopLoop()
     }
 
     func resume() {
         guard state == .paused else { return }
         state = .playing
-        lastUpdateDate = .now
         startLoop()
     }
 
     /// Force-stop without triggering the game-over delegate (used for cleanup).
     func forceStop() {
         state = .gameOver
-        loopTask?.cancel()
-        loopTask = nil
+        stopLoop()
     }
 
     // MARK: - Input
 
     /// Provide normalised horizontal steering in the range [-1, 1].
     /// Positive values steer right; negative steer left.
-    /// Call this from `DragGesture.onChanged` or an accelerometer handler.
     func setHorizontalInput(_ value: Double) {
         horizontalInput = max(-1, min(1, value))
     }
 
-    // MARK: - External drive
-    // When integrated with SpriteKit, call this from `SKScene.update(_:)`.
+    /// Sound the horn: a blast that scares dogs and people off the road,
+    /// or a missile while in monster-truck mode.
+    func honk() {
+        guard state == .playing else { return }
+        let isMissile = player.isMonsterTruck
+        horns.append(spawner.horn(from: player.position, isMissile: isMissile))
+        delegate?.engine(self, requestsSound: isMissile ? .pewPew : .carHonk)
+    }
+
+    // MARK: - Simulation step
 
     /// Advance the simulation by `dt` seconds. Capped at 50 ms to prevent
     /// large jumps after backgrounding.
     func update(deltaTime dt: Double) {
         guard state == .playing else { return }
-        let clampedDt = min(dt, 0.05)
+        frameEvents.removeAll(keepingCapacity: true)
+        let dt = min(dt, 0.05)
 
-        updatePlayer(dt: clampedDt)
-        updateObstacles(dt: clampedDt)
-        updatePowerUpEntities(dt: clampedDt)
-        updateCoins(dt: clampedDt)
-        updateActivePowerUp(dt: clampedDt)
+        updatePlayer(dt: dt)
+        moveEntities(dt: dt)
+        updateHorns(dt: dt)
+        updateTimers(dt: dt)
         checkCollisions()
-        tickObstacleSpawn(dt: clampedDt)
-        tickEnvironmentSpawn(dt: clampedDt)
-        tickPowerUpSpawn(dt: clampedDt)
-        tickSpeedRamp(dt: clampedDt)
-        tickScore(dt: clampedDt)
+        guard state == .playing else { return }
+        tickSpawners(dt: dt)
+        tickSpeedRamp(dt: dt)
+        tickScore(dt: dt)
         pruneOffScreen()
     }
 
     // MARK: - Internal Task loop (~60 fps)
 
     private func startLoop() {
+        guard drivesOwnLoop else { return }
         loopTask?.cancel()
+        lastUpdateDate = .now
         loopTask = Task { @MainActor [weak self] in
             while !Task.isCancelled {
                 guard let self, self.state == .playing else { break }
@@ -148,172 +187,236 @@ final class GameEngine {
         }
     }
 
-    // MARK: - Player update
+    private func stopLoop() {
+        loopTask?.cancel()
+        loopTask = nil
+    }
+
+    // MARK: - Movement
 
     private func updatePlayer(dt: Double) {
-        // Invert steering while drunk
-        let input: Double = player.state == .drunk ? -horizontalInput : horizontalInput
+        // Booze inverts steering.
+        let input = player.isDrunk ? -horizontalInput : horizontalInput
         player.velocity.dx = input * GameConfig.playerMaxSpeed
         player.position.x += player.velocity.dx * dt
 
         let halfW = worldSize.width / 2
-        if case .wrap = activePowerUp?.type {
-            // Edge wrapping
-            let threshold = halfW + player.size.width / 2
-            if player.position.x > threshold  { player.position.x = -threshold }
-            if player.position.x < -threshold { player.position.x = threshold  }
+        if isActive(.wrap) {
+            if player.position.x < -halfW { player.position.x = halfW - GameConfig.wrapInset }
+            if player.position.x >  halfW { player.position.x = -halfW + GameConfig.wrapInset }
         } else {
-            // Clamp to lane boundaries
-            let bound = halfW * GameConfig.laneHalfWidthFraction
+            // Legacy clamp lets a quarter of the car hang off the edge.
+            let bound = halfW - player.size.width / 4
             player.position.x = max(-bound, min(bound, player.position.x))
         }
     }
 
-    // MARK: - World entity updates
-
-    private func updateObstacles(dt: Double) {
+    private func moveEntities(dt: Double) {
         for i in obstacles.indices {
             obstacles[i].position.x += obstacles[i].velocity.dx * dt
             obstacles[i].position.y += obstacles[i].velocity.dy * dt
         }
-    }
-
-    private func updatePowerUpEntities(dt: Double) {
         for i in powerUpEntities.indices {
             powerUpEntities[i].position.y += powerUpEntities[i].velocity.dy * dt
         }
-    }
-
-    private func updateCoins(dt: Double) {
         for i in coins.indices {
             coins[i].position.y += coins[i].velocity.dy * dt
         }
     }
 
-    private func updateActivePowerUp(dt: Double) {
-        guard var active = activePowerUp else { return }
-        active.remainingSeconds -= dt
-        if active.remainingSeconds <= 0 {
-            let expired = active.type
-            activePowerUp = nil
-            delegate?.engine(self, didDeactivatePowerUp: expired)
-            applyPowerUpExpiry(expired)
-        } else {
-            activePowerUp = active
+    private func updateHorns(dt: Double) {
+        for i in horns.indices where !horns[i].isRemoved {
+            horns[i].age += dt
+            horns[i].position.y += horns[i].velocity.dy * dt
+            guard horns[i].age >= GameConfig.hornTravelDuration else { continue }
+            horns[i].isRemoved = true
+            if horns[i].isMissile {
+                frameEvents.append(.explosion(at: horns[i].position))
+                delegate?.engine(self, requestsSound: .explosion)
+            }
+        }
+    }
+
+    // MARK: - Timers
+
+    private func updateTimers(dt: Double) {
+        if player.isRecovering {
+            player.recoveryRemaining = max(0, player.recoveryRemaining - dt)
+            if !player.isRecovering {
+                delegate?.engine(self, didChangePlayerState: player.state)
+            }
+        }
+
+        var expired: [PowerUpType] = []
+        for i in activePowerUps.indices {
+            activePowerUps[i].remainingSeconds -= dt
+            if activePowerUps[i].remainingSeconds <= 0 { expired.append(activePowerUps[i].type) }
+        }
+        guard !expired.isEmpty else { return }
+        activePowerUps.removeAll { $0.remainingSeconds <= 0 }
+        for type in expired {
+            applyPowerUpExpiry(type)
+            delegate?.engine(self, didDeactivatePowerUp: type)
         }
     }
 
     private func applyPowerUpExpiry(_ type: PowerUpType) {
         switch type {
         case .monsterTruck:
-            player.state = .normal
-            player.size  = GameConfig.playerSize
-            delegate?.engine(self, didChangePlayerState: .normal)
+            player.isMonsterTruck = false
+            player.size = GameConfig.playerSize
+            delegate?.engine(self, didChangePlayerState: player.state)
         case .booze:
-            player.state = .normal
-            delegate?.engine(self, didChangePlayerState: .normal)
+            player.isDrunk = false
+            delegate?.engine(self, didChangePlayerState: player.state)
         default:
             break
         }
     }
 
-    // MARK: - AABB Collision detection
+    // MARK: - Collisions
 
     private func checkCollisions() {
         let playerRect = player.collisionRect
 
-        // Obstacle hits
-        for i in obstacles.indices where !obstacles[i].isRemoved {
-            guard obstacles[i].boundingRect.intersects(playerRect) else { continue }
+        for i in obstacles.indices where obstacles[i].isCollidable {
+            guard obstacles[i].collisionRect.intersects(playerRect) else { continue }
             handlePlayerHitObstacle(at: i)
+            guard state == .playing else { return }
         }
 
-        // Power-up pickups
         for i in powerUpEntities.indices where !powerUpEntities[i].isCollected {
             guard powerUpEntities[i].boundingRect.intersects(playerRect) else { continue }
             collectPowerUp(at: i)
         }
 
-        // Coin pickups
         for i in coins.indices where !coins[i].isCollected {
             guard coins[i].boundingRect.intersects(playerRect) else { continue }
             collectCoin(at: i)
         }
+
+        for h in horns.indices where !horns[h].isRemoved {
+            let hornRect = horns[h].collisionRect
+            guard let o = obstacles.indices.first(where: {
+                obstacles[$0].isCollidable && obstacles[$0].type.isMoveable
+                    && obstacles[$0].boundingRect.intersects(hornRect)
+            }) else { continue }
+            horns[h].isRemoved = true
+            scareAway(at: o)
+        }
     }
 
     private func handlePlayerHitObstacle(at index: Int) {
-        if player.state == .monsterTruck {
+        if player.isMonsterTruck {
             obstacles[index].isRemoved = true
+            frameEvents.append(.explosion(at: obstacles[index].position))
             delegate?.engine(self, requestsSound: .explosion)
             delegate?.engine(self, requestsHaptic: .collision)
             return
         }
-        guard !player.isInvincible else { return }
+        // Recovering cars pass through obstacles (legacy `Recover` physics category).
+        guard !player.isRecovering else { return }
 
-        let type = obstacles[index].type
-        obstacles[index].isRemoved = true
-
-        let sound: GameSound = type.causesSpinOut ? .carSkid
-            : type == .dog   ? .dogWhimper
-            : type == .human ? .scream
-            : .crash
-        delegate?.engine(self, requestsSound: sound)
+        switch obstacles[index].type {
+        case .textMessage:
+            // A distraction, not a crash: no life lost.
+            obstacles[index].isRemoved = true
+            delegate?.engine(self, didTriggerTextMessageAt: nextTextMessageIndex)
+            nextTextMessageIndex = (nextTextMessageIndex + 1) % GameConfig.textMessageCount
+            delegate?.engine(self, requestsSound: .textTone)
+            return
+        case .pothole, .blackIce:
+            obstacles[index].isRemoved = true
+            frameEvents.append(.spinOut)
+            delegate?.engine(self, requestsSound: .carSkid)
+        case .dog:
+            obstacles[index].phase = .dying
+            delegate?.engine(self, requestsSound: .dogWhimper)
+        case .human:
+            obstacles[index].phase = .dying
+            delegate?.engine(self, requestsSound: .scream)
+        case .movingCar, .policeCar, .ambulance, .plant:
+            obstacles[index].isRemoved = true
+            delegate?.engine(self, requestsSound: .crash)
+        case .cone, .barricade:
+            obstacles[index].isRemoved = true
+        }
         delegate?.engine(self, requestsHaptic: .collision)
+        loseLife()
+    }
 
-        if type == .textMessage {
-            let index = Int.random(in: 0...GameConfig.maxTextMessageIndex)
-            delegate?.engine(self, didTriggerTextMessageAt: index)
-            // TextMessage does NOT cost a life — it's a distraction mechanic
-        } else {
-            loseLife()
+    /// A honked-at dog or person turns around and runs back off the road side it came from.
+    private func scareAway(at index: Int) {
+        let side = obstacles[index].facing
+        let size = obstacles[index].size
+        let position = obstacles[index].position
+        let targetX = side * (worldSize.width / 2 + size.width)
+        let targetY = -worldSize.height / 2 - size.height
+        obstacles[index].phase = .fleeing
+        obstacles[index].facing = -side
+        obstacles[index].velocity = CGVector(
+            dx: (targetX - position.x) / (GameConfig.fleeDuration * 0.25),
+            dy: (targetY - position.y) / (GameConfig.fleeDuration / 2)
+        )
+        if obstacles[index].type == .human {
+            delegate?.engine(self, requestsSound: .ohMyGod)
         }
     }
 
-    private func collectPowerUp(at index: Int) {
-        powerUpEntities[index].isCollected = true
-        let type = powerUpEntities[index].type
-        applyPowerUp(type)
-        delegate?.engine(self, requestsHaptic: .powerUpActivated)
-    }
+    // MARK: - Pickups
 
-    private func applyPowerUp(_ type: PowerUpType) {
+    private func collectPowerUp(at index: Int) {
+        let type = powerUpEntities[index].type
         switch type {
         case .oneUp:
+            powerUpEntities[index].isCollected = true
             guard player.lives < GameConfig.maxLifeCount else { return }
             player.lives += 1
             delegate?.engine(self, didUpdateLives: player.lives)
             delegate?.engine(self, requestsHaptic: .lifeGained)
+            return
+
+        case .wrap, .multiplier:
+            // Already running: the pickup rolls past untouched (legacy).
+            guard !isActive(type) else { return }
+            activate(type, duration: type == .wrap ? GameConfig.wrapDuration : GameConfig.multiplierDuration)
 
         case .monsterTruck:
-            player.state = .monsterTruck
-            player.size  = GameConfig.monsterTruckSize
-            setActivePowerUp(.monsterTruck, duration: GameConfig.monsterTruckDuration)
-            delegate?.engine(self, didChangePlayerState: .monsterTruck)
-            delegate?.engine(self, requestsSound: .rampage)
+            guard !player.isMonsterTruck else { return }
+            player.recoveryRemaining = 0
+            player.isMonsterTruck = true
+            player.size = GameConfig.monsterTruckSize
+            activate(type, duration: GameConfig.monsterTruckDuration)
+            delegate?.engine(self, didChangePlayerState: player.state)
 
         case .booze:
-            player.state = .drunk
-            setActivePowerUp(.booze, duration: GameConfig.boozeDuration)
-            delegate?.engine(self, didChangePlayerState: .drunk)
-
-        case .wrap:
-            setActivePowerUp(.wrap, duration: GameConfig.wrapDuration)
-
-        case .multiplier(let value):
-            setActivePowerUp(.multiplier(value), duration: GameConfig.multiplierDuration)
+            // Only a car in normal driving picks up booze (legacy contact rules).
+            guard player.state == .normal else { return }
+            player.isDrunk = true
+            activate(type, duration: GameConfig.boozeDuration)
+            delegate?.engine(self, didChangePlayerState: player.state)
+            delegate?.engine(self, didRaiseAlert: .dontDrinkAndDrive)
         }
+        powerUpEntities[index].isCollected = true
+        delegate?.engine(self, requestsHaptic: .powerUpActivated)
     }
 
-    private func setActivePowerUp(_ type: PowerUpType, duration: Double) {
+    private func activate(_ type: PowerUpType, duration: Double) {
         let state = PowerUpState(type: type, remainingSeconds: duration, totalSeconds: duration)
-        activePowerUp = state
+        activePowerUps.append(state)
         delegate?.engine(self, didActivatePowerUp: state)
+    }
+
+    private func isActive(_ type: PowerUpType) -> Bool {
+        activePowerUps.contains { $0.type.isSameKind(as: type) }
     }
 
     private func collectCoin(at index: Int) {
         coins[index].isCollected = true
-        let multiplier: Int
-        if case .multiplier(let v) = activePowerUp?.type { multiplier = v } else { multiplier = 1 }
+        let multiplier = activePowerUps.lazy.compactMap { state -> Int? in
+            if case .multiplier(let value) = state.type { return value }
+            return nil
+        }.first ?? 1
         money += multiplier
         delegate?.engine(self, didUpdateMoney: money)
         delegate?.engine(self, requestsSound: .money)
@@ -328,57 +431,104 @@ final class GameEngine {
 
         if player.lives <= 0 {
             state = .gameOver
-            loopTask?.cancel()
-            loopTask = nil
+            stopLoop()
             delegate?.engineDidEnd(self, finalScore: score, moneyEarned: money)
             return
         }
 
-        // Enter recovery: player is briefly invincible
-        player.state = .recovering
-        delegate?.engine(self, didChangePlayerState: .recovering)
+        // Brief invincibility while the car flashes.
+        player.recoveryRemaining = GameConfig.recoveryDuration
+        delegate?.engine(self, didChangePlayerState: player.state)
+    }
 
-        Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(GameConfig.recoveryDuration))
-            guard let self, self.state == .playing,
-                  self.player.state == .recovering else { return }
-            self.player.state = .normal
-            self.delegate?.engine(self, didChangePlayerState: .normal)
+    // MARK: - Spawning
+
+    private func tickSpawners(dt: Double) {
+        if obstacleSpawnPause > 0 {
+            obstacleSpawnPause -= dt
+        } else {
+            obstacleSpawnAccumulator += dt
+            if obstacleSpawnAccumulator >= GameConfig.obstacleSpawnInterval {
+                obstacleSpawnAccumulator -= GameConfig.obstacleSpawnInterval
+                spawnObstacle()
+            }
+        }
+
+        envSpawnAccumulator += dt
+        if envSpawnAccumulator >= GameConfig.environmentSpawnInterval {
+            envSpawnAccumulator -= GameConfig.environmentSpawnInterval
+            spawnEnvironment()
+        }
+
+        powerUpSpawnAccumulator += dt
+        if powerUpSpawnAccumulator >= GameConfig.powerUpSpawnInterval {
+            powerUpSpawnAccumulator -= GameConfig.powerUpSpawnInterval
+            spawnPowerUp()
         }
     }
 
-    // MARK: - Spawn ticks
-
-    private func tickObstacleSpawn(dt: Double) {
-        obstacleSpawnAccumulator += dt
-        guard obstacleSpawnAccumulator >= currentObstacleInterval else { return }
-        obstacleSpawnAccumulator = 0
-        spawnObstacle()
+    private func spawnObstacle() {
+        switch weightedRandom(tables.obstacles) {
+        case .single(let type)?:
+            obstacles.append(spawner.obstacle(type, travel: travelDuration, rng: &rng))
+        case .conePattern?:
+            guard let pattern = conePatterns.randomElement(using: &rng) else { return }
+            obstacles += spawner.conePattern(pattern, travel: travelDuration, rng: &rng)
+            // Hold other obstacles back until the traffic zone has passed.
+            obstacleSpawnPause = GameConfig.conePatternPause * travelDuration / GameConfig.startTravelDuration
+            obstacleSpawnAccumulator = 0
+            delegate?.engine(self, didRaiseAlert: .trafficZone)
+        case nil:
+            break
+        }
     }
 
-    private func tickEnvironmentSpawn(dt: Double) {
-        envSpawnAccumulator += dt
-        guard envSpawnAccumulator >= GameConfig.environmentSpawnInterval else { return }
-        envSpawnAccumulator = 0
-        // Environment objects (decorative plants, coin patterns) notified via
-        // the rendering layer; the pure engine does not spawn them.
+    private func spawnEnvironment() {
+        switch weightedRandom(tables.environment) {
+        case .plant?:
+            obstacles.append(spawner.plant(travel: travelDuration, rng: &rng))
+        case .coinPattern?:
+            guard let pattern = coinPatterns.randomElement(using: &rng) else { return }
+            coins += spawner.coinPattern(pattern, travel: travelDuration, rng: &rng)
+        case nil:
+            break
+        }
     }
 
-    private func tickPowerUpSpawn(dt: Double) {
-        powerUpSpawnAccumulator += dt
-        guard powerUpSpawnAccumulator >= GameConfig.powerUpSpawnInterval else { return }
-        powerUpSpawnAccumulator = 0
-        spawnPowerUp()
+    private func spawnPowerUp() {
+        let type: PowerUpType
+        switch weightedRandom(tables.powerUps) {
+        case .powerUp(let chosen)?:
+            type = chosen
+        case .multiplier?:
+            type = .multiplier(Bool.random(using: &rng) ? 2 : 3)
+        case .phone?:
+            obstacles.append(spawner.obstacle(.textMessage, travel: travelDuration, rng: &rng))
+            return
+        case .nothing?, nil:
+            return
+        }
+        powerUpEntities.append(spawner.powerUp(type, travel: travelDuration, rng: &rng))
     }
+
+    private func weightedRandom<T>(_ pool: [(T, Int)]) -> T? {
+        let total = pool.reduce(0) { $0 + $1.1 }
+        guard total > 0 else { return nil }
+        var roll = Int.random(in: 0 ..< total, using: &rng)
+        for (item, weight) in pool {
+            roll -= weight
+            if roll < 0 { return item }
+        }
+        return pool.last?.0
+    }
+
+    // MARK: - Speed & score
 
     private func tickSpeedRamp(dt: Double) {
         speedRampAccumulator += dt
         guard speedRampAccumulator >= GameConfig.speedRampInterval else { return }
-        speedRampAccumulator = 0
-        currentObstacleInterval = max(
-            currentObstacleInterval - GameConfig.speedRampStep,
-            GameConfig.minObstacleInterval
-        )
+        speedRampAccumulator -= GameConfig.speedRampInterval
+        travelDuration = max(travelDuration - GameConfig.speedRampStep, GameConfig.minTravelDuration)
     }
 
     private func tickScore(dt: Double) {
@@ -390,91 +540,14 @@ final class GameEngine {
         delegate?.engine(self, didUpdateScore: score)
     }
 
-    // MARK: - Spawn helpers
-
-    private func spawnObstacle() {
-        guard let type = weightedRandom(GameConfig.obstacleWeights) else { return }
-        let spawnY = worldSize.height / 2 + type.size.height / 2
-        let spawnX = randomSpawnX(for: type)
-        let speed  = currentObstacleSpeed
-
-        var dx = 0.0
-        if type == .movingCar {
-            // Diagonal lateral drift mirroring legacy behaviour
-            dx = Double.random(in: -speed * 0.25 ... speed * 0.25)
-        }
-
-        obstacles.append(ObstacleEntity(
-            id: UUID(),
-            position: CGPoint(x: spawnX, y: spawnY),
-            size:     type.size,
-            velocity: CGVector(dx: dx, dy: -speed),
-            type:     type
-        ))
-    }
-
-    private func spawnPowerUp() {
-        let allTypes: [PowerUpType] = [
-            .wrap, .oneUp, .multiplier(2), .multiplier(3), .monsterTruck, .booze
-        ]
-        guard let type = allTypes.randomElement() else { return }
-        let spawnY = worldSize.height / 2 + GameConfig.powerUpSize.height / 2
-        let halfW  = worldSize.width / 2
-        let spawnX = Double.random(in: -halfW ... halfW)
-
-        powerUpEntities.append(PowerUpEntity(
-            id:       UUID(),
-            position: CGPoint(x: spawnX, y: spawnY),
-            size:     GameConfig.powerUpSize,
-            velocity: CGVector(dx: 0, dy: -currentObstacleSpeed),
-            type:     type
-        ))
-    }
-
-    private func randomSpawnX(for type: ObstacleType) -> Double {
-        let halfW = worldSize.width / 2
-        switch type {
-        case .pothole, .blackIce:
-            let r = halfW * GameConfig.centralSpawnHalfFraction
-            return Double.random(in: -r ... r)
-        case .textMessage:
-            let r = halfW * GameConfig.phoneSpawnHalfFraction
-            return Double.random(in: -r ... r)
-        case .plant:
-            let x = halfW * GameConfig.plantSpawnFraction
-            return Bool.random() ? x : -x
-        case .dog, .human:
-            return Double.random(in: -halfW ... halfW)
-        default:
-            return Double.random(in: -halfW * 0.4 ... halfW * 0.4)
-        }
-    }
-
-    /// Pixels per second obstacles travel at the current speed setting.
-    private var currentObstacleSpeed: Double {
-        worldSize.height / currentObstacleInterval
-    }
-
-    // MARK: - Weighted random
-
-    private func weightedRandom<T>(_ pool: [(T, Int)]) -> T? {
-        let total = pool.reduce(0) { $0 + $1.1 }
-        guard total > 0 else { return nil }
-        var roll = Int.random(in: 0 ..< total)
-        for (item, weight) in pool {
-            roll -= weight
-            if roll < 0 { return item }
-        }
-        return pool.last?.0
-    }
-
     // MARK: - Off-screen pruning
 
     private func pruneOffScreen() {
         let minY = -worldSize.height / 2
-        obstacles.removeAll      { $0.isOffScreen(worldMinY: minY) || $0.isRemoved }
-        powerUpEntities.removeAll { $0.isOffScreen(worldMinY: minY) || $0.isCollected }
-        coins.removeAll           { $0.isOffScreen(worldMinY: minY) || $0.isCollected }
+        obstacles.removeAll       { $0.isRemoved || $0.isOffScreen(world: worldSize) }
+        powerUpEntities.removeAll { $0.isCollected || $0.isOffScreen(worldMinY: minY) }
+        coins.removeAll           { $0.isCollected || $0.isOffScreen(worldMinY: minY) }
+        horns.removeAll           { $0.isRemoved }
     }
 
     // MARK: - State reset
@@ -485,28 +558,43 @@ final class GameEngine {
         obstacles.removeAll()
         powerUpEntities.removeAll()
         coins.removeAll()
-        activePowerUp               = nil
-        currentObstacleInterval     = GameConfig.startObstacleInterval
+        horns.removeAll()
+        activePowerUps.removeAll()
+        frameEvents.removeAll()
+        travelDuration              = GameConfig.startTravelDuration
         obstacleSpawnAccumulator    = 0
         envSpawnAccumulator         = 0
         powerUpSpawnAccumulator     = 0
         speedRampAccumulator        = 0
         scoreAccumulator            = 0
+        obstacleSpawnPause          = 0
+        nextTextMessageIndex        = 0
         horizontalInput             = 0
         player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin)
     }
 
     private static func makePlayer(worldSize: CGSize, skin: CarSkin) -> PlayerEntity {
-        let startY = -worldSize.height / 2
-                   + GameConfig.playerSize.height / 2
-                   + GameConfig.playerBottomMargin
-        return PlayerEntity(
-            position: CGPoint(x: 0, y: startY),
+        PlayerEntity(
+            position: CGPoint(x: 0, y: -worldSize.height / 2 + GameConfig.playerBottomOffset),
             velocity: .zero,
             size:     GameConfig.playerSize,
-            state:    .normal,
             carSkin:  skin,
             lives:    GameConfig.beginningLifeCount
         )
     }
 }
+
+// MARK: - Test hooks
+
+#if DEBUG
+extension GameEngine {
+    /// Places an obstacle directly into the world. Tests only.
+    func insert(_ obstacle: ObstacleEntity) { obstacles.append(obstacle) }
+
+    /// Places a power-up pickup directly into the world. Tests only.
+    func insert(_ powerUp: PowerUpEntity) { powerUpEntities.append(powerUp) }
+
+    /// Places a coin directly into the world. Tests only.
+    func insert(_ coin: CoinEntity) { coins.append(coin) }
+}
+#endif
