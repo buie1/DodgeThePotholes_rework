@@ -5,6 +5,9 @@ import SwiftUI
 /// when a session starts.
 struct MainMenuView: View {
 
+    /// Saved player progress, injected by the app.
+    let persistence: any PersistenceServiceProtocol
+
     @State private var viewModel = GameViewModel()
 
     var body: some View {
@@ -94,5 +97,5 @@ private struct MenuButton: View {
 }
 
 #Preview {
-    MainMenuView()
+    MainMenuView(persistence: SwiftDataPersistenceService.inMemory())
 }
