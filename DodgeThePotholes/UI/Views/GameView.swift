@@ -5,7 +5,8 @@ import SpriteKit
 ///
 /// Rendering: a `SpriteView` shows `GameRenderScene`, which also drives the
 /// engine's clock. The world is 750 units wide with the screen's aspect ratio,
-/// so the scene fills the screen exactly. HUD and effect overlays are SwiftUI.
+/// so the scene fills the screen exactly. HUD and effect overlays are SwiftUI
+/// components from `UI/Components`.
 ///
 /// Input: tilt steers by default (`MotionService`). `DragGesture(minimumDistance: 0)`
 ///   maps horizontal translation to a [-1, 1] override; a tap honks the horn.
@@ -23,21 +24,27 @@ struct GameView: View {
 
                 gameLayer
 
-                HUDOverlay(viewModel: viewModel)
-                    .padding(.top, geo.safeAreaInsets.top)
-
                 if viewModel.isDrunkMode {
-                    drunkOverlay
+                    DrunkGogglesOverlay()
                 }
 
-                if let idx = viewModel.textMessageIndex {
-                    TextMessageOverlay(index: idx)
+                HUDOverlayView(viewModel: viewModel)
+                    .padding(.top, geo.safeAreaInsets.top)
+
+                if let alert = viewModel.activeAlert {
+                    AlertBannerView(alert: alert)
+                }
+
+                if let index = viewModel.textMessageIndex {
+                    TextMessageOverlayView(index: index)
                 }
 
                 if viewModel.route == .gameOver {
                     GameOverView(viewModel: viewModel, screenSize: geo.size)
                 }
             }
+            .animation(.easeInOut(duration: 0.6), value: viewModel.activeAlert)
+            .animation(.spring(duration: 0.3), value: viewModel.textMessageIndex)
             .onAppear {
                 guard !hasStarted else { return }
                 hasStarted = true
@@ -75,156 +82,8 @@ struct GameView: View {
                 viewModel.endDrag(wasTap: travel < GameConfig.tapMaxTravel)
             }
     }
-
-    // MARK: - Drunk overlay
-
-    private var drunkOverlay: some View {
-        Color.green
-            .opacity(0.18)
-            .ignoresSafeArea()
-            .allowsHitTesting(false)
-    }
-}
-
-// MARK: - HUD Overlay
-
-private struct HUDOverlay: View {
-    let viewModel: GameViewModel
-
-    var body: some View {
-        VStack {
-            HStack(alignment: .top) {
-                // Score — top-left
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("SCORE")
-                        .font(.custom("Press Start 2P", size: 8))
-                        .foregroundStyle(.white.opacity(0.7))
-                    Text("\(viewModel.score)")
-                        .font(.custom("Press Start 2P", size: 14))
-                        .foregroundStyle(.white)
-                }
-
-                Spacer()
-
-                // High score — top-centre
-                VStack(spacing: 2) {
-                    Text("BEST")
-                        .font(.custom("Press Start 2P", size: 8))
-                        .foregroundStyle(.white.opacity(0.7))
-                    Text("\(viewModel.highScore)")
-                        .font(.custom("Press Start 2P", size: 14))
-                        .foregroundStyle(.yellow)
-                }
-
-                Spacer()
-
-                // Lives — top-right
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("LIVES")
-                        .font(.custom("Press Start 2P", size: 8))
-                        .foregroundStyle(.white.opacity(0.7))
-                    HStack(spacing: 4) {
-                        ForEach(0..<max(0, viewModel.lives), id: \.self) { _ in
-                            Image(systemName: "heart.fill")
-                                .font(.system(size: 12))
-                                .foregroundStyle(.red)
-                        }
-                    }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-
-            // Active power-up timer bar
-            if let pu = viewModel.activePowerUp {
-                PowerUpTimerBar(state: pu)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 4)
-            }
-
-            Spacer()
-
-            // Money counter — bottom
-            HStack {
-                Image(systemName: "dollarsign.circle.fill")
-                    .foregroundStyle(.yellow)
-                Text("\(viewModel.money)")
-                    .font(.custom("Press Start 2P", size: 11))
-                    .foregroundStyle(.yellow)
-            }
-            .padding(.bottom, 12)
-        }
-        .allowsHitTesting(false)
-    }
-}
-
-// MARK: - Power-up timer bar
-
-private struct PowerUpTimerBar: View {
-    let state: PowerUpState
-
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(Color.white.opacity(0.15))
-                    .frame(height: 6)
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(barColor)
-                    .frame(width: geo.size.width * state.progress, height: 6)
-                    .animation(.linear(duration: 0.1), value: state.progress)
-            }
-        }
-        .frame(height: 6)
-    }
-
-    private var barColor: Color {
-        switch state.type {
-        case .monsterTruck: return .orange
-        case .multiplier:   return .yellow
-        case .wrap:         return .cyan
-        case .booze:        return .green
-        case .oneUp:        return .pink
-        }
-    }
-}
-
-// MARK: - Text message overlay
-
-private struct TextMessageOverlay: View {
-    let index: Int
-
-    private let messages = [
-        "📱 INCOMING TEXT!",
-        "Never gonna give you up…",
-        "Mom: Are you driving?!",
-        "🚨 ROAD RAGE ALERT 🚨",
-        "Check your notifications!"
-    ]
-
-    var body: some View {
-        VStack {
-            Spacer()
-            Text(messages[index % messages.count])
-                .font(.custom("Press Start 2P", size: 11))
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(Color.purple.opacity(0.9))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .shadow(radius: 8)
-                .padding(.bottom, 60)
-        }
-        .allowsHitTesting(false)
-        .transition(.move(edge: .bottom).combined(with: .opacity))
-        .animation(.spring(duration: 0.3), value: index)
-    }
 }
 
 #Preview {
-    GameView(viewModel: {
-        let vm = GameViewModel()
-        return vm
-    }())
+    GameView(viewModel: GameViewModel())
 }

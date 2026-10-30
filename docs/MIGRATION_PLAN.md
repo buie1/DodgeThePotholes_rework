@@ -1,7 +1,26 @@
 # DodgeThePotholes — Legacy-to-Modern Migration Plan
 
 > **Source**: `legacy_source/` — SpriteKit/UIKit, CocoaPods, Firebase, iOS 10 target
-> **Target**: `DodgeThePotholes/` — SwiftUI + `@Observable`, SpriteKit engine, GameKit, SwiftData, iOS 17+, Swift 6
+> **Target**: `DodgeThePotholes/` — SwiftUI + `@Observable`, pure-Swift engine rendered with SpriteKit, GameKit, SwiftData, iOS 17+, Swift 6
+
+> **Architecture update (Oct 2026).** The game was built as a **pure-Swift `GameEngine`**
+> (logic, AABB collisions, spawning, power-ups, horn) **rendered by a SpriteKit
+> `GameRenderScene`**, not as an SKPhysics `GameScene`. Where this document mentions
+> `GameScene`, `GameSceneDelegate`, `PhysicsCategory`, `ContactHandler`, `SpawnManager`,
+> `SpeedController`, or the per-node classes in `Obstacles/` and `PowerUps/`, read it as
+> superseded by:
+>
+> | Planned | Built |
+> |---|---|
+> | `GameScene` + SKPhysics contacts | `Core/GameEngine/GameEngine.swift` (AABB) |
+> | `GameSceneDelegate` | `Core/GameEngine/GameEngineDelegate.swift` + `GameEngine.frameEvents` |
+> | `SpawnManager`, `SpeedController`, node `generatePosition` | `Core/GameEngine/EntitySpawner.swift` + `SpawnTables` |
+> | `*ObstacleNode`, `*PowerUpNode`, `PlayerNode` | `Core/Rendering/EntityNodeFactory.swift`, `PlayerNode.swift` |
+> | `AccelerometerManager` | `Core/Services/MotionService.swift` |
+>
+> The engine runs in a **750-unit-wide world** (the legacy scene was 750 × 1334) with the
+> screen's aspect ratio, so every legacy size and position ports unchanged. Assets live in
+> `DodgeThePotholes/Resources/`. Gameplay rules are covered by `DodgeThePotholesTests`.
 
 ---
 
@@ -40,8 +59,11 @@ The modern architecture separates these concerns into strict layers:
 └──────┬──────────────────────────────────────────┘
        │ commands / GameSceneDelegate callbacks
 ┌──────▼──────────────────────────────────────────┐
-│       SpriteKit Layer (pure engine)             │
-│  GameScene, PlayerNode, *ObstacleNode, …        │
+│     Engine (pure Swift, @Observable)            │
+│  GameEngine, EntitySpawner, SpawnTables         │
+│        ▲ update(dt) each frame                  │
+│  SpriteKit renderer: GameRenderScene,           │
+│  EntityNodeFactory, PlayerNode (draws only)     │
 └──────┬──────────────────────────────────────────┘
        │ protocol calls only
 ┌──────▼──────────────────────────────────────────┐
@@ -58,8 +80,8 @@ The modern architecture separates these concerns into strict layers:
 ```
 
 **Boundary rules:**
-- `GameScene` and all `SKNode` subclasses never import SwiftUI, read UserDefaults, or present view controllers.
-- All upward communication from SpriteKit goes through `GameSceneDelegate`.
+- `GameEngine` imports no UI framework. `GameRenderScene` and its nodes only draw; they never decide gameplay, import SwiftUI, read UserDefaults, or present view controllers.
+- All upward communication from the engine goes through `GameEngineDelegate` (gameplay, audio, haptics, alerts) and `frameEvents` (one-shot visual effects for the renderer).
 - All navigation goes through `AppCoordinator` — no scene calls `view?.presentScene(...)`.
 - All dialogs/confirmations use SwiftUI `.alert` / `.confirmationDialog` — `Alerts.swift` is deleted.
 

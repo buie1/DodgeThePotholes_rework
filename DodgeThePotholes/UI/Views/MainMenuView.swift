@@ -32,10 +32,10 @@ struct MainMenuView: View {
     private var titleBlock: some View {
         VStack(spacing: 12) {
             Text("DODGE THE")
-                .font(.custom("Press Start 2P", size: 22).weight(.bold))
+                .font(.pixel(22).weight(.bold))
                 .foregroundStyle(.white)
             Text("POTHOLES")
-                .font(.custom("Press Start 2P", size: 22).weight(.bold))
+                .font(.pixel(22).weight(.bold))
                 .foregroundStyle(.yellow)
         }
         .multilineTextAlignment(.center)
@@ -81,7 +81,7 @@ private struct MenuButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Press Start 2P", size: 13))
+                .font(.pixel(13))
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)

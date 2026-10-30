@@ -21,7 +21,7 @@ struct GameOverView: View {
 
                 // Title
                 Text("GAME OVER")
-                    .font(.custom("Press Start 2P", size: 26).weight(.bold))
+                    .font(.pixel(26).weight(.bold))
                     .foregroundStyle(.red)
                     .shadow(color: .red.opacity(0.6), radius: 12)
                     .padding(.bottom, 32)
@@ -52,7 +52,7 @@ struct GameOverView: View {
         VStack(spacing: 20) {
             if viewModel.isNewHighScore {
                 Text("NEW HIGH SCORE!")
-                    .font(.custom("Press Start 2P", size: 11))
+                    .font(.pixel(11))
                     .foregroundStyle(highScoreGlow ? Color.yellow : Color.orange)
                     .shadow(color: .yellow.opacity(highScoreGlow ? 0.9 : 0.2), radius: 10)
             }
@@ -92,11 +92,11 @@ private struct ScoreRow: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.custom("Press Start 2P", size: 10))
+                .font(.pixel(10))
                 .foregroundStyle(.white.opacity(0.6))
             Spacer()
             Text(value)
-                .font(.custom("Press Start 2P", size: 16))
+                .font(.pixel(16))
                 .foregroundStyle(color)
         }
     }
@@ -110,7 +110,7 @@ private struct GameOverButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.custom("Press Start 2P", size: 13))
+                .font(.pixel(13))
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)

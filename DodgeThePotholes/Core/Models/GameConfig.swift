@@ -133,7 +133,8 @@ enum GameConfig {
     // MARK: - Text messages (rickroll easter egg)
 
     /// Number of lyric lines shown in order before wrapping back to the first.
-    static let textMessageCount: Int = 57
+    /// (Legacy wrapped at 57 and never showed its 58th line.)
+    static var textMessageCount: Int { TextMessageLyrics.lines.count }
 
     // MARK: - Spawn tables
 

@@ -40,6 +40,14 @@ final class ResourceTests: XCTestCase {
         XCTAssertNotNil(UIFont(name: "PressStart2P", size: 12))
     }
 
+    func testAllLegacyLyricsAreShownInOrderThenWrap() {
+        XCTAssertEqual(TextMessageLyrics.lines.count, 58)
+        XCTAssertEqual(GameConfig.textMessageCount, TextMessageLyrics.lines.count)
+        XCTAssertEqual(TextMessageLyrics.line(at: 0), "We're no strangers to love")
+        XCTAssertEqual(TextMessageLyrics.line(at: 57), "Never gonna tell a lie and hurt you")
+        XCTAssertEqual(TextMessageLyrics.line(at: 58), TextMessageLyrics.line(at: 0))
+    }
+
     func testExplosionEmitterLoads() {
         XCTAssertNotNil(Bundle.main.url(forResource: "Explosion", withExtension: "sks"))
     }
