@@ -11,8 +11,8 @@ final class GameViewModelInputTests: XCTestCase {
     override func setUp() {
         super.setUp()
         motion = MockMotionService()
-        viewModel = GameViewModel(audio: MockAudioService(), haptics: MockHapticService(),
-                                  scores: MockScoreService(), motion: motion)
+        viewModel = GameViewModel(persistence: MockPersistenceService(), audio: MockAudioService(),
+                                  haptics: MockHapticService(), motion: motion)
         viewModel.startGame(screenSize: CGSize(width: 402, height: 874))
     }
 
@@ -51,8 +51,8 @@ final class GameViewModelInputTests: XCTestCase {
 
     func testWithoutAccelerometerOnlyDragSteers() {
         let noTilt = MockMotionService(isAvailable: false)
-        let vm = GameViewModel(audio: MockAudioService(), haptics: MockHapticService(),
-                               scores: MockScoreService(), motion: noTilt)
+        let vm = GameViewModel(persistence: MockPersistenceService(), audio: MockAudioService(),
+                               haptics: MockHapticService(), motion: noTilt)
         vm.startGame(screenSize: CGSize(width: 402, height: 874))
         XCTAssertFalse(vm.isTiltAvailable)
 
@@ -90,8 +90,9 @@ final class MockMotionService: MotionServiceProtocol {
 final class MockAudioService: AudioServiceProtocol {
     var isMusicEnabled = true
     var isSFXEnabled = true
+    private(set) var startedTrack: GameSound?
     func play(_ sound: GameSound) {}
-    func startMusic(_ track: GameSound) {}
+    func startMusic(_ track: GameSound) { startedTrack = track }
     func stopMusic() {}
     func setDrunkMode(_ enabled: Bool) {}
 }
@@ -100,8 +101,37 @@ final class MockHapticService: HapticServiceProtocol {
     func play(_ pattern: HapticPattern) {}
 }
 
-final class MockScoreService: ScoreServiceProtocol {
+@MainActor
+final class MockPersistenceService: PersistenceServiceProtocol {
+    var money = 0
     var highScore = 0
-    func save(score: Int) -> Bool { false }
-    func reset() {}
+    var selectedCar: CarSkin = .blue
+    var selectedSong: GameSound = .hotPursuit
+    var isSFXEnabled = true
+    var isMusicEnabled = true
+    var hasTank = false
+    var extraLifePending = false
+    var unlocked: Set<String> = []
+
+    func isUnlocked(_ itemKey: String) -> Bool { unlocked.contains(itemKey) }
+
+    func purchase(_ item: ShopItem) -> PurchaseResult {
+        guard !isUnlocked(item) else { return .alreadyOwned }
+        guard money >= item.cost else { return .insufficientFunds }
+        money -= item.cost
+        unlocked.insert(item.id)
+        return .purchased
+    }
+
+    func consumeExtraLife() -> Bool {
+        defer { extraLifePending = false }
+        return extraLifePending
+    }
+
+    func recordRun(score: Int, moneyEarned: Int) -> Bool {
+        money += moneyEarned
+        guard score > highScore else { return false }
+        highScore = score
+        return true
+    }
 }

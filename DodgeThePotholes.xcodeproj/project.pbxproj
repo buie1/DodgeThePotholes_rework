@@ -16,6 +16,7 @@
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
 		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
 		1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */; };
+		144F3B2856A51D2D45EDBE57 /* GameViewModelPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEFC0360A7DA277C8B4564A /* GameViewModelPersistenceTests.swift */; };
 		16CA9CE5CC4E698A7596B524 /* PowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7360B0D3114A51FC85EF1C38 /* PowerUpState.swift */; };
 		18023AD667715171009C20D6 /* money_pattern4.json in Resources */ = {isa = PBXBuildFile; fileRef = A5D6094F52D834222B995365 /* money_pattern4.json */; };
 		1B1BAD430296D3ACD7633102 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB09546504848C1B4237D8 /* MotionService.swift */; };
@@ -76,7 +77,6 @@
 		BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */; };
 		BEF29EBFABC42CCCC3F9996B /* Array2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D53B029975DF13D6E8D645 /* Array2D.swift */; };
 		C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */; };
-		CF4C5D6A7C8D3E944E329CE5 /* ScoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7BFE347B1C56CF647C9A688 /* ScoreService.swift */; };
 		D41A420B9C705FA3C17E2217 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727E4CA002959AEA1AB50CEA /* AppFonts.swift */; };
 		D81DB774991169EB99AD6371 /* PlayerProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A4E44EFCD169F840331358 /* PlayerProfile.swift */; };
 		D96D1F69C68A0C533738682B /* GameEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0E07D893AA06895BD8DE9D /* GameEvent.swift */; };
@@ -179,9 +179,9 @@
 		D49E3D29718D85EA988C3FE1 /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
 		D6B77B07A57D31294EBCA7D3 /* cone_pattern1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cone_pattern1.json; sourceTree = "<group>"; };
 		DA8A3631F5D056AA94F8BC28 /* EntitySpawner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitySpawner.swift; sourceTree = "<group>"; };
+		DDEFC0360A7DA277C8B4564A /* GameViewModelPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModelPersistenceTests.swift; sourceTree = "<group>"; };
 		E2C9291713F4579B279BD3D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSound.swift; sourceTree = "<group>"; };
-		E7BFE347B1C56CF647C9A688 /* ScoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreService.swift; sourceTree = "<group>"; };
 		ED7B2A16089A351B800FD712 /* carskid.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = carskid.wav; sourceTree = "<group>"; };
 		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F64EE81291DC53CB8A17F059 /* start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = start.wav; sourceTree = "<group>"; };
@@ -255,7 +255,6 @@
 				CF124AB9399306BA9CDEBE48 /* HapticService.swift */,
 				2CCB09546504848C1B4237D8 /* MotionService.swift */,
 				CD567DA4CAEB430A021C569C /* PersistenceService.swift */,
-				E7BFE347B1C56CF647C9A688 /* ScoreService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -292,6 +291,7 @@
 			children = (
 				4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */,
 				91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */,
+				DDEFC0360A7DA277C8B4564A /* GameViewModelPersistenceTests.swift */,
 				B6174851FD947D07571C9E86 /* PersistenceServiceTests.swift */,
 				B33D5585DBEFEA579129409D /* ResourceTests.swift */,
 			);
@@ -578,6 +578,7 @@
 			files = (
 				118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */,
 				09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */,
+				144F3B2856A51D2D45EDBE57 /* GameViewModelPersistenceTests.swift in Sources */,
 				26FE01179AAC1E7C5A078C26 /* PersistenceServiceTests.swift in Sources */,
 				91E0F084971ACB4C51486D24 /* ResourceTests.swift in Sources */,
 			);
@@ -622,7 +623,6 @@
 				16CA9CE5CC4E698A7596B524 /* PowerUpState.swift in Sources */,
 				5D51A56BD37AE288FAFB7D1C /* PowerUpTimerBar.swift in Sources */,
 				23CB773C884361F21DF56115 /* ScoreEntry.swift in Sources */,
-				CF4C5D6A7C8D3E944E329CE5 /* ScoreService.swift in Sources */,
 				286F21F25D1FBD4F09EF9713 /* ShopItem.swift in Sources */,
 				BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */,
 				AEF6ECE1D31DA0B9F8A97FD6 /* SpriteImage.swift in Sources */,

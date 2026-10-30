@@ -8,7 +8,12 @@ struct MainMenuView: View {
     /// Saved player progress, injected by the app.
     let persistence: any PersistenceServiceProtocol
 
-    @State private var viewModel = GameViewModel()
+    @State private var viewModel: GameViewModel
+
+    init(persistence: any PersistenceServiceProtocol) {
+        self.persistence = persistence
+        _viewModel = State(initialValue: GameViewModel(persistence: persistence))
+    }
 
     var body: some View {
         ZStack {

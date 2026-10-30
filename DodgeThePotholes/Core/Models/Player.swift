@@ -13,6 +13,8 @@ struct PlayerEntity {
     var carSkin: CarSkin
     var lives: Int
     var isMonsterTruck: Bool = false
+    /// Owns the shop's tank upgrade: monster-truck mode shows a tank instead.
+    var hasTank: Bool = false
     var isDrunk: Bool = false
     /// Seconds of post-collision invincibility left; `0` when not recovering.
     var recoveryRemaining: Double = 0

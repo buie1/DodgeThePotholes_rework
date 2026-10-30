@@ -123,5 +123,5 @@ private struct GameOverButton: View {
 }
 
 #Preview {
-    GameOverView(viewModel: GameViewModel(), screenSize: CGSize(width: 390, height: 844))
+    GameOverView(viewModel: GameViewModel(persistence: SwiftDataPersistenceService.inMemory()), screenSize: CGSize(width: 390, height: 844))
 }

@@ -57,6 +57,6 @@ struct HUDOverlayView: View {
 }
 
 #Preview {
-    HUDOverlayView(viewModel: GameViewModel())
+    HUDOverlayView(viewModel: GameViewModel(persistence: SwiftDataPersistenceService.inMemory()))
         .background(.black)
 }

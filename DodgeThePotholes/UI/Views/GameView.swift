@@ -85,5 +85,5 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(viewModel: GameViewModel())
+    GameView(viewModel: GameViewModel(persistence: SwiftDataPersistenceService.inMemory()))
 }

@@ -102,8 +102,14 @@ final class GameEngine {
     // MARK: - Lifecycle
 
     /// Start or restart a session from the initial state.
-    func start(carSkin: CarSkin = .blue) {
+    /// - Parameters:
+    ///   - carSkin: The player's car.
+    ///   - extraLives: Lives added to `GameConfig.beginningLifeCount` (a bought extra life).
+    ///   - hasTank: Whether monster-truck mode shows the tank upgrade.
+    func start(carSkin: CarSkin = .blue, extraLives: Int = 0, hasTank: Bool = false) {
         resetState(carSkin: carSkin)
+        player.lives = min(GameConfig.beginningLifeCount + extraLives, GameConfig.maxLifeCount)
+        player.hasTank = hasTank
         state = .playing
         startLoop()
     }

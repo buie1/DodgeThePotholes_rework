@@ -35,8 +35,9 @@ final class PlayerNode: SKSpriteNode {
         if player.isMonsterTruck != isShowingMonsterTruck {
             isShowingMonsterTruck = player.isMonsterTruck
             setSignal(.none, skin: player.carSkin)
+            let truck: SpriteCatalog.Image = player.hasTank ? .tank : .monsterTruck
             texture = factory.texture(player.isMonsterTruck
-                ? SpriteCatalog.Image.monsterTruck.rawValue
+                ? truck.rawValue
                 : player.carSkin.imageName)
         }
         if !player.isMonsterTruck {

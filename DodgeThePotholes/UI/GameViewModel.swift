@@ -21,7 +21,7 @@ enum AppRoute: Equatable {
 /// - Conforms to `GameEngineDelegate` to receive event callbacks.
 /// - Exposes observable state consumed by `GameView`'s HUD and `GameOverView`.
 /// - Routes horizontal input (drag gesture / accelerometer) to the engine.
-/// - Delegates audio, haptics, and score persistence to injected services.
+/// - Delegates audio, haptics, and saved progress to injected services.
 @Observable
 @MainActor
 final class GameViewModel: GameEngineDelegate {
@@ -77,7 +77,7 @@ final class GameViewModel: GameEngineDelegate {
 
     private let audioService:  any AudioServiceProtocol
     private let hapticService: any HapticServiceProtocol
-    private let scoreService:  any ScoreServiceProtocol
+    private let persistence:   any PersistenceServiceProtocol
     private let motionService: any MotionServiceProtocol
 
     // MARK: - Steering input
@@ -87,27 +87,23 @@ final class GameViewModel: GameEngineDelegate {
     /// Drag steering while a finger is down; overrides tilt. `nil` when not dragging.
     private var dragInput: Double? = nil
 
-    /// Background music tracks that can be randomly selected on game start.
-    /// The user's chosen track will be wired here in the Settings phase.
-    private static let musicTracks: [GameSound] = [
-        .hotPursuit, .bornLucky, .raceDuel, .catchMe, .urbanChase,
-    ]
-
     // MARK: - Init
 
     /// Creates the view model with concrete service defaults.
     /// Pass mock implementations in tests or Previews.
+    /// - Parameter persistence: Saved progress; supplies the car, song, sound
+    ///   settings and shop upgrades, and banks each run's earnings.
     init(
+        persistence: any PersistenceServiceProtocol,
         audio:  any AudioServiceProtocol  = AudioService(),
         haptics: any HapticServiceProtocol = HapticService(),
-        scores:  any ScoreServiceProtocol  = UserDefaultsScoreService(),
         motion:  any MotionServiceProtocol = MotionService()
     ) {
+        self.persistence   = persistence
         self.audioService  = audio
         self.hapticService = haptics
-        self.scoreService  = scores
         self.motionService = motion
-        highScore = scores.highScore
+        highScore = persistence.highScore
     }
 
     // MARK: - Lifecycle
@@ -119,10 +115,11 @@ final class GameViewModel: GameEngineDelegate {
     }
 
     /// Start (or restart) a new game session.
+    /// Uses the saved car, song and sound settings, and spends a bought extra life.
     /// - Parameter screenSize: The on-screen canvas size in points, from `GeometryReader`.
     ///   It is converted to the 750-unit-wide game world.
-    /// - Parameter carSkin: The player's currently selected car skin.
-    func startGame(screenSize: CGSize, carSkin: CarSkin = .blue) {
+    func startGame(screenSize: CGSize) {
+        let carSkin = persistence.selectedCar
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
         let eng = GameEngine(worldSize: worldSize, carSkin: carSkin, drivesOwnLoop: false)
         eng.delegate = self
@@ -139,8 +136,10 @@ final class GameViewModel: GameEngineDelegate {
         playerState      = .normal
         route            = .playing
 
-        // Audio: start a random music track then play the game-start SFX.
-        currentTrack = Self.musicTracks.randomElement() ?? .hotPursuit
+        // Audio: apply saved settings, start the chosen track, then the game-start SFX.
+        audioService.isMusicEnabled = persistence.isMusicEnabled
+        audioService.isSFXEnabled   = persistence.isSFXEnabled
+        currentTrack = persistence.selectedSong
         audioService.startMusic(currentTrack)
         audioService.play(.gameStart)
 
@@ -151,7 +150,9 @@ final class GameViewModel: GameEngineDelegate {
             self?.applySteering()
         }
 
-        eng.start(carSkin: carSkin)
+        let extraLives = persistence.consumeExtraLife() ? 1 : 0
+        eng.start(carSkin: carSkin, extraLives: extraLives, hasTank: persistence.hasTank)
+        lives = eng.player.lives
     }
 
     func pauseGame() {
@@ -270,8 +271,8 @@ final class GameViewModel: GameEngineDelegate {
         self.finalScore = finalScore
         self.finalMoney = moneyEarned
 
-        isNewHighScore = scoreService.save(score: finalScore)
-        highScore      = scoreService.highScore
+        isNewHighScore = persistence.recordRun(score: finalScore, moneyEarned: moneyEarned)
+        highScore      = persistence.highScore
 
         audioService.stopMusic()
         motionService.stop()
