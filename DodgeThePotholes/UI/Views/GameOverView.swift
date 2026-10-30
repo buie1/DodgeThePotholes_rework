@@ -72,10 +72,10 @@ struct GameOverView: View {
 
     private var buttonStack: some View {
         VStack(spacing: 14) {
-            GameOverButton(title: "PLAY AGAIN", color: .yellow) {
+            MenuButton(title: "PLAY AGAIN", color: .yellow) {
                 viewModel.startGame(screenSize: screenSize)
             }
-            GameOverButton(title: "MAIN MENU", color: .gray) {
+            MenuButton(title: "MAIN MENU", color: .gray) {
                 viewModel.returnToMenu()
             }
         }
@@ -99,26 +99,6 @@ private struct ScoreRow: View {
                 .font(.pixel(16))
                 .foregroundStyle(color)
         }
-    }
-}
-
-private struct GameOverButton: View {
-    let title: String
-    let color: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.pixel(13))
-                .foregroundStyle(.black)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(color)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-                .shadow(color: color.opacity(0.5), radius: 8, y: 4)
-        }
-        .buttonStyle(.plain)
     }
 }
 

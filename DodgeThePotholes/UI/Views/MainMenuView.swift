@@ -1,21 +1,50 @@
 import SwiftUI
 
+/// Screens pushed from the main menu.
+enum MenuDestination: Hashable {
+    case settings
+    case audio
+}
+
 /// Entry point the player sees on launch.
 /// Owns `GameViewModel` and presents `GameView` as a full-screen cover
-/// when a session starts.
+/// when a session starts. Settings and other menus push onto a `NavigationStack`.
 struct MainMenuView: View {
 
     /// Saved player progress, injected by the app.
     let persistence: any PersistenceServiceProtocol
 
     @State private var viewModel: GameViewModel
+    @State private var settingsViewModel: SettingsViewModel
 
     init(persistence: any PersistenceServiceProtocol) {
         self.persistence = persistence
         _viewModel = State(initialValue: GameViewModel(persistence: persistence))
+        _settingsViewModel = State(initialValue: SettingsViewModel(persistence: persistence))
     }
 
     var body: some View {
+        NavigationStack {
+            menu
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationDestination(for: MenuDestination.self, destination: destination)
+        }
+        .fullScreenCover(isPresented: $viewModel.isShowingGame) {
+            GameView(viewModel: viewModel)
+        }
+    }
+
+    @ViewBuilder
+    private func destination(_ screen: MenuDestination) -> some View {
+        switch screen {
+        case .settings: SettingsView()
+        case .audio:    AudioSettingsView(viewModel: settingsViewModel)
+        }
+    }
+
+    // MARK: - Sub-views
+
+    private var menu: some View {
         ZStack {
             // Background
             Color.black.ignoresSafeArea()
@@ -30,12 +59,7 @@ struct MainMenuView: View {
             }
             .padding(.horizontal, 32)
         }
-        .fullScreenCover(isPresented: $viewModel.isShowingGame) {
-            GameView(viewModel: viewModel)
-        }
     }
-
-    // MARK: - Sub-views
 
     private var titleBlock: some View {
         VStack(spacing: 12) {
@@ -56,8 +80,11 @@ struct MainMenuView: View {
                 viewModel.navigateToGame()
             }
             MenuButton(title: "LEADERBOARD", color: .cyan)  { /* Phase 5 */ }
-            MenuButton(title: "SHOP",        color: .green) { /* Phase 2 */ }
-            MenuButton(title: "SETTINGS",    color: .gray)  { /* Phase 2 */ }
+            MenuButton(title: "SHOP",        color: .green) { /* Step 5 */ }
+            NavigationLink(value: MenuDestination.settings) {
+                MenuButtonLabel(title: "SETTINGS", color: .gray)
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -76,28 +103,6 @@ struct MainMenuView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea()
-    }
-}
-
-// MARK: - Reusable menu button
-
-private struct MenuButton: View {
-    let title: String
-    let color: Color
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.pixel(13))
-                .foregroundStyle(.black)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(color)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-                .shadow(color: color.opacity(0.5), radius: 8, y: 4)
-        }
-        .buttonStyle(.plain)
     }
 }
 
