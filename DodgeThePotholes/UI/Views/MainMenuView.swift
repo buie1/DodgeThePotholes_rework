@@ -5,6 +5,7 @@ enum MenuDestination: Hashable {
     case settings
     case audio
     case carSelect
+    case shop
 }
 
 /// Entry point the player sees on launch.
@@ -17,11 +18,13 @@ struct MainMenuView: View {
 
     @State private var viewModel: GameViewModel
     @State private var settingsViewModel: SettingsViewModel
+    @State private var shopViewModel: ShopViewModel
 
     init(persistence: any PersistenceServiceProtocol) {
         self.persistence = persistence
         _viewModel = State(initialValue: GameViewModel(persistence: persistence))
         _settingsViewModel = State(initialValue: SettingsViewModel(persistence: persistence))
+        _shopViewModel = State(initialValue: ShopViewModel(persistence: persistence))
     }
 
     var body: some View {
@@ -41,6 +44,7 @@ struct MainMenuView: View {
         case .settings: SettingsView()
         case .audio:     AudioSettingsView(viewModel: settingsViewModel)
         case .carSelect: CarSelectView(viewModel: settingsViewModel)
+        case .shop:      ShopView(viewModel: shopViewModel)
         }
     }
 
@@ -82,7 +86,10 @@ struct MainMenuView: View {
                 viewModel.navigateToGame()
             }
             MenuButton(title: "LEADERBOARD", color: .cyan)  { /* Phase 5 */ }
-            MenuButton(title: "SHOP",        color: .green) { /* Step 5 */ }
+            NavigationLink(value: MenuDestination.shop) {
+                MenuButtonLabel(title: "SHOP", color: .green)
+            }
+            .buttonStyle(.plain)
             NavigationLink(value: MenuDestination.settings) {
                 MenuButtonLabel(title: "SETTINGS", color: .gray)
             }

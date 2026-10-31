@@ -33,10 +33,12 @@
 		2C5645739B6EFC835596CD13 /* catch_me.wav in Resources */ = {isa = PBXBuildFile; fileRef = CED1B69923C95586F1571929 /* catch_me.wav */; };
 		2CAED9D2DC57A018E470614C /* GameConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91079949E0AE64E60F81967E /* GameConfig.swift */; };
 		2D77CB378556B501B8282156 /* TextMessageLyrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 389E96CFDB3CAA46E9005EAA /* TextMessageLyrics.swift */; };
+		3332B3A5450D3B0593E714B0 /* ShopViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98907B4A46A056211D9412D7 /* ShopViewModel.swift */; };
 		3387B9A6216313CFDC48852A /* HUDOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A9B7664641D0F30D694AFB9 /* HUDOverlayView.swift */; };
 		38C98A369705617FA69FF98B /* SettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2BBF06B0337343C7A833A7 /* SettingsViewModelTests.swift */; };
 		3C23E098600EA6C0B0C4D356 /* explosion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FB62D00C5B1F9D8E6D03952C /* explosion.mp3 */; };
 		40BFF8504740F037B9E2EEF3 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF124AB9399306BA9CDEBE48 /* HapticService.swift */; };
+		41E0DB98A2FCA7F340C527E3 /* ShopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE185A18FEDE713BDD23B11 /* ShopView.swift */; };
 		44167B9FBDFACB57C150ADF1 /* RAMPAGE.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C5D58300ACD0288C014A856 /* RAMPAGE.mp3 */; };
 		48494FA286ABD7DC8A66FFC3 /* carskid.wav in Resources */ = {isa = PBXBuildFile; fileRef = ED7B2A16089A351B800FD712 /* carskid.wav */; };
 		4B26B1A4367743CB3F26824F /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04389AB0A6117773D7538F0 /* PlayerState.swift */; };
@@ -72,6 +74,7 @@
 		9BCC8B985CCAD4F1088971C6 /* race_duel.wav in Resources */ = {isa = PBXBuildFile; fileRef = A3669642EA8D974AFB1786DB /* race_duel.wav */; };
 		A0D9BEE46B0C0274075D7A1A /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC3285123F99306E99F497 /* Player.swift */; };
 		A29C8E5CD9BB2CBA31FB7CA2 /* money.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CEACCA45AA1E7496AD95F35E /* money.aiff */; };
+		A2C5D092CFBD89286FF8FE89 /* ShopViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */; };
 		A5E9F50699BA790D9A9F94B9 /* oh_my_god.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CDFEF7DCB9A98DB6F96901B0 /* oh_my_god.mp3 */; };
 		A75499FA8264E36E2C3A4252 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EAAAB47588F01E88C73032 /* GameEngine.swift */; };
 		AB456E1F74A669F65F63E16E /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC92D143A1456D21985E6F6E /* GameOverView.swift */; };
@@ -79,6 +82,7 @@
 		AEF6ECE1D31DA0B9F8A97FD6 /* SpriteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B26EF2CAE7D3604AE22D8CF /* SpriteImage.swift */; };
 		B4A3FD7BE02FDEC58AA48B7F /* CarSkin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF9F16B03415C2D66A8073C /* CarSkin.swift */; };
 		B80E32615DFDC284C06432DF /* pew-pew-lei.caf in Resources */ = {isa = PBXBuildFile; fileRef = 9A7E8D47CC73B3A7A5630D31 /* pew-pew-lei.caf */; };
+		BB328BECDE95BE966D7948F3 /* ShopItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08907C4B425146D48FB9C357 /* ShopItemRow.swift */; };
 		BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */; };
 		BEF29EBFABC42CCCC3F9996B /* Array2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D53B029975DF13D6E8D645 /* Array2D.swift */; };
 		C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */; };
@@ -111,6 +115,7 @@
 /* Begin PBXFileReference section */
 		0348A92201F8A035FB87FA03 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		043C8A01C890EE2D173D93AF /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		08907C4B425146D48FB9C357 /* ShopItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopItemRow.swift; sourceTree = "<group>"; };
 		0C1AE0D100CE14E6EEF9517C /* monster_truck_jam.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = monster_truck_jam.mp3; sourceTree = "<group>"; };
 		0E0E07D893AA06895BD8DE9D /* GameEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEvent.swift; sourceTree = "<group>"; };
 		10D53B029975DF13D6E8D645 /* Array2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array2D.swift; sourceTree = "<group>"; };
@@ -138,6 +143,7 @@
 		4FF9F16B03415C2D66A8073C /* CarSkin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSkin.swift; sourceTree = "<group>"; };
 		546537AA7FBEB9453ACED722 /* UnlockRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnlockRecord.swift; sourceTree = "<group>"; };
 		5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityNodeFactory.swift; sourceTree = "<group>"; };
+		5DE185A18FEDE713BDD23B11 /* ShopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopView.swift; sourceTree = "<group>"; };
 		5F2BBF06B0337343C7A833A7 /* SettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelTests.swift; sourceTree = "<group>"; };
 		61A4E44EFCD169F840331358 /* PlayerProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerProfile.swift; sourceTree = "<group>"; };
 		68EADB6093E04FB8412BC4D3 /* crash1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = crash1.mp3; sourceTree = "<group>"; };
@@ -159,6 +165,7 @@
 		91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModelInputTests.swift; sourceTree = "<group>"; };
 		946F1202D54B6150731E0036 /* text_tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = text_tone.mp3; sourceTree = "<group>"; };
 		94930C0999B865240AFC6310 /* ScoreEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEntry.swift; sourceTree = "<group>"; };
+		98907B4A46A056211D9412D7 /* ShopViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewModel.swift; sourceTree = "<group>"; };
 		9937C7BDA93AF4C8CDA05513 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		9A7E8D47CC73B3A7A5630D31 /* pew-pew-lei.caf */ = {isa = PBXFileReference; path = "pew-pew-lei.caf"; sourceTree = "<group>"; };
 		9AFE4367F246F0DC7C3D6B39 /* car_honk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = car_honk.mp3; sourceTree = "<group>"; };
@@ -195,6 +202,7 @@
 		E2C9291713F4579B279BD3D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSound.swift; sourceTree = "<group>"; };
 		ED7B2A16089A351B800FD712 /* carskid.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = carskid.wav; sourceTree = "<group>"; };
+		EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewModelTests.swift; sourceTree = "<group>"; };
 		EEDBE63ADD3D73DD5085338C /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		F3DB95C921DFADFDBCA20AE1 /* MenuScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScreen.swift; sourceTree = "<group>"; };
 		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -228,6 +236,7 @@
 				A5941A87F7B8299EFE61A232 /* MenuButton.swift */,
 				F3DB95C921DFADFDBCA20AE1 /* MenuScreen.swift */,
 				3B578C32053B7A4E2ECD3A20 /* PowerUpTimerBar.swift */,
+				08907C4B425146D48FB9C357 /* ShopItemRow.swift */,
 				1B26EF2CAE7D3604AE22D8CF /* SpriteImage.swift */,
 				1325C00EBECD4E09CF876C13 /* TextMessageOverlayView.swift */,
 			);
@@ -311,6 +320,7 @@
 				B6174851FD947D07571C9E86 /* PersistenceServiceTests.swift */,
 				B33D5585DBEFEA579129409D /* ResourceTests.swift */,
 				5F2BBF06B0337343C7A833A7 /* SettingsViewModelTests.swift */,
+				EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */,
 			);
 			path = DodgeThePotholesTests;
 			sourceTree = "<group>";
@@ -360,6 +370,7 @@
 				9937C7BDA93AF4C8CDA05513 /* GameView.swift */,
 				C58586542449D596808E89FA /* MainMenuView.swift */,
 				8B759AEB904FF4B7BDC7EC56 /* SettingsView.swift */,
+				5DE185A18FEDE713BDD23B11 /* ShopView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -369,6 +380,7 @@
 			children = (
 				3A81341E67EC2645EC447D6B /* GameViewModel.swift */,
 				EEDBE63ADD3D73DD5085338C /* SettingsViewModel.swift */,
+				98907B4A46A056211D9412D7 /* ShopViewModel.swift */,
 				1082A7E03F2A5BA8521678A3 /* Components */,
 				681A8EFD4DB365A3C20AEE34 /* Theme */,
 				9FB5FE509CBA4DD375EFB698 /* Views */,
@@ -603,6 +615,7 @@
 				26FE01179AAC1E7C5A078C26 /* PersistenceServiceTests.swift in Sources */,
 				91E0F084971ACB4C51486D24 /* ResourceTests.swift in Sources */,
 				38C98A369705617FA69FF98B /* SettingsViewModelTests.swift in Sources */,
+				A2C5D092CFBD89286FF8FE89 /* ShopViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,6 +665,9 @@
 				772374EDDC8147F906508282 /* SettingsView.swift in Sources */,
 				13D0D57DB173E62A32AD0AA0 /* SettingsViewModel.swift in Sources */,
 				286F21F25D1FBD4F09EF9713 /* ShopItem.swift in Sources */,
+				BB328BECDE95BE966D7948F3 /* ShopItemRow.swift in Sources */,
+				41E0DB98A2FCA7F340C527E3 /* ShopView.swift in Sources */,
+				3332B3A5450D3B0593E714B0 /* ShopViewModel.swift in Sources */,
 				BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */,
 				AEF6ECE1D31DA0B9F8A97FD6 /* SpriteImage.swift in Sources */,
 				2D77CB378556B501B8282156 /* TextMessageLyrics.swift in Sources */,
