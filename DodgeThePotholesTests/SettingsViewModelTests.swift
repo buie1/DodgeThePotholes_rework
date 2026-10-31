@@ -46,4 +46,23 @@ final class SettingsViewModelTests: XCTestCase {
     func testSongDisplayNameComesFromShop() {
         XCTAssertEqual(viewModel.displayName(of: .bornLucky), "Born Lucky")
     }
+
+    // MARK: - Car
+
+    func testBlueCarIsAlwaysOwned() {
+        XCTAssertTrue(viewModel.isOwned(.blue))
+        XCTAssertFalse(viewModel.isOwned(.red))
+    }
+
+    func testSelectsOwnedCar() {
+        persistence.unlocked.insert("greencar")
+        viewModel.select(.green)
+        XCTAssertEqual(persistence.selectedCar, .green)
+        XCTAssertEqual(viewModel.selectedCar, .green)
+    }
+
+    func testLockedCarCannotBeSelected() {
+        viewModel.select(.red)
+        XCTAssertEqual(persistence.selectedCar, .blue)
+    }
 }

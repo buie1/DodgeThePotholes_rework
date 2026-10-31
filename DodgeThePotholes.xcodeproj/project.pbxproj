@@ -82,6 +82,7 @@
 		BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */; };
 		BEF29EBFABC42CCCC3F9996B /* Array2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D53B029975DF13D6E8D645 /* Array2D.swift */; };
 		C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */; };
+		D089222678702D815931ADBC /* CarSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47D32FE4AF1445606414A4B /* CarSelectView.swift */; };
 		D41A420B9C705FA3C17E2217 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727E4CA002959AEA1AB50CEA /* AppFonts.swift */; };
 		D81DB774991169EB99AD6371 /* PlayerProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A4E44EFCD169F840331358 /* PlayerProfile.swift */; };
 		D96D1F69C68A0C533738682B /* GameEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0E07D893AA06895BD8DE9D /* GameEvent.swift */; };
@@ -165,6 +166,7 @@
 		A30933A47FB78319DD612D1B /* DodgeThePotholesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DodgeThePotholesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3669642EA8D974AFB1786DB /* race_duel.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = race_duel.wav; sourceTree = "<group>"; };
 		A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DodgeThePotholesApp.swift; sourceTree = "<group>"; };
+		A47D32FE4AF1445606414A4B /* CarSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSelectView.swift; sourceTree = "<group>"; };
 		A5941A87F7B8299EFE61A232 /* MenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuButton.swift; sourceTree = "<group>"; };
 		A5D6094F52D834222B995365 /* money_pattern4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern4.json; sourceTree = "<group>"; };
 		A8ED4DFA4D223857F39FA984 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -353,6 +355,7 @@
 			isa = PBXGroup;
 			children = (
 				0348A92201F8A035FB87FA03 /* AudioSettingsView.swift */,
+				A47D32FE4AF1445606414A4B /* CarSelectView.swift */,
 				BC92D143A1456D21985E6F6E /* GameOverView.swift */,
 				9937C7BDA93AF4C8CDA05513 /* GameView.swift */,
 				C58586542449D596808E89FA /* MainMenuView.swift */,
@@ -612,6 +615,7 @@
 				BEF29EBFABC42CCCC3F9996B /* Array2D.swift in Sources */,
 				0270AB5277CDE1DB51FEDD95 /* AudioService.swift in Sources */,
 				4FC6D265533B0E18D7D464A5 /* AudioSettingsView.swift in Sources */,
+				D089222678702D815931ADBC /* CarSelectView.swift in Sources */,
 				B4A3FD7BE02FDEC58AA48B7F /* CarSkin.swift in Sources */,
 				C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */,
 				6FBC4B9F3D7560F8CFFA3BEA /* DrunkGogglesOverlay.swift in Sources */,

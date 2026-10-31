@@ -9,6 +9,9 @@ struct SettingsView: View {
                 NavigationLink(value: MenuDestination.audio) {
                     MenuButtonLabel(title: "AUDIO", color: .cyan)
                 }
+                NavigationLink(value: MenuDestination.carSelect) {
+                    MenuButtonLabel(title: "CAR", color: .orange)
+                }
             }
             .buttonStyle(.plain)
         }

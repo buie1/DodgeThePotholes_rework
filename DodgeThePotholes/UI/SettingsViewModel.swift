@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// `@Observable` state for the Settings and Audio screens.
+/// `@Observable` state for the Settings, Audio and Car Select screens.
 ///
 /// Reads and writes the player's preferences through `PersistenceServiceProtocol`,
 /// so changes are saved immediately and picked up by the next run.
@@ -25,6 +25,19 @@ final class SettingsViewModel {
     var isSFXEnabled: Bool {
         get { persistence.isSFXEnabled }
         set { persistence.isSFXEnabled = newValue }
+    }
+
+    // MARK: - Car
+
+    var selectedCar: CarSkin { persistence.selectedCar }
+
+    /// Whether the player owns `car`. The blue car is free.
+    func isOwned(_ car: CarSkin) -> Bool { persistence.isUnlocked(car) }
+
+    /// Selects `car` for the next run if the player owns it.
+    func select(_ car: CarSkin) {
+        guard isOwned(car) else { return }
+        persistence.selectedCar = car
     }
 
     // MARK: - Song

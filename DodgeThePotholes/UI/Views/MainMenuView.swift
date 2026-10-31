@@ -4,6 +4,7 @@ import SwiftUI
 enum MenuDestination: Hashable {
     case settings
     case audio
+    case carSelect
 }
 
 /// Entry point the player sees on launch.
@@ -38,7 +39,8 @@ struct MainMenuView: View {
     private func destination(_ screen: MenuDestination) -> some View {
         switch screen {
         case .settings: SettingsView()
-        case .audio:    AudioSettingsView(viewModel: settingsViewModel)
+        case .audio:     AudioSettingsView(viewModel: settingsViewModel)
+        case .carSelect: CarSelectView(viewModel: settingsViewModel)
         }
     }
 
