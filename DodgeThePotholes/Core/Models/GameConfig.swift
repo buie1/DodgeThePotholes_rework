@@ -41,6 +41,11 @@ enum GameConfig {
     /// A touch that moves less than this many points is a tap (honk), not a drag.
     static let tapMaxTravel: Double = 10
 
+    // MARK: - Leaderboard
+
+    /// Game Center leaderboard ID. Must match the leaderboard set up in App Store Connect.
+    static let leaderboardID = "dodgethepotholes.highscore"
+
     // MARK: - Lives
 
     static let beginningLifeCount: Int = 3

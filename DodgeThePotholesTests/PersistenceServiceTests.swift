@@ -146,6 +146,18 @@ final class PersistenceServiceTests: XCTestCase {
         XCTAssertEqual(store.highScore, 500)
     }
 
+    func testBestRunsAreSortedAndLimited() {
+        let store = makeService()
+        for score in [300, 900, 100, 700, 500] {
+            store.recordRun(score: score, moneyEarned: score / 100)
+        }
+
+        let best = store.bestRuns(limit: 3)
+        XCTAssertEqual(best.map(\.score), [900, 700, 500])
+        XCTAssertEqual(best.first?.moneyEarned, 9)
+        XCTAssertEqual(store.bestRuns(limit: 10).count, 5)
+    }
+
     // MARK: - Preferences
 
     func testPreferencesPersistAcrossInstances() throws {

@@ -11,6 +11,13 @@ enum PurchaseResult: Equatable {
     case alreadyOwned
 }
 
+/// One finished run from the local score history.
+struct RunRecord: Equatable {
+    let score: Int
+    let moneyEarned: Int
+    let date: Date
+}
+
 /// Saved player progress: bank balance, high score, shop unlocks and preferences.
 ///
 /// The protocol boundary lets tests and Previews swap in an in-memory or mock store.
@@ -44,6 +51,9 @@ protocol PersistenceServiceProtocol: AnyObject {
     /// - Returns: `true` when `score` is a new high score.
     @discardableResult
     func recordRun(score: Int, moneyEarned: Int) -> Bool
+
+    /// The highest-scoring runs, best first (ties: earliest first).
+    func bestRuns(limit: Int) -> [RunRecord]
 }
 
 extension PersistenceServiceProtocol {
@@ -171,6 +181,15 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
         if isNewHighScore { profile.highScore = score }
         save()
         return isNewHighScore
+    }
+
+    func bestRuns(limit: Int) -> [RunRecord] {
+        var descriptor = FetchDescriptor<ScoreEntry>(
+            sortBy: [SortDescriptor(\.score, order: .reverse), SortDescriptor(\.date)]
+        )
+        descriptor.fetchLimit = limit
+        let entries = (try? context.fetch(descriptor)) ?? []
+        return entries.map { RunRecord(score: $0.score, moneyEarned: $0.moneyEarned, date: $0.date) }
     }
 
     // MARK: - Private

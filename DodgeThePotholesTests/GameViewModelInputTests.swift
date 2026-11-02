@@ -112,6 +112,7 @@ final class MockPersistenceService: PersistenceServiceProtocol {
     var hasTank = false
     var extraLifePending = false
     var unlocked: Set<String> = []
+    var runs: [RunRecord] = []
 
     func isUnlocked(_ itemKey: String) -> Bool { unlocked.contains(itemKey) }
 
@@ -130,8 +131,13 @@ final class MockPersistenceService: PersistenceServiceProtocol {
 
     func recordRun(score: Int, moneyEarned: Int) -> Bool {
         money += moneyEarned
+        runs.append(RunRecord(score: score, moneyEarned: moneyEarned, date: .now))
         guard score > highScore else { return false }
         highScore = score
         return true
+    }
+
+    func bestRuns(limit: Int) -> [RunRecord] {
+        Array(runs.sorted { $0.score > $1.score }.prefix(limit))
     }
 }
