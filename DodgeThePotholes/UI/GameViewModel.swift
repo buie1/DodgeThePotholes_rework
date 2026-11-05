@@ -79,6 +79,7 @@ final class GameViewModel: GameEngineDelegate {
     private let hapticService: any HapticServiceProtocol
     private let persistence:   any PersistenceServiceProtocol
     private let motionService: any MotionServiceProtocol
+    private let leaderboard:   any LeaderboardServiceProtocol
 
     // MARK: - Steering input
 
@@ -91,18 +92,22 @@ final class GameViewModel: GameEngineDelegate {
 
     /// Creates the view model with concrete service defaults.
     /// Pass mock implementations in tests or Previews.
-    /// - Parameter persistence: Saved progress; supplies the car, song, sound
-    ///   settings and shop upgrades, and banks each run's earnings.
+    /// - Parameters:
+    ///   - persistence: Saved progress; supplies the car, song, sound
+    ///     settings and shop upgrades, and banks each run's earnings.
+    ///   - leaderboard: Receives each finished run's score.
     init(
         persistence: any PersistenceServiceProtocol,
         audio:  any AudioServiceProtocol  = AudioService(),
         haptics: any HapticServiceProtocol = HapticService(),
-        motion:  any MotionServiceProtocol = MotionService()
+        motion:  any MotionServiceProtocol = MotionService(),
+        leaderboard: any LeaderboardServiceProtocol = GameCenterLeaderboardService()
     ) {
         self.persistence   = persistence
         self.audioService  = audio
         self.hapticService = haptics
         self.motionService = motion
+        self.leaderboard   = leaderboard
         highScore = persistence.highScore
     }
 
@@ -273,6 +278,9 @@ final class GameViewModel: GameEngineDelegate {
 
         isNewHighScore = persistence.recordRun(score: finalScore, moneyEarned: moneyEarned)
         highScore      = persistence.highScore
+
+        // Every run is submitted; Game Center keeps each player's best.
+        Task { [leaderboard] in await leaderboard.submit(score: finalScore) }
 
         audioService.stopMusic()
         motionService.stop()

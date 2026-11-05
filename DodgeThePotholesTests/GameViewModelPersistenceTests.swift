@@ -7,6 +7,7 @@ final class GameViewModelPersistenceTests: XCTestCase {
 
     private var persistence: MockPersistenceService!
     private var audio: MockAudioService!
+    private var leaderboard: MockLeaderboardService!
     private var viewModel: GameViewModel!
 
     private let screen = CGSize(width: 402, height: 874)
@@ -15,8 +16,10 @@ final class GameViewModelPersistenceTests: XCTestCase {
         super.setUp()
         persistence = MockPersistenceService()
         audio = MockAudioService()
+        leaderboard = MockLeaderboardService()
         viewModel = GameViewModel(persistence: persistence, audio: audio,
-                                  haptics: MockHapticService(), motion: MockMotionService())
+                                  haptics: MockHapticService(), motion: MockMotionService(),
+                                  leaderboard: leaderboard)
     }
 
     func testUsesSelectedCarAndSong() {
@@ -65,5 +68,16 @@ final class GameViewModelPersistenceTests: XCTestCase {
         XCTAssertTrue(viewModel.isNewHighScore)
         XCTAssertEqual(viewModel.highScore, 80)
         XCTAssertEqual(viewModel.route, .gameOver)
+    }
+
+    func testGameOverSubmitsScoreToLeaderboard() async {
+        let submitted = expectation(description: "score submitted")
+        leaderboard.onSubmit = { _ in submitted.fulfill() }
+        viewModel.startGame(screenSize: screen)
+
+        viewModel.engineDidEnd(viewModel.engine!, finalScore: 420, moneyEarned: 5)
+
+        await fulfillment(of: [submitted], timeout: 1)
+        XCTAssertEqual(leaderboard.submittedScores, [420])
     }
 }

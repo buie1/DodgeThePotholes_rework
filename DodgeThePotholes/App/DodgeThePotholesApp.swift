@@ -6,6 +6,8 @@ struct DodgeThePotholesApp: App {
 
     /// Saved player progress, shared by every screen.
     @State private var persistence: SwiftDataPersistenceService
+    /// Game Center sign-in and scores, shared by the game and the leaderboard screen.
+    @State private var leaderboard = GameCenterLeaderboardService()
 
     init() {
         do {
@@ -18,7 +20,7 @@ struct DodgeThePotholesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainMenuView(persistence: persistence)
+            MainMenuView(persistence: persistence, leaderboard: leaderboard)
         }
     }
 }

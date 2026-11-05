@@ -15,14 +15,17 @@ struct MainMenuView: View {
 
     /// Saved player progress, injected by the app.
     let persistence: any PersistenceServiceProtocol
+    /// Game Center leaderboard, injected by the app.
+    let leaderboard: any LeaderboardServiceProtocol
 
     @State private var viewModel: GameViewModel
     @State private var settingsViewModel: SettingsViewModel
     @State private var shopViewModel: ShopViewModel
 
-    init(persistence: any PersistenceServiceProtocol) {
+    init(persistence: any PersistenceServiceProtocol, leaderboard: any LeaderboardServiceProtocol) {
         self.persistence = persistence
-        _viewModel = State(initialValue: GameViewModel(persistence: persistence))
+        self.leaderboard = leaderboard
+        _viewModel = State(initialValue: GameViewModel(persistence: persistence, leaderboard: leaderboard))
         _settingsViewModel = State(initialValue: SettingsViewModel(persistence: persistence))
         _shopViewModel = State(initialValue: ShopViewModel(persistence: persistence))
     }
@@ -36,6 +39,7 @@ struct MainMenuView: View {
         .fullScreenCover(isPresented: $viewModel.isShowingGame) {
             GameView(viewModel: viewModel)
         }
+        .task { leaderboard.authenticate() }
     }
 
     @ViewBuilder
@@ -116,5 +120,6 @@ struct MainMenuView: View {
 }
 
 #Preview {
-    MainMenuView(persistence: SwiftDataPersistenceService.inMemory())
+    MainMenuView(persistence: SwiftDataPersistenceService.inMemory(),
+                 leaderboard: GameCenterLeaderboardService())
 }

@@ -12,7 +12,8 @@ final class GameViewModelInputTests: XCTestCase {
         super.setUp()
         motion = MockMotionService()
         viewModel = GameViewModel(persistence: MockPersistenceService(), audio: MockAudioService(),
-                                  haptics: MockHapticService(), motion: motion)
+                                  haptics: MockHapticService(), motion: motion,
+                                  leaderboard: MockLeaderboardService())
         viewModel.startGame(screenSize: CGSize(width: 402, height: 874))
     }
 
@@ -52,7 +53,8 @@ final class GameViewModelInputTests: XCTestCase {
     func testWithoutAccelerometerOnlyDragSteers() {
         let noTilt = MockMotionService(isAvailable: false)
         let vm = GameViewModel(persistence: MockPersistenceService(), audio: MockAudioService(),
-                               haptics: MockHapticService(), motion: noTilt)
+                               haptics: MockHapticService(), motion: noTilt,
+                               leaderboard: MockLeaderboardService())
         vm.startGame(screenSize: CGSize(width: 402, height: 874))
         XCTAssertFalse(vm.isTiltAvailable)
 
@@ -99,6 +101,33 @@ final class MockAudioService: AudioServiceProtocol {
 
 final class MockHapticService: HapticServiceProtocol {
     func play(_ pattern: HapticPattern) {}
+}
+
+@MainActor
+final class MockLeaderboardService: LeaderboardServiceProtocol {
+    var isAuthenticated = false
+    var playerName: String?
+    var entries: [LeaderboardEntry] = []
+    var error: Error?
+    private(set) var authenticateCount = 0
+    private(set) var submittedScores: [Int] = []
+    private(set) var dashboardShown = false
+    /// Called after each submission, for tests awaiting the async submit.
+    var onSubmit: ((Int) -> Void)?
+
+    func authenticate() { authenticateCount += 1 }
+
+    func submit(score: Int) async {
+        submittedScores.append(score)
+        onSubmit?(score)
+    }
+
+    func topScores(limit: Int) async throws -> [LeaderboardEntry] {
+        if let error { throw error }
+        return Array(entries.prefix(limit))
+    }
+
+    func showDashboard() { dashboardShown = true }
 }
 
 @MainActor

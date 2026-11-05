@@ -49,6 +49,9 @@ final class GameCenterLeaderboardService: LeaderboardServiceProtocol {
     private(set) var isAuthenticated = false
     private(set) var playerName: String?
 
+    /// Touches no GameKit state, so it can be a default argument outside the main actor.
+    nonisolated init() {}
+
     func authenticate() {
         GKLocalPlayer.local.authenticateHandler = { [weak self] viewController, _ in
             Task { @MainActor in
