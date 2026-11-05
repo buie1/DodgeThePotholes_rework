@@ -8,6 +8,3 @@ DerivedData/
 .DS_Store
 *.swp
 *.lock
-
-# Temporary/Cache files
-legacy_source/
