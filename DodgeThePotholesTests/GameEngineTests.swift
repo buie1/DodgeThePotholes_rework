@@ -11,8 +11,8 @@ final class GameEngineTests: XCTestCase {
     /// A point inside the player's hit box (front half of the car).
     private var hitPoint: CGPoint { CGPoint(x: 0, y: -world.height / 2 + GameConfig.playerBottomOffset + 40) }
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         recorder = RecordingDelegate()
     }
 

@@ -8,8 +8,8 @@ final class GameViewModelInputTests: XCTestCase {
     private var motion: MockMotionService!
     private var viewModel: GameViewModel!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         motion = MockMotionService()
         viewModel = GameViewModel(persistence: MockPersistenceService(), audio: MockAudioService(),
                                   haptics: MockHapticService(), motion: motion,
@@ -158,6 +158,7 @@ final class MockPersistenceService: PersistenceServiceProtocol {
         return extraLifePending
     }
 
+    @discardableResult
     func recordRun(score: Int, moneyEarned: Int) -> Bool {
         money += moneyEarned
         runs.append(RunRecord(score: score, moneyEarned: moneyEarned, date: .now))

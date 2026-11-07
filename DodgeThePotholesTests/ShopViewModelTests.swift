@@ -8,8 +8,8 @@ final class ShopViewModelTests: XCTestCase {
     private var persistence: MockPersistenceService!
     private var viewModel: ShopViewModel!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         persistence = MockPersistenceService()
         viewModel = ShopViewModel(persistence: persistence)
     }

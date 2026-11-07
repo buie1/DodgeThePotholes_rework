@@ -12,8 +12,8 @@ final class GameViewModelPersistenceTests: XCTestCase {
 
     private let screen = CGSize(width: 402, height: 874)
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         persistence = MockPersistenceService()
         audio = MockAudioService()
         leaderboard = MockLeaderboardService()

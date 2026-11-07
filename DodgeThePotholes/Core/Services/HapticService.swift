@@ -4,6 +4,7 @@ import UIKit
 // MARK: - Protocol
 
 /// Plays semantic haptic patterns mapped from engine events.
+@MainActor
 protocol HapticServiceProtocol: AnyObject {
     func play(_ pattern: HapticPattern)
 }
@@ -17,6 +18,7 @@ protocol HapticServiceProtocol: AnyObject {
 ///
 /// **Fallback**: devices that don't support Core Haptics (iPhone 7 and earlier)
 /// receive `UIImpactFeedbackGenerator` / `UINotificationFeedbackGenerator` pulses.
+@MainActor
 final class HapticService: HapticServiceProtocol {
 
     // MARK: - State

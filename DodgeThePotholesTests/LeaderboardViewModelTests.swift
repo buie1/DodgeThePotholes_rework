@@ -14,8 +14,8 @@ final class LeaderboardViewModelTests: XCTestCase {
         LeaderboardEntry(rank: 2, playerName: "Me", score: 4_000, isLocalPlayer: true),
     ]
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         persistence = MockPersistenceService()
         leaderboard = MockLeaderboardService()
         viewModel = LeaderboardViewModel(persistence: persistence, leaderboard: leaderboard)

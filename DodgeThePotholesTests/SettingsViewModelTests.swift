@@ -8,8 +8,8 @@ final class SettingsViewModelTests: XCTestCase {
     private var persistence: MockPersistenceService!
     private var viewModel: SettingsViewModel!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         persistence = MockPersistenceService()
         persistence.unlocked = [GameSound.hotPursuit.rawValue, GameSound.raceDuel.rawValue,
                                 GameSound.urbanChase.rawValue]

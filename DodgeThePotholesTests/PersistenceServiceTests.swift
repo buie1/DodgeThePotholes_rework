@@ -8,15 +8,15 @@ final class PersistenceServiceTests: XCTestCase {
     private var defaults: UserDefaults!
     private let suiteName = "PersistenceServiceTests"
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         UserDefaults().removePersistentDomain(forName: suiteName)
         defaults = UserDefaults(suiteName: suiteName)
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         UserDefaults().removePersistentDomain(forName: suiteName)
-        super.tearDown()
+        try await super.tearDown()
     }
 
     private func makeService() -> SwiftDataPersistenceService {
