@@ -3,6 +3,19 @@
 > **Source**: `legacy_source/` — SpriteKit/UIKit, CocoaPods, Firebase, iOS 10 target
 > **Target**: `DodgeThePotholes/` — SwiftUI + `@Observable`, pure-Swift engine rendered with SpriteKit, GameKit, SwiftData, iOS 17+, Swift 6
 
+> **Status (Nov 2026): rewrite complete.** Phases 1–6 are done: the legacy CocoaPods/Firebase
+> project has been removed from the repo (it remains in git history), and the app builds in
+> Swift 6 language mode. Where the result differs from this plan:
+>
+> - **Engine**: pure-Swift `GameEngine` rendered by SpriteKit, not an SKPhysics `GameScene` (see below).
+> - **Tank**: a shop upgrade that replaces the monster-truck power-up sprite, as in the legacy game — not a `CarSkin`.
+> - **Leaderboard**: GameKit, offline-first. Signed out, the Leaderboard screen shows the player's own best runs from SwiftData; the legacy 3-initials prompt is dropped in favour of Game Center names.
+> - **No leaderboard-reset notice**: legacy Firebase scores are not migrated, and players aren't told.
+> - **No `GameOverViewModel`**: `GameOverView` reads the final run from `GameViewModel`.
+>
+> Going live with Game Center is a setup task, not code — see the checklist in the root `README.md`.
+> The rest of this document is the original plan, kept unchanged.
+
 > **Architecture update (Oct 2026).** The game was built as a **pure-Swift `GameEngine`**
 > (logic, AABB collisions, spawning, power-ups, horn) **rendered by a SpriteKit
 > `GameRenderScene`**, not as an SKPhysics `GameScene`. Where this document mentions
