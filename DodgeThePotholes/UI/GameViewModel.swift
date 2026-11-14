@@ -83,6 +83,11 @@ final class GameViewModel: GameEngineDelegate {
     /// Balance values each run's engine is built with.
     private let tuning: GameTuning
 
+    #if DEBUG
+    /// Dev-mode setup applied to each run; `nil` for normal play.
+    @ObservationIgnored var devScenario: DevScenario?
+    #endif
+
     // MARK: - Steering input
 
     /// Latest tilt steering in [-1, 1]; `0` when no accelerometer.
@@ -132,7 +137,7 @@ final class GameViewModel: GameEngineDelegate {
     func startGame(screenSize: CGSize) {
         let carSkin = persistence.selectedCar
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
-        let eng = GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning, drivesOwnLoop: false)
+        let eng = makeEngine(worldSize: worldSize, carSkin: carSkin)
         eng.delegate = self
         engine = eng
         scene = GameRenderScene(engine: eng)
@@ -163,8 +168,53 @@ final class GameViewModel: GameEngineDelegate {
 
         let extraLives = persistence.consumeExtraLife() ? 1 : 0
         eng.start(carSkin: carSkin, extraLives: extraLives, hasTank: persistence.hasTank)
+        #if DEBUG
+        if let devScenario { apply(devScenario, to: eng) }
+        #endif
         lives = eng.player.lives
     }
+
+    /// A fresh engine for one run, set up by the dev scenario when there is one.
+    private func makeEngine(worldSize: CGSize, carSkin: CarSkin) -> GameEngine {
+        #if DEBUG
+        if let devScenario {
+            return GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning,
+                              tables: devScenario.spawnTables(base: tuning.weights),
+                              rng: SplitMix64(seed: devScenario.seed ?? .random(in: .min ... .max)),
+                              drivesOwnLoop: false)
+        }
+        #endif
+        return GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning, drivesOwnLoop: false)
+    }
+
+    /// `false` for dev runs on the real profile, so they never touch saved progress.
+    private var recordsRuns: Bool {
+        #if DEBUG
+        return devScenario?.useRealProfile != true
+        #else
+        return true
+        #endif
+    }
+
+    /// Dev runs never reach Game Center.
+    private var submitsScores: Bool {
+        #if DEBUG
+        return devScenario == nil
+        #else
+        return true
+        #endif
+    }
+
+    #if DEBUG
+    /// Applies a dev scenario's in-run setup to a just-started engine.
+    private func apply(_ scenario: DevScenario, to engine: GameEngine) {
+        engine.debug.godMode = scenario.godMode
+        engine.debug.timeScale = scenario.timeScale
+        if let elapsed = scenario.startElapsed { engine.fastForwardSpeedRamp(by: elapsed) }
+        if let lives = scenario.lives { engine.setLives(lives) }
+        scenario.startPowerUps.forEach(engine.activatePowerUp)
+    }
+    #endif
 
     func pauseGame() {
         engine?.pause()
@@ -282,11 +332,17 @@ final class GameViewModel: GameEngineDelegate {
         self.finalScore = finalScore
         self.finalMoney = moneyEarned
 
-        isNewHighScore = persistence.recordRun(score: finalScore, moneyEarned: moneyEarned)
-        highScore      = persistence.highScore
+        if recordsRuns {
+            isNewHighScore = persistence.recordRun(score: finalScore, moneyEarned: moneyEarned)
+            highScore      = persistence.highScore
+        } else {
+            isNewHighScore = false
+        }
 
-        // Every run is submitted; Game Center keeps each player's best.
-        Task { [leaderboard] in await leaderboard.submit(score: finalScore) }
+        // Every real run is submitted; Game Center keeps each player's best.
+        if submitsScores {
+            Task { [leaderboard] in await leaderboard.submit(score: finalScore) }
+        }
 
         audioService.stopMusic()
         motionService.stop()

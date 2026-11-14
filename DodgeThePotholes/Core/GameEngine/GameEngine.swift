@@ -78,6 +78,11 @@ final class GameEngine {
     /// Normalised horizontal input in [-1, 1]. Positive = right.
     @ObservationIgnored private var horizontalInput: Double = 0
 
+    #if DEBUG
+    /// Dev-mode switches; see the debug extension at the bottom of this file.
+    @ObservationIgnored var debug = DebugOptions()
+    #endif
+
     // MARK: - Init
 
     /// - Parameters:
@@ -170,8 +175,22 @@ final class GameEngine {
         // Cleared even when idle so a renderer never replays last frame's effects.
         if !frameEvents.isEmpty { frameEvents.removeAll(keepingCapacity: true) }
         guard state == .playing else { return }
-        let dt = min(dt, 0.05)
+        #if DEBUG
+        // Slow motion / fast-forward: scale the frame, then run it in ≤ 50 ms slices
+        // so fast speeds never skip collisions.
+        var remaining = min(dt, 0.05) * debug.timeScale
+        while remaining > 0, state == .playing {
+            let slice = min(remaining, 0.05)
+            step(dt: slice)
+            remaining -= slice
+        }
+        #else
+        step(dt: min(dt, 0.05))
+        #endif
+    }
 
+    /// One simulation step of at most 50 ms.
+    private func step(dt: Double) {
         updatePlayer(dt: dt)
         moveEntities(dt: dt)
         updateHorns(dt: dt)
@@ -441,6 +460,14 @@ final class GameEngine {
     // MARK: - Life management
 
     private func loseLife() {
+        #if DEBUG
+        if debug.godMode {
+            // The hit still flashes the car, but costs nothing.
+            player.recoveryRemaining = tuning.durations.recovery
+            delegate?.engine(self, didChangePlayerState: player.state)
+            return
+        }
+        #endif
         player.lives = max(0, player.lives - 1)
         delegate?.engine(self, didUpdateLives: player.lives)
 
@@ -465,7 +492,7 @@ final class GameEngine {
             obstacleSpawnAccumulator += dt
             if obstacleSpawnAccumulator >= tuning.spawnIntervals.obstacle {
                 obstacleSpawnAccumulator -= tuning.spawnIntervals.obstacle
-                spawnObstacle()
+                spawnObstacle(weightedRandom(tables.obstacles, using: &obstacleRNG))
             }
         }
 
@@ -478,12 +505,12 @@ final class GameEngine {
         powerUpSpawnAccumulator += dt
         if powerUpSpawnAccumulator >= tuning.spawnIntervals.powerUp {
             powerUpSpawnAccumulator -= tuning.spawnIntervals.powerUp
-            spawnPowerUp()
+            spawnPowerUp(weightedRandom(tables.powerUps, using: &powerUpRNG))
         }
     }
 
-    private func spawnObstacle() {
-        switch weightedRandom(tables.obstacles, using: &obstacleRNG) {
+    private func spawnObstacle(_ roll: ObstacleSpawn?) {
+        switch roll {
         case .single(let type)?:
             obstacles.append(spawner.obstacle(type, travel: travelDuration, rng: &obstacleRNG))
         case .conePattern?:
@@ -510,9 +537,9 @@ final class GameEngine {
         }
     }
 
-    private func spawnPowerUp() {
+    private func spawnPowerUp(_ roll: PowerUpSpawn?) {
         let type: PowerUpType
-        switch weightedRandom(tables.powerUps, using: &powerUpRNG) {
+        switch roll {
         case .powerUp(let chosen)?:
             type = chosen
         case .multiplier?:
@@ -599,7 +626,7 @@ final class GameEngine {
     }
 }
 
-// MARK: - Test hooks
+// MARK: - Test hooks and dev mode
 
 #if DEBUG
 extension GameEngine {
@@ -611,5 +638,42 @@ extension GameEngine {
 
     /// Places a coin directly into the world. Tests only.
     func insert(_ coin: CoinEntity) { coins.append(coin) }
+}
+
+// MARK: - Dev mode
+
+extension GameEngine {
+    /// Dev-mode switches read by `update` and `loseLife`.
+    struct DebugOptions {
+        /// Hits flash the car but never cost a life.
+        var godMode = false
+        /// Simulation speed: `0.5` is slow motion, `2` is double speed.
+        var timeScale: Double = 1
+    }
+
+    /// Spawns `spawn` now, as if the obstacle spawner had rolled it.
+    /// Uses the obstacle random stream, so it changes a seeded road from here on.
+    func spawnNow(_ spawn: ObstacleSpawn) { spawnObstacle(spawn) }
+
+    /// Spawns `spawn` now, as if the power-up spawner had rolled it.
+    func spawnNow(_ spawn: PowerUpSpawn) { spawnPowerUp(spawn) }
+
+    /// Drops a `type` pickup on the player; the next update collects it.
+    func activatePowerUp(_ type: PowerUpType) {
+        insert(PowerUpEntity(id: UUID(), position: player.position, size: type.spawnSize,
+                             velocity: .zero, type: type))
+    }
+
+    /// Sets the remaining lives (at least 1).
+    func setLives(_ lives: Int) {
+        player.lives = max(1, lives)
+        delegate?.engine(self, didUpdateLives: player.lives)
+    }
+
+    /// Applies the speed-ramp steps that `seconds` of play would have made.
+    func fastForwardSpeedRamp(by seconds: Double) {
+        let steps = (seconds / tuning.speed.rampInterval).rounded(.down)
+        travelDuration = max(travelDuration - steps * tuning.speed.rampStep, tuning.speed.minTravelDuration)
+    }
 }
 #endif

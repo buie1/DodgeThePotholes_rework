@@ -24,6 +24,12 @@ struct MainMenuView: View {
     @State private var shopViewModel: ShopViewModel
     @State private var leaderboardViewModel: LeaderboardViewModel
 
+    #if DEBUG
+    @Environment(\.devLaunchScenario) private var devLaunchScenario
+    /// Set once the launch scenario has started, so returning to the menu doesn't restart it.
+    @State private var didStartLaunchScenario = false
+    #endif
+
     init(persistence: any PersistenceServiceProtocol, leaderboard: any LeaderboardServiceProtocol) {
         self.persistence = persistence
         self.leaderboard = leaderboard
@@ -43,7 +49,16 @@ struct MainMenuView: View {
         .fullScreenCover(isPresented: $viewModel.isShowingGame) {
             GameView(viewModel: viewModel)
         }
-        .task { leaderboard.authenticate() }
+        .task {
+            leaderboard.authenticate()
+            #if DEBUG
+            if let devLaunchScenario, !didStartLaunchScenario {
+                didStartLaunchScenario = true
+                viewModel.devScenario = devLaunchScenario
+                viewModel.navigateToGame()
+            }
+            #endif
+        }
     }
 
     @ViewBuilder

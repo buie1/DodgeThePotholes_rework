@@ -202,6 +202,21 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
         }
     }
 
+    // MARK: - Dev mode
+
+    #if DEBUG
+    /// Applies a dev scenario's bank and unlocks. Used on throwaway dev profiles.
+    func applyDevSetup(_ scenario: DevScenario, catalog: GameCatalog = .bundled) {
+        if let bank = scenario.bank { profile.money = bank }
+        if scenario.unlockAll {
+            for item in catalog.shopItems where item.category != .extraLife && !isUnlocked(item) {
+                profile.unlocks.append(UnlockRecord(itemKey: item.id))
+            }
+        }
+        save()
+    }
+    #endif
+
     // MARK: - Legacy migration
 
     static let migrationFlagKey = "v2_migrated"

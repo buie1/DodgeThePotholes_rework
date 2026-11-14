@@ -86,25 +86,30 @@ extension SpawnTables: Decodable {
 
     /// One `{ "spawn": name, "weight": n }` row. Rows keep their JSON order, so a
     /// seeded run rolls the same pool the same way.
-    private struct Row: Decodable {
+    struct Row: Decodable {
         let spawn: String
         let weight: Int
     }
 
+    /// A spawn name no pool recognises.
+    struct UnknownSpawn: Error {
+        let name: String
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        func pool<T>(_ key: CodingKeys, _ parse: (String) -> T?) throws -> [(T, Int)] {
-            try container.decode([Row].self, forKey: key).map { row in
-                guard let spawn = parse(row.spawn) else {
-                    throw DecodingError.dataCorruptedError(forKey: key, in: container,
-                                                           debugDescription: "Unknown spawn '\(row.spawn)'")
-                }
-                return (spawn, row.weight)
-            }
+        self.init(obstacles: try Self.pool(container.decode([Row].self, forKey: .obstacles), ObstacleSpawn.init(name:)),
+                  environment: try Self.pool(container.decode([Row].self, forKey: .environment), EnvSpawnType.init(name:)),
+                  powerUps: try Self.pool(container.decode([Row].self, forKey: .powerUps), PowerUpSpawn.init(name:)))
+    }
+
+    /// Converts `rows` to a weighted pool, keeping their order.
+    /// - Throws: `UnknownSpawn` when `parse` doesn't recognise a row's name.
+    static func pool<T>(_ rows: [Row], _ parse: (String) -> T?) throws -> [(T, Int)] {
+        try rows.map { row in
+            guard let spawn = parse(row.spawn) else { throw UnknownSpawn(name: row.spawn) }
+            return (spawn, row.weight)
         }
-        self.init(obstacles: try pool(.obstacles, ObstacleSpawn.init(name:)),
-                  environment: try pool(.environment, EnvSpawnType.init(name:)),
-                  powerUps: try pool(.powerUps, PowerUpSpawn.init(name:)))
     }
 }
 
