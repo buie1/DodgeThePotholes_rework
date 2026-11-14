@@ -34,6 +34,14 @@ final class GameRenderScene: SKScene {
     /// How far the road has scrolled within one screen height.
     private var roadOffset: Double = 0
 
+    #if DEBUG
+    /// Draws every entity's hit box in a debug build.
+    var showsHitboxes = false
+    /// Smoothed frames per second, for the DEV overlay.
+    private(set) var debugFPS: Double = 0
+    private var hitboxLayer: SKNode?
+    #endif
+
     init(engine: GameEngine) {
         self.engine = engine
         // Legacy road: one `road_long` sprite four screens tall, scrolled and reset every screen.
@@ -65,6 +73,10 @@ final class GameRenderScene: SKScene {
         if engine.state == .playing { scrollRoad(dt: min(dt, 0.05)) }
         syncEntities()
         playEffects()
+        #if DEBUG
+        if dt > 0 { debugFPS = debugFPS == 0 ? 1 / dt : debugFPS * 0.9 + 0.1 / dt }
+        drawHitboxes()
+        #endif
     }
 
     // MARK: - Road
@@ -137,3 +149,54 @@ final class GameRenderScene: SKScene {
         explosion.run(.sequence([.wait(forDuration: 2), .removeFromParent()]))
     }
 }
+
+// MARK: - Dev mode
+
+#if DEBUG
+extension GameRenderScene {
+    /// Redraws the current engine state, for changes made while the scene is paused.
+    func debugRedraw() {
+        syncEntities()
+        drawHitboxes()
+    }
+
+    /// Outlines the rectangles the engine collides: player blue, obstacles red,
+    /// power-ups yellow, coins green, horns purple.
+    private func drawHitboxes() {
+        guard showsHitboxes else {
+            hitboxLayer?.removeFromParent()
+            hitboxLayer = nil
+            return
+        }
+        let layer = hitboxLayer ?? makeHitboxLayer()
+        // Same order as the colours in `makeHitboxLayer`.
+        let boxes: [[CGRect]] = [
+            [engine.player.collisionRect],
+            engine.obstacles.filter(\.isCollidable).map(\.collisionRect),
+            engine.powerUpEntities.filter { !$0.isCollected }.map(\.boundingRect),
+            engine.coins.filter { !$0.isCollected }.map(\.boundingRect),
+            engine.horns.filter { !$0.isRemoved }.map(\.collisionRect),
+        ]
+        for (node, rects) in zip(layer.children.compactMap { $0 as? SKShapeNode }, boxes) {
+            let path = CGMutablePath()
+            path.addRects(rects)
+            node.path = path
+        }
+    }
+
+    private func makeHitboxLayer() -> SKNode {
+        let layer = SKNode()
+        layer.zPosition = 10
+        for color in [SKColor.systemBlue, .systemRed, .systemYellow, .systemGreen, .systemPurple] {
+            let node = SKShapeNode()
+            node.strokeColor = color
+            node.lineWidth = 5
+            node.fillColor = .clear
+            layer.addChild(node)
+        }
+        addChild(layer)
+        hitboxLayer = layer
+        return layer
+    }
+}
+#endif

@@ -16,6 +16,7 @@ struct DevScenarioForm: View {
             }
             Toggle("God mode", isOn: $viewModel.scenario.godMode)
             Toggle("Autopilot", isOn: $viewModel.scenario.autopilot)
+            Toggle("Hitboxes", isOn: $viewModel.scenario.hitboxes)
             LabeledContent("Time scale \(viewModel.scenario.timeScale.formatted())×") {
                 Slider(value: $viewModel.scenario.timeScale, in: 0.25...4, step: 0.25)
             }

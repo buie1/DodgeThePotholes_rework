@@ -9,8 +9,8 @@ Approved 2026-11-13 after a design interview. Each item ships one step at a time
 | Item | Status |
 |------|--------|
 | #0 Shared groundwork | ✅ Done: seeded RNG (`44798f8`), tuning JSON (`ba08e27`), catalog JSON (`15a10d5`) |
-| Dev mode and test hooks | 🚧 In progress: D0–D3 done (scenarios, autopilot, `scripts/dev-run.sh`, DEV menu; see `docs/DEV_MODE.md`), D4 (in-run overlay) next |
-| #1–#11 | Not started; paused until dev mode lands |
+| Dev mode and test hooks | ✅ Done (D0–D4): scenarios, autopilot, `scripts/dev-run.sh`, DEV menu, in-run DEV panel. See `docs/DEV_MODE.md` |
+| #1–#11 | Not started. Next: #8 game feel (includes fixing the HUD: BEST label under the Dynamic Island, money counter overlapping the car) |
 
 ## Decisions
 
@@ -134,7 +134,7 @@ Foundations to build on:
 ---
 
 ## Order of work
-1. **Dev mode and test hooks** (D0–D4), inserted before the rest.
+1. ~~**Dev mode and test hooks** (D0–D4)~~ ✅
 2. **Groundwork and feel:** ~~#0~~ → #8 visual effects/haptics → #1 combos → #5
    onboarding/controls.
 3. **Content and tone:** #11 style guide + packs → #4 zones → tone pass (#7) → #6 catalog.

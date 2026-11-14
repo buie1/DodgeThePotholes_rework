@@ -19,6 +19,7 @@
 		09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */; };
 		0D7B5B843F30BF26E9B2B446 /* CarSkin+Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */; };
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
+		0F04F4A4E2AF3769959D3124 /* DevOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E49BB98A5AC4794401536CB /* DevOverlayView.swift */; };
 		10929E5791A3E28A202ABA3D /* SplitMix64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D37C155D64588A1F5B445 /* SplitMix64.swift */; };
 		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
 		12A71DB62B6DAF5B960EB42F /* GameTuning.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCDDE231821B345CEADF8478 /* GameTuning.swift */; };
@@ -93,6 +94,7 @@
 		A0D9BEE46B0C0274075D7A1A /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC3285123F99306E99F497 /* Player.swift */; };
 		A29C8E5CD9BB2CBA31FB7CA2 /* money.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CEACCA45AA1E7496AD95F35E /* money.aiff */; };
 		A2C5D092CFBD89286FF8FE89 /* ShopViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */; };
+		A3A21ED9DC30412718D6306C /* DevOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */; };
 		A5E9F50699BA790D9A9F94B9 /* oh_my_god.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CDFEF7DCB9A98DB6F96901B0 /* oh_my_god.mp3 */; };
 		A75499FA8264E36E2C3A4252 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EAAAB47588F01E88C73032 /* GameEngine.swift */; };
 		AB456E1F74A669F65F63E16E /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC92D143A1456D21985E6F6E /* GameOverView.swift */; };
@@ -110,6 +112,7 @@
 		D089222678702D815931ADBC /* CarSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47D32FE4AF1445606414A4B /* CarSelectView.swift */; };
 		D41A420B9C705FA3C17E2217 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727E4CA002959AEA1AB50CEA /* AppFonts.swift */; };
 		D81DB774991169EB99AD6371 /* PlayerProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A4E44EFCD169F840331358 /* PlayerProfile.swift */; };
+		D86527D10E1398EEBF47A7DD /* DevSpawnMenus.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE28D56AEFCD9D94881B9DDB /* DevSpawnMenus.swift */; };
 		D96D1F69C68A0C533738682B /* GameEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0E07D893AA06895BD8DE9D /* GameEvent.swift */; };
 		DB2D3066B95921762DAC088D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2C9291713F4579B279BD3D4 /* Assets.xcassets */; };
 		E1FF6932DF189159FF2E6A95 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2117657443EDAACD0D935FD /* Obstacle.swift */; };
@@ -142,6 +145,7 @@
 		08907C4B425146D48FB9C357 /* ShopItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopItemRow.swift; sourceTree = "<group>"; };
 		0C1AE0D100CE14E6EEF9517C /* monster_truck_jam.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = monster_truck_jam.mp3; sourceTree = "<group>"; };
 		0E0E07D893AA06895BD8DE9D /* GameEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEvent.swift; sourceTree = "<group>"; };
+		0E49BB98A5AC4794401536CB /* DevOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevOverlayView.swift; sourceTree = "<group>"; };
 		10D53B029975DF13D6E8D645 /* Array2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array2D.swift; sourceTree = "<group>"; };
 		11643E3C81C722C6138E87E6 /* DevScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevScenario.swift; sourceTree = "<group>"; };
 		1325C00EBECD4E09CF876C13 /* TextMessageOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMessageOverlayView.swift; sourceTree = "<group>"; };
@@ -223,6 +227,7 @@
 		B2117657443EDAACD0D935FD /* Obstacle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
 		B33D5585DBEFEA579129409D /* ResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceTests.swift; sourceTree = "<group>"; };
 		B6174851FD947D07571C9E86 /* PersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceServiceTests.swift; sourceTree = "<group>"; };
+		B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevOverlayTests.swift; sourceTree = "<group>"; };
 		BC92D143A1456D21985E6F6E /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
 		C246E95AB0B47B943D0D5B83 /* LeaderboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardViewModel.swift; sourceTree = "<group>"; };
 		C3288D1939235550FE52EE00 /* LeaderboardRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardRow.swift; sourceTree = "<group>"; };
@@ -256,6 +261,7 @@
 		F7AD4B4913B53B319426FB8E /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
 		F7FE786691A0FA1C6A20E226 /* DevMenuViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevMenuViewModelTests.swift; sourceTree = "<group>"; };
 		FB62D00C5B1F9D8E6D03952C /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
+		FE28D56AEFCD9D94881B9DDB /* DevSpawnMenus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevSpawnMenus.swift; sourceTree = "<group>"; };
 		FFDA19FE3EA0592B2675D594 /* GameRenderScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRenderScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -277,8 +283,10 @@
 		0053B2B7D03C381D5B39DF01 /* Dev */ = {
 			isa = PBXGroup;
 			children = (
+				0E49BB98A5AC4794401536CB /* DevOverlayView.swift */,
 				18F56096B6BCD63993B28B7A /* DevProfileToolsSection.swift */,
 				7DB80C0CDB0C6D54697ADD79 /* DevScenarioForm.swift */,
+				FE28D56AEFCD9D94881B9DDB /* DevSpawnMenus.swift */,
 			);
 			path = Dev;
 			sourceTree = "<group>";
@@ -397,6 +405,7 @@
 				2A39CF3D3B2FDE82E5B0C06F /* AutopilotTests.swift */,
 				F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */,
 				F7FE786691A0FA1C6A20E226 /* DevMenuViewModelTests.swift */,
+				B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */,
 				53511C8B5C5C653033923FE1 /* DevScenarioTests.swift */,
 				4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */,
 				91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */,
@@ -726,6 +735,7 @@
 				FAF3F2D0EADEB3EC454339A4 /* AutopilotTests.swift in Sources */,
 				0D7B5B843F30BF26E9B2B446 /* CarSkin+Fixtures.swift in Sources */,
 				49B479E618E477F05384B723 /* DevMenuViewModelTests.swift in Sources */,
+				A3A21ED9DC30412718D6306C /* DevOverlayTests.swift in Sources */,
 				2B40865E69B2C2B538D21CD5 /* DevScenarioTests.swift in Sources */,
 				118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */,
 				09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */,
@@ -754,9 +764,11 @@
 				48019483816F73ED7FC17B71 /* DevEventLog.swift in Sources */,
 				1F67E4E33A708D6E2BDC3E87 /* DevMenuView.swift in Sources */,
 				0629E177C6F5FF2654E30C2E /* DevMenuViewModel.swift in Sources */,
+				0F04F4A4E2AF3769959D3124 /* DevOverlayView.swift in Sources */,
 				CE857E244C0C9CAB223D9BA4 /* DevProfileToolsSection.swift in Sources */,
 				B9CAE6D77A734290725F6233 /* DevScenario.swift in Sources */,
 				4171B53909B02C23CB038C47 /* DevScenarioForm.swift in Sources */,
+				D86527D10E1398EEBF47A7DD /* DevSpawnMenus.swift in Sources */,
 				C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */,
 				6FBC4B9F3D7560F8CFFA3BEA /* DrunkGogglesOverlay.swift in Sources */,
 				1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */,

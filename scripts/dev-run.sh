@@ -2,11 +2,12 @@
 # Runs the game in the iOS simulator in a dev scenario, takes screenshots during the
 # run and copies out the event log. Debug builds only; see docs/DEV_MODE.md.
 #
-# Usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--no-build]
+# Usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--overlay] [--no-build]
 #   preset       a DevScenario preset name, e.g. monsterTruck, or inline scenario JSON
 #   seconds      how long to let the run play (default 15)
 #   --shots N    screenshots spread over the run (default 3)
 #   --autopilot  let the bot drive
+#   --overlay    open the in-run DEV panel
 #   --no-build   reuse the last build
 #
 # Output: build/dev-runs/<timestamp>-<name>/ with shot-N.png, devlog.jsonl and run.txt.
@@ -18,16 +19,18 @@ DEVICE_NAME="iPhone 17"
 DERIVED="$ROOT/build/DerivedData"
 APP="$DERIVED/Build/Products/Debug-iphonesimulator/DodgeThePotholes.app"
 
-scenario="${1:?usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--no-build]}"
+scenario="${1:?usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--overlay] [--no-build]}"
 shift
 seconds=15
 shots=3
 autopilot=false
+overlay=false
 build=true
 while (($#)); do
   case "$1" in
     --shots) shots="$2"; shift ;;
     --autopilot) autopilot=true ;;
+    --overlay) overlay=true ;;
     --no-build) build=false ;;
     *) seconds="$1" ;;
   esac
@@ -56,6 +59,7 @@ else
   args=(-devScenario "$scenario"); name="$scenario"
 fi
 $autopilot && args+=(-devAutopilot)
+$overlay && args+=(-devOverlay)
 
 out="$ROOT/build/dev-runs/$(date +%Y%m%d-%H%M%S)-$name"
 mkdir -p "$out"

@@ -19,6 +19,7 @@ is optional; an empty scenario is a normal run.
 | `godMode` | Hits flash the car but never cost a life |
 | `timeScale` | `0.5` is slow motion, `2` is double speed |
 | `autopilot` | A simple bot drives and honks (`Debug/Autopilot.swift`) |
+| `hitboxes` | Outlines every hit box on screen |
 | `bank`, `unlockAll` | Money and unlocks for the throwaway profile |
 | `useRealProfile` | Play on your real save. Runs are then **not recorded** |
 
@@ -43,6 +44,28 @@ you can:
   sound settings). Each asks for confirmation first.
 
 The `-devMenu` launch argument opens the menu on launch.
+
+## The in-run DEV panel
+
+During any run in a debug build, a red **DEV** button under the lives opens a panel at the
+top of the screen. It stays at the top so it never hides your car.
+
+| Control | What it does |
+|---------|--------------|
+| Readout | Seconds of play, current travel duration, frame rate, and seed |
+| **God** | Hits flash the car but cost nothing |
+| **Autopilot** | The bot drives |
+| **Hitboxes** | Draws the exact rectangles the engine collides: player blue, obstacles red, power-ups yellow, coins green, horns purple. The player's box covers only the front half of the car, as in the original game |
+| Time scale | 0.25× to 4× |
+| **Pause / Step** | Pause, then advance one frame per tap |
+| **+30 s** | Jumps the speed ramp forward 30 seconds |
+| **Obstacle ▾ / Pickup ▾** | Spawns any obstacle or pickup now |
+| **Activate ▾** | Starts any power-up now |
+
+**Using the panel on a normal run:** that run is marked dev-adjusted, so it is **not
+recorded or submitted**. The next untouched run counts normally.
+
+The `-devOverlay` launch argument opens the panel at the start of a run.
 
 ## Launching a scenario
 
@@ -69,6 +92,7 @@ scripts/dev-run.sh monsterTruck                    # 15 s, 3 screenshots
 scripts/dev-run.sh potholeRain 30 --shots 5 --autopilot
 scripts/dev-run.sh '{"startPowerUps": ["booze"], "autopilot": true}' 10
 scripts/dev-run.sh lateGame 20 --no-build          # reuse the last build
+scripts/dev-run.sh '{"hitboxes": true}' 10 --overlay   # with the DEV panel open
 ```
 
 The script:

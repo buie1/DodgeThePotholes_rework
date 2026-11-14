@@ -686,6 +686,14 @@ extension GameEngine {
         delegate?.engine(self, didUpdateLives: player.lives)
     }
 
+    /// Advances one frame while paused, for frame-by-frame inspection.
+    func stepWhilePaused(deltaTime dt: Double = 1.0 / 60) {
+        guard state == .paused else { return }
+        state = .playing
+        update(deltaTime: dt)
+        if state == .playing { state = .paused }
+    }
+
     /// Applies the speed-ramp steps that `seconds` of play would have made.
     func fastForwardSpeedRamp(by seconds: Double) {
         let steps = (seconds / tuning.speed.rampInterval).rounded(.down)

@@ -39,6 +39,13 @@ struct GameView: View {
                     TextMessageOverlayView(index: index)
                 }
 
+                #if DEBUG
+                if viewModel.route == .playing {
+                    DevOverlayView(viewModel: viewModel)
+                        .padding(.top, geo.safeAreaInsets.top + 64)
+                }
+                #endif
+
                 if viewModel.route == .gameOver {
                     GameOverView(viewModel: viewModel, screenSize: geo.size)
                 }

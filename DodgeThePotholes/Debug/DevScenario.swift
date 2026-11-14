@@ -26,6 +26,8 @@ struct DevScenario {
     var timeScale: Double = 1
     /// A bot drives (see `Autopilot`), for unattended runs.
     var autopilot = false
+    /// Outlines every hit box on screen.
+    var hitboxes = false
     /// Bank balance for the throwaway profile.
     var bank: Int?
     /// Owns every shop item on the throwaway profile.
@@ -135,7 +137,7 @@ extension DevScenario {
 extension DevScenario: Decodable {
     private enum CodingKeys: String, CodingKey {
         case seed, obstacles, environment, powerUps, startElapsed, startPowerUps
-        case lives, godMode, timeScale, autopilot, bank, unlockAll, useRealProfile
+        case lives, godMode, timeScale, autopilot, hitboxes, bank, unlockAll, useRealProfile
     }
 
     struct UnknownPowerUp: Error {
@@ -161,6 +163,7 @@ extension DevScenario: Decodable {
             godMode: try c.decodeIfPresent(Bool.self, forKey: .godMode) ?? false,
             timeScale: try c.decodeIfPresent(Double.self, forKey: .timeScale) ?? 1,
             autopilot: try c.decodeIfPresent(Bool.self, forKey: .autopilot) ?? false,
+            hitboxes: try c.decodeIfPresent(Bool.self, forKey: .hitboxes) ?? false,
             bank: try c.decodeIfPresent(Int.self, forKey: .bank),
             unlockAll: try c.decodeIfPresent(Bool.self, forKey: .unlockAll) ?? false,
             useRealProfile: try c.decodeIfPresent(Bool.self, forKey: .useRealProfile) ?? false

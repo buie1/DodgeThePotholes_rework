@@ -88,6 +88,9 @@ final class GameViewModel: GameEngineDelegate {
     @ObservationIgnored var devScenario: DevScenario?
     /// The seed of the current dev run, to replay its road.
     @ObservationIgnored private(set) var devSeed: UInt64?
+    /// Set once the DEV overlay changes this run; a changed normal run is then
+    /// neither recorded nor submitted.
+    @ObservationIgnored private(set) var isDevAdjustedRun = false
     #endif
 
     // MARK: - Steering input
@@ -142,6 +145,7 @@ final class GameViewModel: GameEngineDelegate {
         let eng = makeEngine(worldSize: worldSize, carSkin: carSkin)
         eng.delegate = self
         #if DEBUG
+        isDevAdjustedRun = false
         if let devScenario, let devSeed {
             // Log the dev run, forwarding every callback on to this view model.
             DevEventLog.shared.beginRun(devScenario, seed: devSeed, forwardingTo: self)
@@ -179,6 +183,7 @@ final class GameViewModel: GameEngineDelegate {
         eng.start(carSkin: carSkin, extraLives: extraLives, hasTank: persistence.hasTank)
         #if DEBUG
         devScenario?.apply(to: eng)
+        scene?.showsHitboxes = devScenario?.hitboxes ?? false
         #endif
         lives = eng.player.lives
     }
@@ -196,23 +201,36 @@ final class GameViewModel: GameEngineDelegate {
         return GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning, drivesOwnLoop: false)
     }
 
-    /// `false` for dev runs on the real profile, so they never touch saved progress.
+    /// `false` for dev runs on the real profile, and for normal runs changed from the
+    /// DEV overlay, so they never touch saved progress.
     private var recordsRuns: Bool {
         #if DEBUG
-        return devScenario?.useRealProfile != true
+        if devScenario?.useRealProfile == true { return false }
+        return devScenario != nil || !isDevAdjustedRun
         #else
         return true
         #endif
     }
 
-    /// Dev runs never reach Game Center.
+    /// Dev runs, and runs changed from the DEV overlay, never reach Game Center.
     private var submitsScores: Bool {
         #if DEBUG
-        return devScenario == nil
+        return devScenario == nil && !isDevAdjustedRun
         #else
         return true
         #endif
     }
+
+    #if DEBUG
+    /// Applies a DEV overlay change to the running engine and redraws it (the scene
+    /// doesn't tick while paused). Marks the run as dev-adjusted.
+    func devAdjust(_ change: (GameEngine) -> Void) {
+        guard let engine else { return }
+        isDevAdjustedRun = true
+        change(engine)
+        scene?.debugRedraw()
+    }
+    #endif
 
     func pauseGame() {
         engine?.pause()
