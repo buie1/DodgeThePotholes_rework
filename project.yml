@@ -1,6 +1,6 @@
 name: DodgeThePotholes
 options:
-  bundleIdPrefix: edu.duke
+  bundleIdPrefix: com.jonbuie
   deploymentTarget:
     iOS: "17.0"
   defaultConfig: Debug
@@ -25,7 +25,7 @@ targets:
           - "**/*.md"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: edu.duke.DodgeThePotholes
+        PRODUCT_BUNDLE_IDENTIFIER: com.jonbuie.dodgethepotholes.app
         SWIFT_VERSION: "6.0"
         INFOPLIST_FILE: DodgeThePotholes/App/Info.plist
         DEVELOPMENT_TEAM: L986M8KB6K
@@ -62,7 +62,7 @@ targets:
       - path: DodgeThePotholesTests
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: edu.duke.DodgeThePotholesTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jonbuie.dodgethepotholes.app.tests
         GENERATE_INFOPLIST_FILE: true
         SWIFT_VERSION: "6.0"
     dependencies:
