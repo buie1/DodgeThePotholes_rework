@@ -42,6 +42,9 @@ persistence (SwiftData) and the leaderboard (GameKit) sit behind protocols and a
 injected, so view models are tested with mocks. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 and [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md).
 
+What's next for the game (features, monetization, launch) is tracked in
+[docs/ROADMAP.md](docs/ROADMAP.md).
+
 ```
 DodgeThePotholes/
   App/          entry point
