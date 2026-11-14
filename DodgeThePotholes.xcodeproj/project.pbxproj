@@ -13,8 +13,10 @@
 		02DBB0BAFA9DDD3FD209D774 /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97B1D75537D18F110D82B235 /* LeaderboardView.swift */; };
 		038A19CF9B7BC9A139090404 /* TextMessageOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1325C00EBECD4E09CF876C13 /* TextMessageOverlayView.swift */; };
 		04569D019A0E4B4DE944A0C0 /* LeaderboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B34DAEE5C425B8A59CF4568 /* LeaderboardEntry.swift */; };
+		053AA5E93A9D6F3476CD53D5 /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BD70365F8105272919F8A8 /* GameCatalog.swift */; };
 		06E8AE56CB01B2E5FF320F5A /* money_pattern2.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C497DE4BD3900EE444FAAA5 /* money_pattern2.json */; };
 		09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */; };
+		0D7B5B843F30BF26E9B2B446 /* CarSkin+Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */; };
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
 		10929E5791A3E28A202ABA3D /* SplitMix64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D37C155D64588A1F5B445 /* SplitMix64.swift */; };
 		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
@@ -103,6 +105,7 @@
 		E2D935BCC79E636218BEF18D /* Explosion.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8823CD508FC9765BB862F196 /* Explosion.sks */; };
 		E43E167C150DCF2A943698F6 /* money_pattern3.json in Resources */ = {isa = PBXBuildFile; fileRef = 78A6A9515BF2297AA8078AD2 /* money_pattern3.json */; };
 		E7A9B134E1ACDCED65E51231 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD567DA4CAEB430A021C569C /* PersistenceService.swift */; };
+		EAAFFE73F77CB2E312CC7756 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 4580F01BB70C79ABEFC360C6 /* catalog.json */; };
 		EBD499B1A44F3607262D0323 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E95808F0A581EBB2A7EEE4 /* AVFoundation.framework */; };
 		EDE4D97050332FEDCE063ED7 /* cone_pattern3.json in Resources */ = {isa = PBXBuildFile; fileRef = CEB6BC450F92C6D36C0591D5 /* cone_pattern3.json */; };
 		F0EEDCCE4784E4BFBC96A442 /* MenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5941A87F7B8299EFE61A232 /* MenuButton.swift */; };
@@ -139,6 +142,7 @@
 		2CCB09546504848C1B4237D8 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
 		2D822AEFC9043DB8386D575A /* torpedo.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = torpedo.mp3; sourceTree = "<group>"; };
 		317114713DEF96BCEAA15D60 /* money_pattern1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern1.json; sourceTree = "<group>"; };
+		36BD70365F8105272919F8A8 /* GameCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
 		37ECF6E6F884D64E311AF977 /* dog_wimper.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dog_wimper.mp3; sourceTree = "<group>"; };
 		389E96CFDB3CAA46E9005EAA /* TextMessageLyrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMessageLyrics.swift; sourceTree = "<group>"; };
 		3A81341E67EC2645EC447D6B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
@@ -147,6 +151,7 @@
 		3D6098674B5E16EB4CAFF8E8 /* police_s.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = police_s.wav; sourceTree = "<group>"; };
 		3F7476FC4015C83B5C5EC961 /* AlertBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertBannerView.swift; sourceTree = "<group>"; };
 		421964D192A64B06E29C1B0A /* LivesDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivesDisplayView.swift; sourceTree = "<group>"; };
+		4580F01BB70C79ABEFC360C6 /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		498FBB401194B789C3369283 /* ObstacleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstacleType.swift; sourceTree = "<group>"; };
 		4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngineTests.swift; sourceTree = "<group>"; };
 		4C5D58300ACD0288C014A856 /* RAMPAGE.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = RAMPAGE.mp3; sourceTree = "<group>"; };
@@ -223,6 +228,7 @@
 		EEDBE63ADD3D73DD5085338C /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		F3DB95C921DFADFDBCA20AE1 /* MenuScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScreen.swift; sourceTree = "<group>"; };
 		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CarSkin+Fixtures.swift"; sourceTree = "<group>"; };
 		F64EE81291DC53CB8A17F059 /* start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = start.wav; sourceTree = "<group>"; };
 		F7AD4B4913B53B319426FB8E /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
 		FB62D00C5B1F9D8E6D03952C /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
@@ -265,6 +271,7 @@
 		1D52447E1ADE70E50EBE96F9 /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				4580F01BB70C79ABEFC360C6 /* catalog.json */,
 				81311074D04960CE002851F4 /* tuning.json */,
 			);
 			path = Config;
@@ -342,6 +349,7 @@
 		7709047DE5E62B7300D658ED /* DodgeThePotholesTests */ = {
 			isa = PBXGroup;
 			children = (
+				F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */,
 				4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */,
 				91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */,
 				DDEFC0360A7DA277C8B4564A /* GameViewModelPersistenceTests.swift */,
@@ -481,6 +489,7 @@
 			children = (
 				10D53B029975DF13D6E8D645 /* Array2D.swift */,
 				4FF9F16B03415C2D66A8073C /* CarSkin.swift */,
+				36BD70365F8105272919F8A8 /* GameCatalog.swift */,
 				91079949E0AE64E60F81967E /* GameConfig.swift */,
 				E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */,
 				D101A2B29B80ED8B6D17D34C /* GameState.swift */,
@@ -611,6 +620,7 @@
 				2614828F08F90B6397622740 /* born-lucky.wav in Resources */,
 				02B76A6AABF35CDE43DCCEB9 /* car_honk.mp3 in Resources */,
 				48494FA286ABD7DC8A66FFC3 /* carskid.wav in Resources */,
+				EAAFFE73F77CB2E312CC7756 /* catalog.json in Resources */,
 				2C5645739B6EFC835596CD13 /* catch_me.wav in Resources */,
 				8D5BEC90B3E415F3DC7F8EE5 /* cone_pattern1.json in Resources */,
 				6A043815999B4B3904F7701C /* cone_pattern2.json in Resources */,
@@ -645,6 +655,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D7B5B843F30BF26E9B2B446 /* CarSkin+Fixtures.swift in Sources */,
 				118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */,
 				09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */,
 				144F3B2856A51D2D45EDBE57 /* GameViewModelPersistenceTests.swift in Sources */,
@@ -671,6 +682,7 @@
 				6FBC4B9F3D7560F8CFFA3BEA /* DrunkGogglesOverlay.swift in Sources */,
 				1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */,
 				9105E0A214DBCBD7CD92209E /* EntitySpawner.swift in Sources */,
+				053AA5E93A9D6F3476CD53D5 /* GameCatalog.swift in Sources */,
 				2CAED9D2DC57A018E470614C /* GameConfig.swift in Sources */,
 				A75499FA8264E36E2C3A4252 /* GameEngine.swift in Sources */,
 				6BD895D428C968E9B7415D1F /* GameEngineDelegate.swift in Sources */,

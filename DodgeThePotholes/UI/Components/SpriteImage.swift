@@ -2,14 +2,19 @@ import SwiftUI
 
 /// A legacy pixel-art sprite from the asset catalog, scaled without smoothing.
 struct SpriteImage: View {
-    let image: SpriteCatalog.Image
+    let name: String
 
     init(_ image: SpriteCatalog.Image) {
-        self.image = image
+        self.name = image.rawValue
+    }
+
+    /// A sprite by asset name, e.g. a `CarSkin.imageName` from the catalog.
+    init(named name: String) {
+        self.name = name
     }
 
     var body: some View {
-        Image(image.rawValue)
+        Image(name)
             .interpolation(.none)
             .resizable()
             .scaledToFit()

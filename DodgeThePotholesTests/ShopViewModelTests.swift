@@ -15,7 +15,7 @@ final class ShopViewModelTests: XCTestCase {
     }
 
     private func item(_ id: String) -> ShopItem {
-        ShopItem.allItems.first { $0.id == id }!
+        GameCatalog.bundled.shopItem(id: id)!
     }
 
     func testAffordableItemAsksForConfirmation() {
@@ -35,7 +35,7 @@ final class ShopViewModelTests: XCTestCase {
 
         XCTAssertNil(viewModel.pendingPurchase)
         XCTAssertTrue(viewModel.isOwned(item("redcar")))
-        XCTAssertEqual(viewModel.money, 600 - GameConfig.ShopCost.car)
+        XCTAssertEqual(viewModel.money, 600 - item("redcar").cost)
     }
 
     func testCancellingSpendsNothing() {
@@ -54,7 +54,7 @@ final class ShopViewModelTests: XCTestCase {
 
         XCTAssertNil(viewModel.pendingPurchase)
         XCTAssertEqual(viewModel.alert?.title, "Insufficient Funds")
-        XCTAssertEqual(viewModel.alert?.message, "This item costs $\(GameConfig.ShopCost.tank).")
+        XCTAssertEqual(viewModel.alert?.message, "This item costs $\(item("tank").cost).")
     }
 
     func testOwnedItemShowsAlreadyPurchased() {

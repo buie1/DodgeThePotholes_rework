@@ -73,24 +73,21 @@ final class PlayerNode: SKSpriteNode {
         guard newSignal != signal else { return }
         signal = newSignal
         removeAction(forKey: ActionKey.signal)
-        guard let animation = signalAnimation(newSignal, skin: skin) else {
+        let frameNames = signalFrames(newSignal, skin: skin)
+        guard !frameNames.isEmpty else {
             if !isShowingMonsterTruck { texture = factory.texture(skin.imageName) }
             return
         }
-        run(.repeatForever(.animate(with: factory.frames(animation), timePerFrame: 0.2)),
+        run(.repeatForever(.animate(with: factory.frames(named: frameNames), timePerFrame: 0.2)),
             withKey: ActionKey.signal)
     }
 
-    /// Blinker frames exist for the three car skins only.
-    private func signalAnimation(_ signal: Signal, skin: CarSkin) -> SpriteCatalog.Animation? {
-        switch (skin, signal) {
-        case (.blue, .left):   return .car1Left
-        case (.blue, .right):  return .car1Right
-        case (.red, .left):    return .car2Left
-        case (.red, .right):   return .car2Right
-        case (.green, .left):  return .car3Left
-        case (.green, .right): return .car3Right
-        default:               return nil
+    /// The car's blinker frames for `signal`; empty when driving straight.
+    private func signalFrames(_ signal: Signal, skin: CarSkin) -> [String] {
+        switch signal {
+        case .none:  return []
+        case .left:  return skin.leftFrames
+        case .right: return skin.rightFrames
         }
     }
 }

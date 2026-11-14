@@ -91,7 +91,7 @@ final class GameEngine {
     ///     `false` when the caller calls `update(deltaTime:)` itself.
     init(
         worldSize: CGSize,
-        carSkin: CarSkin = .blue,
+        carSkin: CarSkin = GameCatalog.bundled.defaultCar,
         tuning: GameTuning = .bundled,
         tables: SpawnTables? = nil,
         rng: some RandomNumberGenerator = SystemRandomNumberGenerator(),
@@ -119,7 +119,7 @@ final class GameEngine {
     ///   - carSkin: The player's car.
     ///   - extraLives: Lives added to the tuning's starting lives (a bought extra life).
     ///   - hasTank: Whether monster-truck mode shows the tank upgrade.
-    func start(carSkin: CarSkin = .blue, extraLives: Int = 0, hasTank: Bool = false) {
+    func start(carSkin: CarSkin = GameCatalog.bundled.defaultCar, extraLives: Int = 0, hasTank: Bool = false) {
         resetState(carSkin: carSkin)
         player.lives = min(tuning.lives.start + extraLives, tuning.lives.max)
         player.hasTank = hasTank

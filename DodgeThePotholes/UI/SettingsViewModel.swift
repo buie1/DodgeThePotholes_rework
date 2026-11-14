@@ -10,9 +10,14 @@ import Observation
 final class SettingsViewModel {
 
     private let persistence: any PersistenceServiceProtocol
+    private let catalog: GameCatalog
 
-    init(persistence: any PersistenceServiceProtocol) {
+    /// - Parameters:
+    ///   - persistence: Saved preferences and owned items.
+    ///   - catalog: The cars and songs to choose from.
+    init(persistence: any PersistenceServiceProtocol, catalog: GameCatalog = .bundled) {
         self.persistence = persistence
+        self.catalog = catalog
     }
 
     // MARK: - Sound
@@ -29,9 +34,12 @@ final class SettingsViewModel {
 
     // MARK: - Car
 
+    /// Every car, in display order.
+    var cars: [CarSkin] { catalog.cars }
+
     var selectedCar: CarSkin { persistence.selectedCar }
 
-    /// Whether the player owns `car`. The blue car is free.
+    /// Whether the player owns `car`. A car with no unlock key is free.
     func isOwned(_ car: CarSkin) -> Bool { persistence.isUnlocked(car) }
 
     /// Selects `car` for the next run if the player owns it.
@@ -46,14 +54,14 @@ final class SettingsViewModel {
 
     /// Songs the player owns, in shop order.
     var ownedSongs: [GameSound] {
-        ShopItem.allItems
+        catalog.shopItems
             .filter { $0.category == .song && persistence.isUnlocked($0) }
             .compactMap { GameSound(rawValue: $0.id) }
     }
 
     /// Shop display name for a song, e.g. "Hot Pursuit".
     func displayName(of song: GameSound) -> String {
-        ShopItem.allItems.first { $0.id == song.rawValue }?.displayName ?? song.rawValue
+        catalog.shopItem(id: song.rawValue)?.displayName ?? song.rawValue
     }
 
     /// Selects the next owned song, wrapping around. Legacy cycled songs the same way.

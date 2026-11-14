@@ -59,7 +59,7 @@ protocol PersistenceServiceProtocol: AnyObject {
 extension PersistenceServiceProtocol {
     func isUnlocked(_ item: ShopItem) -> Bool { isUnlocked(item.id) }
 
-    /// The blue car is free; the others need their unlock.
+    /// A car with no unlock key is free; the others need their unlock.
     func isUnlocked(_ car: CarSkin) -> Bool {
         car.unlockKey.map { isUnlocked($0) } ?? true
     }
@@ -124,8 +124,8 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
     // MARK: - Preferences
 
     var selectedCar: CarSkin {
-        get { CarSkin(rawValue: profile.selectedCarKey) ?? .blue }
-        set { profile.selectedCarKey = newValue.rawValue; save() }
+        get { GameCatalog.bundled.car(id: profile.selectedCarKey) ?? GameCatalog.bundled.defaultCar }
+        set { profile.selectedCarKey = newValue.id; save() }
     }
 
     var selectedSong: GameSound {
@@ -214,7 +214,7 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
 
         profile.money     = defaults.integer(forKey: "money")
         profile.highScore = defaults.integer(forKey: "highscore")
-        if let car = defaults.string(forKey: "car"), CarSkin(rawValue: car) != nil {
+        if let car = defaults.string(forKey: "car"), GameCatalog.bundled.car(id: car) != nil {
             profile.selectedCarKey = car
         }
         if let song = defaults.string(forKey: "song_selected"), GameSound(rawValue: song) != nil {

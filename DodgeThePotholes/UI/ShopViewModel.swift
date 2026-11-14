@@ -16,7 +16,7 @@ struct ShopAlert: Equatable {
 final class ShopViewModel {
 
     /// Everything for sale, in display order.
-    let items: [ShopItem] = ShopItem.allItems
+    let items: [ShopItem]
 
     /// The item awaiting the player's confirmation; drives the confirmation dialog.
     var pendingPurchase: ShopItem?
@@ -26,8 +26,12 @@ final class ShopViewModel {
 
     private let persistence: any PersistenceServiceProtocol
 
-    init(persistence: any PersistenceServiceProtocol) {
+    /// - Parameters:
+    ///   - persistence: Banked money and owned items.
+    ///   - catalog: The items for sale.
+    init(persistence: any PersistenceServiceProtocol, catalog: GameCatalog = .bundled) {
         self.persistence = persistence
+        self.items = catalog.shopItems
     }
 
     /// Banked money available to spend.

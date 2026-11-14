@@ -51,6 +51,37 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(tuning.weights.powerUps.last?.0, .nothing)
     }
 
+    func testBundledCatalogKeepsLegacyShop() throws {
+        let catalog = try GameCatalog.load()
+        XCTAssertEqual(catalog.cars.map(\.id), ["car1", "car2", "car3"])
+        XCTAssertEqual(catalog.defaultCar.id, "car1")
+        XCTAssertEqual(catalog.shopItems.count, 9)
+        XCTAssertEqual(catalog.shopItem(id: "redcar")?.cost, 500)
+        XCTAssertEqual(catalog.shopItem(id: "life")?.cost, 1_000)
+        XCTAssertEqual(catalog.shopItem(id: "tank")?.cost, 5_000)
+    }
+
+    func testEveryCarUnlocksFromACarShopItem() throws {
+        let catalog = try GameCatalog.load()
+        for car in catalog.cars {
+            guard let key = car.unlockKey else { continue }
+            XCTAssertEqual(catalog.shopItem(id: key)?.category, .carSkin, "\(car.id) unlock '\(key)'")
+        }
+        let carUnlocks = Set(catalog.cars.compactMap(\.unlockKey))
+        for item in catalog.shopItems where item.category == .carSkin {
+            XCTAssertTrue(carUnlocks.contains(item.id), "Shop car '\(item.id)' unlocks no car")
+        }
+    }
+
+    func testEveryShopImageAndSongIsBundled() throws {
+        for item in try GameCatalog.load().shopItems {
+            XCTAssertNotNil(UIImage(named: item.imageName, in: .main, with: nil), "Missing shop image: \(item.imageName)")
+            if item.category == .song {
+                XCTAssertNotNil(GameSound(rawValue: item.id), "Song '\(item.id)' is not a GameSound")
+            }
+        }
+    }
+
     func testUnknownSpawnNameFailsToDecode() {
         let json = #"{ "obstacles": [{ "spawn": "meteor", "weight": 1 }], "environment": [], "powerUps": [] }"#
         XCTAssertThrowsError(try JSONDecoder().decode(SpawnTables.self, from: Data(json.utf8)))

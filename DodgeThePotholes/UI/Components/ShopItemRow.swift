@@ -49,9 +49,10 @@ struct ShopItemRow: View {
 
 #Preview {
     VStack(spacing: 10) {
-        ShopItemRow(item: ShopItem.allItems[0], isOwned: true, canAfford: true) {}
-        ShopItemRow(item: ShopItem.allItems[2], isOwned: false, canAfford: true) {}
-        ShopItemRow(item: ShopItem.allItems[3], isOwned: false, canAfford: false) {}
+        let items = GameCatalog.bundled.shopItems
+        ShopItemRow(item: items[0], isOwned: true, canAfford: true) {}
+        ShopItemRow(item: items[2], isOwned: false, canAfford: true) {}
+        ShopItemRow(item: items[3], isOwned: false, canAfford: false) {}
     }
     .padding()
     .background(.black)

@@ -1,0 +1,38 @@
+{
+  "cars": [
+    {
+      "id": "car1",
+      "name": "Blue Racer",
+      "sprite": "car1",
+      "leftFrames": ["car1_left_1", "car1_left_2"],
+      "rightFrames": ["car1_right_1", "car1_right_2"]
+    },
+    {
+      "id": "car2",
+      "name": "Red Rocket",
+      "sprite": "car2",
+      "leftFrames": ["car2_left_1", "car2_left_2"],
+      "rightFrames": ["car2_right_1", "car2_right_2"],
+      "unlockKey": "redcar"
+    },
+    {
+      "id": "car3",
+      "name": "Green Machine",
+      "sprite": "car3",
+      "leftFrames": ["car3_left_1", "car3_left_2"],
+      "rightFrames": ["car3_right_1", "car3_right_2"],
+      "unlockKey": "greencar"
+    }
+  ],
+  "shop": [
+    { "id": "redcar",          "name": "Red Rocket",    "cost": 500,  "image": "car2",   "category": "carSkin" },
+    { "id": "greencar",        "name": "Green Machine", "cost": 500,  "image": "car3",   "category": "carSkin" },
+    { "id": "life",            "name": "Extra Life",    "cost": 1000, "image": "oneup",  "category": "extraLife" },
+    { "id": "tank",            "name": "Tank Upgrade",  "cost": 5000, "image": "tank",   "category": "vehicleUpgrade" },
+    { "id": "hot-pursuit.wav", "name": "Hot Pursuit",   "cost": 500,  "image": "music",  "category": "song" },
+    { "id": "born-lucky.wav",  "name": "Born Lucky",    "cost": 500,  "image": "music",  "category": "song" },
+    { "id": "race_duel.wav",   "name": "Race Duel",     "cost": 500,  "image": "music",  "category": "song" },
+    { "id": "catch_me.wav",    "name": "Catch Me",      "cost": 500,  "image": "music",  "category": "song" },
+    { "id": "urban_chase.wav", "name": "Urban Chase",   "cost": 500,  "image": "music",  "category": "song" }
+  ]
+}

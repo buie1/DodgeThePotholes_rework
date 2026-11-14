@@ -24,7 +24,7 @@ final class PersistenceServiceTests: XCTestCase {
     }
 
     private func item(_ id: String) -> ShopItem {
-        ShopItem.allItems.first { $0.id == id }!
+        GameCatalog.bundled.shopItem(id: id)!
     }
 
     // MARK: - Fresh install
@@ -102,10 +102,10 @@ final class PersistenceServiceTests: XCTestCase {
         store.recordRun(score: 10, moneyEarned: 700)
 
         XCTAssertEqual(store.purchase(item("redcar")), .purchased)
-        XCTAssertEqual(store.money, 700 - GameConfig.ShopCost.car)
+        XCTAssertEqual(store.money, 700 - item("redcar").cost)
         XCTAssertTrue(store.isUnlocked(CarSkin.red))
         XCTAssertEqual(store.purchase(item("redcar")), .alreadyOwned)
-        XCTAssertEqual(store.money, 700 - GameConfig.ShopCost.car)
+        XCTAssertEqual(store.money, 700 - item("redcar").cost)
     }
 
     func testFreeSongIsAlreadyOwned() {
@@ -117,7 +117,7 @@ final class PersistenceServiceTests: XCTestCase {
 
     func testTankPurchaseSetsHasTank() {
         let store = makeService()
-        store.recordRun(score: 10, moneyEarned: GameConfig.ShopCost.tank)
+        store.recordRun(score: 10, moneyEarned: item("tank").cost)
         XCTAssertEqual(store.purchase(item("tank")), .purchased)
         XCTAssertTrue(store.hasTank)
     }
@@ -126,7 +126,7 @@ final class PersistenceServiceTests: XCTestCase {
 
     func testExtraLifeIsSpentByOneRunAndCanBeRebought() {
         let store = makeService()
-        store.recordRun(score: 10, moneyEarned: 2 * GameConfig.ShopCost.life)
+        store.recordRun(score: 10, moneyEarned: 2 * item("life").cost)
 
         XCTAssertEqual(store.purchase(item("life")), .purchased)
         XCTAssertEqual(store.purchase(item("life")), .alreadyOwned)

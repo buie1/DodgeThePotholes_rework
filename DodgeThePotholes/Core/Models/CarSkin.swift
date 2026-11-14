@@ -1,31 +1,28 @@
 import Foundation
 
-/// Available player car skins, keyed to legacy asset names.
+/// A player car from `GameCatalog`: its sprite, turn-signal frames and unlock.
 ///
 /// The tank is not a skin: owning it replaces the monster-truck power-up sprite.
-enum CarSkin: String, CaseIterable, Equatable {
-    case blue  = "car1"
-    case red   = "car2"
-    case green = "car3"
+struct CarSkin: Decodable, Hashable, Identifiable {
+    /// Saved in `PlayerProfile.selectedCarKey`; legacy values are `car1`–`car3`.
+    let id: String
+    /// Human-readable name for the shop / car-select screen.
+    let displayName: String
+    /// Asset catalog image of the car driving straight.
+    let imageName: String
+    /// Blinker frames shown while steering left.
+    let leftFrames: [String]
+    /// Blinker frames shown while steering right.
+    let rightFrames: [String]
+    /// `ShopItem.id` that unlocks this car; `nil` for a free car.
+    let unlockKey: String?
 
-    /// Asset catalog image name for this skin.
-    var imageName: String { rawValue }
-
-    /// UserDefaults / UnlockRecord key that gates this skin, if any.
-    var unlockKey: String? {
-        switch self {
-        case .blue:  return nil          // default — always available
-        case .red:   return "redcar"
-        case .green: return "greencar"
-        }
+    private enum CodingKeys: String, CodingKey {
+        case id, leftFrames, rightFrames, unlockKey
+        case displayName = "name"
+        case imageName = "sprite"
     }
 
-    /// Human-readable display name for the shop / car-select screen.
-    var displayName: String {
-        switch self {
-        case .blue:  return "Blue Racer"
-        case .red:   return "Red Rocket"
-        case .green: return "Green Machine"
-        }
-    }
+    /// Every image the car can show.
+    var imageNames: [String] { [imageName] + leftFrames + rightFrames }
 }

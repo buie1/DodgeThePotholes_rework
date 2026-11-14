@@ -83,17 +83,6 @@ enum GameConfig {
     /// Seconds a scared or dying pedestrian takes for its reaction (legacy `runAway` duration).
     static let fleeDuration: Double = 2.0
 
-    // MARK: - Shop costs
-    // Note: car and song intentionally share the same price (500),
-    // so this is a namespace enum with static constants rather than
-    // a raw-value enum (which requires unique values).
-    enum ShopCost {
-        static let car:  Int = 500
-        static let life: Int = 1_000
-        static let tank: Int = 5_000
-        static let song: Int = 500
-    }
-
     // MARK: - Text messages (rickroll easter egg)
 
     /// Number of lyric lines shown in order before wrapping back to the first.

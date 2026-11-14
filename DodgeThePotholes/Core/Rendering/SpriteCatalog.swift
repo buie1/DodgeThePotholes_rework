@@ -10,8 +10,8 @@ enum SpriteCatalog {
 
     /// Stand-alone image sets used by gameplay and the HUD.
     enum Image: String, CaseIterable {
-        // Player / vehicles
-        case car1, car2, car3, tank
+        // Vehicles (player cars come from `GameCatalog`)
+        case tank
         case monsterTruck = "MonsterTruck"
         case taxi, truck, sedan
         // Road & environment
@@ -42,7 +42,6 @@ enum SpriteCatalog {
         case oldManWalk, oldManJump, oldManDead
         case buffGuyWalk, buffGuyJump
         case taxiLeft, taxiRight, truckLeft, truckRight, sedanLeft, sedanRight
-        case car1Left, car1Right, car2Left, car2Right, car3Left, car3Right
 
         /// Ordered frame image names inside the atlas.
         var frameNames: [String] {
@@ -63,19 +62,14 @@ enum SpriteCatalog {
             case .truckRight:  return (0...1).map { "truck_right_\($0)" }
             case .sedanLeft:   return (0...1).map { "sedan_left_\($0)" }
             case .sedanRight:  return (0...1).map { "sedan_right_\($0)" }
-            case .car1Left:    return (1...2).map { "car1_left_\($0)" }
-            case .car1Right:   return (1...2).map { "car1_right_\($0)" }
-            case .car2Left:    return (1...2).map { "car2_left_\($0)" }
-            case .car2Right:   return (1...2).map { "car2_right_\($0)" }
-            case .car3Left:    return (1...2).map { "car3_left_\($0)" }
-            case .car3Right:   return (1...2).map { "car3_right_\($0)" }
             }
         }
     }
 
-    /// Every image name the catalog can load (single images + animation frames).
+    /// Every image name the game can load (single images, animation frames, player cars).
     static var allImageNames: [String] {
         Image.allCases.map(\.rawValue) + Animation.allCases.flatMap(\.frameNames)
+            + GameCatalog.bundled.cars.flatMap(\.imageNames)
     }
 
     // MARK: - Texture loading

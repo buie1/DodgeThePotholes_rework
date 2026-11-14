@@ -10,7 +10,7 @@ struct CarSelectView: View {
         MenuScreen("CAR", titleColor: .orange) {
             VStack(spacing: 24) {
                 HStack(alignment: .top, spacing: 12) {
-                    ForEach(CarSkin.allCases, id: \.self) { car in
+                    ForEach(viewModel.cars) { car in
                         CarCard(car: car,
                                 isOwned: viewModel.isOwned(car),
                                 isSelected: viewModel.selectedCar == car) {
@@ -40,7 +40,7 @@ private struct CarCard: View {
     var body: some View {
         Button(action: onSelect) {
             VStack(spacing: 12) {
-                SpriteImage(car.sprite)
+                SpriteImage(named: car.imageName)
                     .frame(height: 110)
                     .opacity(isOwned ? 1 : 0.3)
 
@@ -78,17 +78,6 @@ private struct CarCard: View {
     private var statusColor: Color {
         if isSelected { return .yellow }
         return isOwned ? .green : .red
-    }
-}
-
-private extension CarSkin {
-    /// The car's sprite in the asset catalog.
-    var sprite: SpriteCatalog.Image {
-        switch self {
-        case .blue:  return .car1
-        case .red:   return .car2
-        case .green: return .car3
-        }
     }
 }
 

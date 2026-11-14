@@ -9,8 +9,8 @@ import SwiftData
 final class PlayerProfile {
     var money: Int = 0
     var highScore: Int = 0
-    /// `CarSkin.rawValue` of the car the player drives.
-    var selectedCarKey: String = CarSkin.blue.rawValue
+    /// `CarSkin.id` of the car the player drives (`car1` is the free blue car).
+    var selectedCarKey: String = "car1"
     var isSFXEnabled: Bool = true
     var isMusicEnabled: Bool = true
     /// `GameSound.rawValue` of the background track played each run.

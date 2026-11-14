@@ -142,7 +142,11 @@ final class EntityNodeFactory {
     }
 
     func frames(_ animation: SpriteCatalog.Animation) -> [SKTexture] {
-        animation.frameNames.map(texture)
+        frames(named: animation.frameNames)
+    }
+
+    func frames(named names: [String]) -> [SKTexture] {
+        names.map(texture)
     }
 
     private func makeNode(_ image: SpriteCatalog.Image, size: CGSize) -> SKSpriteNode {
