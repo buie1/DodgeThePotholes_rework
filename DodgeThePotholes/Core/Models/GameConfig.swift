@@ -91,19 +91,19 @@ enum GameConfig {
 }
 
 /// One roll of the obstacle spawner.
-enum ObstacleSpawn: Equatable {
+enum ObstacleSpawn: Hashable {
     case single(ObstacleType)
     case conePattern
 }
 
 /// One roll of the environment spawner.
-enum EnvSpawnType: Equatable {
+enum EnvSpawnType: Hashable {
     case plant
     case coinPattern
 }
 
 /// One roll of the power-up spawner.
-enum PowerUpSpawn: Equatable {
+enum PowerUpSpawn: Hashable {
     case powerUp(PowerUpType)
     /// x2 or x3, chosen 50/50.
     case multiplier

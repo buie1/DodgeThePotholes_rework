@@ -183,6 +183,64 @@ extension PowerUpType {
     }
 }
 
+// MARK: - Dev names
+
+extension ObstacleSpawn {
+    /// Everything the obstacle spawner can roll (cones and barricades only come in patterns).
+    static var devChoices: [ObstacleSpawn] {
+        ObstacleType.allCases.filter { $0 != .cone && $0 != .barricade }.map(ObstacleSpawn.single) + [.conePattern]
+    }
+
+    var devName: String {
+        switch self {
+        case .single(let type): return type.rawValue
+        case .conePattern:      return "conePattern"
+        }
+    }
+}
+
+extension EnvSpawnType {
+    static let devChoices: [EnvSpawnType] = [.plant, .coinPattern]
+
+    var devName: String {
+        switch self {
+        case .plant:       return "plant"
+        case .coinPattern: return "coinPattern"
+        }
+    }
+}
+
+extension PowerUpSpawn {
+    static let devChoices: [PowerUpSpawn] = [
+        .powerUp(.oneUp), .powerUp(.monsterTruck), .powerUp(.wrap), .multiplier, .phone, .powerUp(.booze), .nothing,
+    ]
+
+    var devName: String {
+        switch self {
+        case .powerUp(let type): return type.devName
+        case .multiplier:        return "multiplier"
+        case .phone:             return "phone"
+        case .nothing:           return "nothing"
+        }
+    }
+}
+
+extension PowerUpType {
+    /// The power-ups a run can start with.
+    static let devChoices: [PowerUpType] = [.wrap, .monsterTruck, .booze, .oneUp, .multiplier(2), .multiplier(3)]
+
+    /// Inverse of `init(devName:)`.
+    var devName: String {
+        switch self {
+        case .wrap:              return "wrap"
+        case .monsterTruck:      return "monsterTruck"
+        case .booze:             return "booze"
+        case .oneUp:             return "oneUp"
+        case .multiplier(let n): return "x\(n)"
+        }
+    }
+}
+
 // MARK: - Environment
 
 extension EnvironmentValues {

@@ -208,11 +208,7 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
     /// Applies a dev scenario's bank and unlocks. Used on throwaway dev profiles.
     func applyDevSetup(_ scenario: DevScenario, catalog: GameCatalog = .bundled) {
         if let bank = scenario.bank { profile.money = bank }
-        if scenario.unlockAll {
-            for item in catalog.shopItems where item.category != .extraLife && !isUnlocked(item) {
-                profile.unlocks.append(UnlockRecord(itemKey: item.id))
-            }
-        }
+        if scenario.unlockAll { devUnlockAll(catalog: catalog) }
         save()
     }
     #endif
@@ -249,3 +245,45 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
         }
     }
 }
+
+// MARK: - Dev profile tools
+
+#if DEBUG
+/// Debug-build edits to saved progress, used by the DEV menu on the real profile.
+@MainActor
+protocol DevProfileTools: AnyObject {
+    func devAddMoney(_ amount: Int)
+    /// Owns every shop item except the consumable extra life.
+    func devUnlockAll(catalog: GameCatalog)
+    /// Clears money, high score, run history, unlocks and the car/song choice.
+    /// Sound settings are kept.
+    func devResetProgress()
+}
+
+extension SwiftDataPersistenceService: DevProfileTools {
+    func devAddMoney(_ amount: Int) {
+        profile.money += amount
+        save()
+    }
+
+    func devUnlockAll(catalog: GameCatalog) {
+        for item in catalog.shopItems where item.category != .extraLife && !isUnlocked(item) {
+            profile.unlocks.append(UnlockRecord(itemKey: item.id))
+        }
+        save()
+    }
+
+    func devResetProgress() {
+        profile.money = 0
+        profile.highScore = 0
+        profile.extraLifePending = false
+        profile.selectedCarKey = GameCatalog.bundled.defaultCar.id
+        profile.selectedSongFilename = GameSound.hotPursuit.rawValue
+        profile.unlocks.forEach(context.delete)
+        profile.unlocks.removeAll()
+        profile.scoreHistory.forEach(context.delete)
+        profile.scoreHistory.removeAll()
+        save()
+    }
+}
+#endif

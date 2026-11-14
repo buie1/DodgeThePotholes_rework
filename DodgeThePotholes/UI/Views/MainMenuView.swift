@@ -44,6 +44,9 @@ struct MainMenuView: View {
         NavigationStack {
             menu
                 .toolbar(.hidden, for: .navigationBar)
+                #if DEBUG
+                .modifier(DevMenuAccess(persistence: persistence, leaderboard: leaderboard))
+                #endif
                 .navigationDestination(for: MenuDestination.self, destination: destination)
         }
         .fullScreenCover(isPresented: $viewModel.isShowingGame) {
@@ -78,7 +81,7 @@ struct MainMenuView: View {
         ZStack {
             // Background
             Color.black.ignoresSafeArea()
-            roadStripes
+            RoadStripes()
 
             VStack(spacing: 32) {
                 Spacer()
@@ -122,23 +125,6 @@ struct MainMenuView: View {
             }
             .buttonStyle(.plain)
         }
-    }
-
-    /// Decorative vertical road stripes in the background.
-    private var roadStripes: some View {
-        GeometryReader { geo in
-            let stripeCount = 5
-            let w = geo.size.width / CGFloat(stripeCount + 1)
-            HStack(spacing: w - 3) {
-                ForEach(0..<stripeCount, id: \.self) { _ in
-                    Rectangle()
-                        .fill(Color.white.opacity(0.05))
-                        .frame(width: 3)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .ignoresSafeArea()
     }
 }
 

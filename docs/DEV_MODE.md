@@ -29,6 +29,21 @@ is optional; an empty scenario is a normal run.
 - They never submit to Game Center.
 - By default they use a throwaway in-memory profile, so nothing touches your real save.
 
+## The DEV menu
+
+In debug builds the main menu has a red **DEV** button (top right). It opens a menu where
+you can:
+
+- **Set up a run:** pick a preset or edit a scenario (seed, god mode, autopilot, time scale,
+  starting speed and lives, power-ups to start with, which obstacles / roadside items /
+  power-ups spawn, throwaway bank and unlocks).
+- **Start Run:** plays the scenario on its own throwaway profile, or on your real one if
+  "Use real profile" is on. Closing the run returns you to the DEV menu.
+- **Edit your real profile:** add $10,000, unlock everything, or reset progress (keeps
+  sound settings). Each asks for confirmation first.
+
+The `-devMenu` launch argument opens the menu on launch.
+
 ## Launching a scenario
 
 The launch arguments skip the menu and start the run straight away:

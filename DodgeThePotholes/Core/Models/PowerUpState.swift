@@ -2,7 +2,7 @@ import Foundation
 import CoreGraphics
 
 /// Discriminates every power-up the engine can activate.
-enum PowerUpType: Equatable {
+enum PowerUpType: Hashable {
     case wrap                    // 15 s — screen-edge wrapping
     case multiplier(Int)         // 30 s — coin multiplier (value = 2 or 3)
     case monsterTruck            // 18 s — invincible, destroys obstacles
