@@ -28,7 +28,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: edu.duke.DodgeThePotholes
         SWIFT_VERSION: "6.0"
         INFOPLIST_FILE: DodgeThePotholes/App/Info.plist
-        DEVELOPMENT_TEAM: ""
+        DEVELOPMENT_TEAM: L986M8KB6K
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: false
         # Silence the "no UIApplicationSceneManifest" warning — SwiftUI lifecycle
