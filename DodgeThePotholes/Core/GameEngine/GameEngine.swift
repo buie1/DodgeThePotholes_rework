@@ -55,7 +55,11 @@ final class GameEngine {
     @ObservationIgnored private let coinPatterns: [TilePattern]
     @ObservationIgnored private let conePatterns: [TilePattern]
     @ObservationIgnored private let drivesOwnLoop: Bool
-    @ObservationIgnored private var rng: AnyRandomGenerator
+    /// One random stream per spawner, so the roll sequence of each never depends on
+    /// which spawner fires first in a frame (and so not on the device's frame rate).
+    @ObservationIgnored private var obstacleRNG: AnyRandomGenerator
+    @ObservationIgnored private var environmentRNG: AnyRandomGenerator
+    @ObservationIgnored private var powerUpRNG: AnyRandomGenerator
 
     @ObservationIgnored private var obstacleSpawnAccumulator: Double = 0
     @ObservationIgnored private var envSpawnAccumulator: Double      = 0
@@ -79,7 +83,8 @@ final class GameEngine {
     ///   - worldSize: World size in world units; see `GameConfig.worldSize(forScreen:)`.
     ///   - carSkin: The player's car.
     ///   - tables: Spawn pools to roll on.
-    ///   - rng: Random source; pass a seeded generator for deterministic tests.
+    ///   - rng: Random source the spawner streams are seeded from; pass a seeded
+    ///     generator for a reproducible road.
     ///   - drivesOwnLoop: `true` to tick on an internal ~60 fps task;
     ///     `false` when the caller calls `update(deltaTime:)` itself.
     init(
@@ -94,7 +99,10 @@ final class GameEngine {
         self.tables = tables
         self.coinPatterns = TilePattern.loadAll(TilePattern.Name.money)
         self.conePatterns = TilePattern.loadAll(TilePattern.Name.cone)
-        self.rng = AnyRandomGenerator(rng)
+        var source = rng
+        self.obstacleRNG    = AnyRandomGenerator(SplitMix64(seed: source.next()))
+        self.environmentRNG = AnyRandomGenerator(SplitMix64(seed: source.next()))
+        self.powerUpRNG     = AnyRandomGenerator(SplitMix64(seed: source.next()))
         self.drivesOwnLoop = drivesOwnLoop
         self.player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin)
     }
@@ -470,12 +478,12 @@ final class GameEngine {
     }
 
     private func spawnObstacle() {
-        switch weightedRandom(tables.obstacles) {
+        switch weightedRandom(tables.obstacles, using: &obstacleRNG) {
         case .single(let type)?:
-            obstacles.append(spawner.obstacle(type, travel: travelDuration, rng: &rng))
+            obstacles.append(spawner.obstacle(type, travel: travelDuration, rng: &obstacleRNG))
         case .conePattern?:
-            guard let pattern = conePatterns.randomElement(using: &rng) else { return }
-            obstacles += spawner.conePattern(pattern, travel: travelDuration, rng: &rng)
+            guard let pattern = conePatterns.randomElement(using: &obstacleRNG) else { return }
+            obstacles += spawner.conePattern(pattern, travel: travelDuration, rng: &obstacleRNG)
             // Hold other obstacles back until the traffic zone has passed.
             obstacleSpawnPause = GameConfig.conePatternPause * travelDuration / GameConfig.startTravelDuration
             obstacleSpawnAccumulator = 0
@@ -486,12 +494,12 @@ final class GameEngine {
     }
 
     private func spawnEnvironment() {
-        switch weightedRandom(tables.environment) {
+        switch weightedRandom(tables.environment, using: &environmentRNG) {
         case .plant?:
-            obstacles.append(spawner.plant(travel: travelDuration, rng: &rng))
+            obstacles.append(spawner.plant(travel: travelDuration, rng: &environmentRNG))
         case .coinPattern?:
-            guard let pattern = coinPatterns.randomElement(using: &rng) else { return }
-            coins += spawner.coinPattern(pattern, travel: travelDuration, rng: &rng)
+            guard let pattern = coinPatterns.randomElement(using: &environmentRNG) else { return }
+            coins += spawner.coinPattern(pattern, travel: travelDuration, rng: &environmentRNG)
         case nil:
             break
         }
@@ -499,21 +507,21 @@ final class GameEngine {
 
     private func spawnPowerUp() {
         let type: PowerUpType
-        switch weightedRandom(tables.powerUps) {
+        switch weightedRandom(tables.powerUps, using: &powerUpRNG) {
         case .powerUp(let chosen)?:
             type = chosen
         case .multiplier?:
-            type = .multiplier(Bool.random(using: &rng) ? 2 : 3)
+            type = .multiplier(Bool.random(using: &powerUpRNG) ? 2 : 3)
         case .phone?:
-            obstacles.append(spawner.obstacle(.textMessage, travel: travelDuration, rng: &rng))
+            obstacles.append(spawner.obstacle(.textMessage, travel: travelDuration, rng: &powerUpRNG))
             return
         case .nothing?, nil:
             return
         }
-        powerUpEntities.append(spawner.powerUp(type, travel: travelDuration, rng: &rng))
+        powerUpEntities.append(spawner.powerUp(type, travel: travelDuration, rng: &powerUpRNG))
     }
 
-    private func weightedRandom<T>(_ pool: [(T, Int)]) -> T? {
+    private func weightedRandom<T>(_ pool: [(T, Int)], using rng: inout AnyRandomGenerator) -> T? {
         let total = pool.reduce(0) { $0 + $1.1 }
         guard total > 0 else { return nil }
         var roll = Int.random(in: 0 ..< total, using: &rng)

@@ -16,6 +16,7 @@
 		06E8AE56CB01B2E5FF320F5A /* money_pattern2.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C497DE4BD3900EE444FAAA5 /* money_pattern2.json */; };
 		09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */; };
 		0EEFD4C2EF94D35CF7FABFCD /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159EAA11EFF1C06577E182D9 /* PowerUp.swift */; };
+		10929E5791A3E28A202ABA3D /* SplitMix64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D37C155D64588A1F5B445 /* SplitMix64.swift */; };
 		118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */; };
 		13D0D57DB173E62A32AD0AA0 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEDBE63ADD3D73DD5085338C /* SettingsViewModel.swift */; };
 		1427FFDF0673225DE95D7F8A /* EntityNodeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */; };
@@ -168,6 +169,7 @@
 		87919EC119F7F54EA67229F2 /* cone_pattern2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cone_pattern2.json; sourceTree = "<group>"; };
 		87A2839F3279837E8E5A64B4 /* hot-pursuit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "hot-pursuit.wav"; sourceTree = "<group>"; };
 		8823CD508FC9765BB862F196 /* Explosion.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Explosion.sks; sourceTree = "<group>"; };
+		8B4D37C155D64588A1F5B445 /* SplitMix64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitMix64.swift; sourceTree = "<group>"; };
 		8B759AEB904FF4B7BDC7EC56 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		91079949E0AE64E60F81967E /* GameConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConfig.swift; sourceTree = "<group>"; };
 		91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModelInputTests.swift; sourceTree = "<group>"; };
@@ -176,7 +178,7 @@
 		97B1D75537D18F110D82B235 /* LeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardView.swift; sourceTree = "<group>"; };
 		98907B4A46A056211D9412D7 /* ShopViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewModel.swift; sourceTree = "<group>"; };
 		9937C7BDA93AF4C8CDA05513 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
-		9A7E8D47CC73B3A7A5630D31 /* pew-pew-lei.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pew-pew-lei.caf"; sourceTree = "<group>"; };
+		9A7E8D47CC73B3A7A5630D31 /* pew-pew-lei.caf */ = {isa = PBXFileReference; path = "pew-pew-lei.caf"; sourceTree = "<group>"; };
 		9AFE4367F246F0DC7C3D6B39 /* car_honk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = car_honk.mp3; sourceTree = "<group>"; };
 		9FEC3285123F99306E99F497 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		A30933A47FB78319DD612D1B /* DodgeThePotholesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DodgeThePotholesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -216,7 +218,7 @@
 		EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewModelTests.swift; sourceTree = "<group>"; };
 		EEDBE63ADD3D73DD5085338C /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		F3DB95C921DFADFDBCA20AE1 /* MenuScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScreen.swift; sourceTree = "<group>"; };
-		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F64EE81291DC53CB8A17F059 /* start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = start.wav; sourceTree = "<group>"; };
 		F7AD4B4913B53B319426FB8E /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
 		FB62D00C5B1F9D8E6D03952C /* explosion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = explosion.mp3; sourceTree = "<group>"; };
@@ -491,6 +493,7 @@
 				D2EAAAB47588F01E88C73032 /* GameEngine.swift */,
 				AB22DABA61FA6B18DE9A036E /* GameEngineDelegate.swift */,
 				0E0E07D893AA06895BD8DE9D /* GameEvent.swift */,
+				8B4D37C155D64588A1F5B445 /* SplitMix64.swift */,
 			);
 			path = GameEngine;
 			sourceTree = "<group>";
@@ -556,6 +559,7 @@
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					A455FBA3C3CC474D6326047D = {
+						DevelopmentTeam = L986M8KB6K;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -691,6 +695,7 @@
 				BB328BECDE95BE966D7948F3 /* ShopItemRow.swift in Sources */,
 				41E0DB98A2FCA7F340C527E3 /* ShopView.swift in Sources */,
 				3332B3A5450D3B0593E714B0 /* ShopViewModel.swift in Sources */,
+				10929E5791A3E28A202ABA3D /* SplitMix64.swift in Sources */,
 				BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */,
 				AEF6ECE1D31DA0B9F8A97FD6 /* SpriteImage.swift in Sources */,
 				2D77CB378556B501B8282156 /* TextMessageLyrics.swift in Sources */,
@@ -755,7 +760,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = WRG4KR8PE8;
+				DEVELOPMENT_TEAM = L986M8KB6K;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = DodgeThePotholes/App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -763,7 +768,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jonbuie.DodgeThePotholes;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.duke.DodgeThePotholes;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -777,7 +782,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = WRG4KR8PE8;
+				DEVELOPMENT_TEAM = L986M8KB6K;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = DodgeThePotholes/App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -785,7 +790,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jonbuie.DodgeThePotholes;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.duke.DodgeThePotholes;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

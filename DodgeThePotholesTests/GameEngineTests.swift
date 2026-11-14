@@ -190,7 +190,36 @@ final class GameEngineTests: XCTestCase {
         XCTAssertEqual(engine.player.lives, GameConfig.beginningLifeCount)
     }
 
+    // MARK: - Seeded runs
+
+    func testSameSeedSpawnsSameRoad() {
+        XCTAssertEqual(spawnedRoad(seed: 7, fps: 60), spawnedRoad(seed: 7, fps: 60))
+        XCTAssertNotEqual(spawnedRoad(seed: 7, fps: 60), spawnedRoad(seed: 8, fps: 60))
+    }
+
+    func testSeededRoadDoesNotDependOnFrameRate() {
+        for seed: UInt64 in 1...20 {
+            XCTAssertEqual(spawnedRoad(seed: seed, fps: 60), spawnedRoad(seed: seed, fps: 120), "seed \(seed)")
+        }
+    }
+
     // MARK: - Helpers
+
+    /// Every plant spawned in the first 29.5 s of a seeded run, as sorted "variant@x" strings.
+    /// Plants sit on the road side, so the idle player never hits one.
+    private func spawnedRoad(seed: UInt64, fps: Double) -> [String] {
+        let tables = SpawnTables(obstacles: [(.single(.plant), 1)], environment: [(.plant, 1)], powerUps: [])
+        let engine = GameEngine(worldSize: world, tables: tables, rng: SplitMix64(seed: seed), drivesOwnLoop: false)
+        engine.start()
+        var seen: [UUID: String] = [:]
+        for _ in 0..<Int(29.5 * fps) {
+            engine.update(deltaTime: 1 / fps)
+            for plant in engine.obstacles where seen[plant.id] == nil {
+                seen[plant.id] = "\(plant.variant)@\(plant.position.x)"
+            }
+        }
+        return seen.values.sorted()
+    }
 
     private func makeEngine(tables: SpawnTables = .none) -> GameEngine {
         let engine = GameEngine(worldSize: world, tables: tables,
@@ -221,19 +250,6 @@ final class GameEngineTests: XCTestCase {
 }
 
 // MARK: - Test doubles
-
-/// Deterministic random generator (SplitMix64).
-struct SplitMix64: RandomNumberGenerator {
-    private var state: UInt64
-    init(seed: UInt64) { state = seed }
-    mutating func next() -> UInt64 {
-        state &+= 0x9E37_79B9_7F4A_7C15
-        var z = state
-        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
-        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
-        return z ^ (z >> 31)
-    }
-}
 
 /// Records every delegate callback for assertions.
 @MainActor
