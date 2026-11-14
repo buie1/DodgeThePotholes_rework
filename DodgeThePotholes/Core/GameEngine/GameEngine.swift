@@ -33,7 +33,7 @@ final class GameEngine {
     /// Timed power-ups currently running, oldest first.
     private(set) var activePowerUps: [PowerUpState] = []
     /// Seconds a newly spawned obstacle takes to cross the screen (legacy `gameSpeed`).
-    private(set) var travelDuration: Double = GameConfig.startTravelDuration
+    private(set) var travelDuration: Double
     /// One-shot visual effects emitted during the most recent `update`.
     private(set) var frameEvents: [GameEvent] = []
 
@@ -51,6 +51,7 @@ final class GameEngine {
     // MARK: - Private state
 
     @ObservationIgnored private let spawner: EntitySpawner
+    @ObservationIgnored private let tuning: GameTuning
     @ObservationIgnored private let tables: SpawnTables
     @ObservationIgnored private let coinPatterns: [TilePattern]
     @ObservationIgnored private let conePatterns: [TilePattern]
@@ -82,7 +83,8 @@ final class GameEngine {
     /// - Parameters:
     ///   - worldSize: World size in world units; see `GameConfig.worldSize(forScreen:)`.
     ///   - carSkin: The player's car.
-    ///   - tables: Spawn pools to roll on.
+    ///   - tuning: Balance values (lives, speed, spawn rates, durations).
+    ///   - tables: Spawn pools to roll on; defaults to `tuning`'s pools.
     ///   - rng: Random source the spawner streams are seeded from; pass a seeded
     ///     generator for a reproducible road.
     ///   - drivesOwnLoop: `true` to tick on an internal ~60 fps task;
@@ -90,13 +92,16 @@ final class GameEngine {
     init(
         worldSize: CGSize,
         carSkin: CarSkin = .blue,
-        tables: SpawnTables = .standard,
+        tuning: GameTuning = .bundled,
+        tables: SpawnTables? = nil,
         rng: some RandomNumberGenerator = SystemRandomNumberGenerator(),
         drivesOwnLoop: Bool = true
     ) {
         self.worldSize = worldSize
         self.spawner = EntitySpawner(world: worldSize)
-        self.tables = tables
+        self.tuning = tuning
+        self.tables = tables ?? tuning.weights
+        self.travelDuration = tuning.speed.startTravelDuration
         self.coinPatterns = TilePattern.loadAll(TilePattern.Name.money)
         self.conePatterns = TilePattern.loadAll(TilePattern.Name.cone)
         var source = rng
@@ -104,7 +109,7 @@ final class GameEngine {
         self.environmentRNG = AnyRandomGenerator(SplitMix64(seed: source.next()))
         self.powerUpRNG     = AnyRandomGenerator(SplitMix64(seed: source.next()))
         self.drivesOwnLoop = drivesOwnLoop
-        self.player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin)
+        self.player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin, lives: tuning.lives.start)
     }
 
     // MARK: - Lifecycle
@@ -112,11 +117,11 @@ final class GameEngine {
     /// Start or restart a session from the initial state.
     /// - Parameters:
     ///   - carSkin: The player's car.
-    ///   - extraLives: Lives added to `GameConfig.beginningLifeCount` (a bought extra life).
+    ///   - extraLives: Lives added to the tuning's starting lives (a bought extra life).
     ///   - hasTank: Whether monster-truck mode shows the tank upgrade.
     func start(carSkin: CarSkin = .blue, extraLives: Int = 0, hasTank: Bool = false) {
         resetState(carSkin: carSkin)
-        player.lives = min(GameConfig.beginningLifeCount + extraLives, GameConfig.maxLifeCount)
+        player.lives = min(tuning.lives.start + extraLives, tuning.lives.max)
         player.hasTank = hasTank
         state = .playing
         startLoop()
@@ -380,7 +385,7 @@ final class GameEngine {
         switch type {
         case .oneUp:
             powerUpEntities[index].isCollected = true
-            guard player.lives < GameConfig.maxLifeCount else { return }
+            guard player.lives < tuning.lives.max else { return }
             player.lives += 1
             delegate?.engine(self, didUpdateLives: player.lives)
             delegate?.engine(self, requestsHaptic: .lifeGained)
@@ -389,21 +394,21 @@ final class GameEngine {
         case .wrap, .multiplier:
             // Already running: the pickup rolls past untouched (legacy).
             guard !isActive(type) else { return }
-            activate(type, duration: type == .wrap ? GameConfig.wrapDuration : GameConfig.multiplierDuration)
+            activate(type, duration: type == .wrap ? tuning.durations.wrap : tuning.durations.multiplier)
 
         case .monsterTruck:
             guard !player.isMonsterTruck else { return }
             player.recoveryRemaining = 0
             player.isMonsterTruck = true
             player.size = GameConfig.monsterTruckSize
-            activate(type, duration: GameConfig.monsterTruckDuration)
+            activate(type, duration: tuning.durations.monsterTruck)
             delegate?.engine(self, didChangePlayerState: player.state)
 
         case .booze:
             // Only a car in normal driving picks up booze (legacy contact rules).
             guard player.state == .normal else { return }
             player.isDrunk = true
-            activate(type, duration: GameConfig.boozeDuration)
+            activate(type, duration: tuning.durations.booze)
             delegate?.engine(self, didChangePlayerState: player.state)
             delegate?.engine(self, didRaiseAlert: .dontDrinkAndDrive)
         }
@@ -447,7 +452,7 @@ final class GameEngine {
         }
 
         // Brief invincibility while the car flashes.
-        player.recoveryRemaining = GameConfig.recoveryDuration
+        player.recoveryRemaining = tuning.durations.recovery
         delegate?.engine(self, didChangePlayerState: player.state)
     }
 
@@ -458,21 +463,21 @@ final class GameEngine {
             obstacleSpawnPause -= dt
         } else {
             obstacleSpawnAccumulator += dt
-            if obstacleSpawnAccumulator >= GameConfig.obstacleSpawnInterval {
-                obstacleSpawnAccumulator -= GameConfig.obstacleSpawnInterval
+            if obstacleSpawnAccumulator >= tuning.spawnIntervals.obstacle {
+                obstacleSpawnAccumulator -= tuning.spawnIntervals.obstacle
                 spawnObstacle()
             }
         }
 
         envSpawnAccumulator += dt
-        if envSpawnAccumulator >= GameConfig.environmentSpawnInterval {
-            envSpawnAccumulator -= GameConfig.environmentSpawnInterval
+        if envSpawnAccumulator >= tuning.spawnIntervals.environment {
+            envSpawnAccumulator -= tuning.spawnIntervals.environment
             spawnEnvironment()
         }
 
         powerUpSpawnAccumulator += dt
-        if powerUpSpawnAccumulator >= GameConfig.powerUpSpawnInterval {
-            powerUpSpawnAccumulator -= GameConfig.powerUpSpawnInterval
+        if powerUpSpawnAccumulator >= tuning.spawnIntervals.powerUp {
+            powerUpSpawnAccumulator -= tuning.spawnIntervals.powerUp
             spawnPowerUp()
         }
     }
@@ -485,7 +490,7 @@ final class GameEngine {
             guard let pattern = conePatterns.randomElement(using: &obstacleRNG) else { return }
             obstacles += spawner.conePattern(pattern, travel: travelDuration, rng: &obstacleRNG)
             // Hold other obstacles back until the traffic zone has passed.
-            obstacleSpawnPause = GameConfig.conePatternPause * travelDuration / GameConfig.startTravelDuration
+            obstacleSpawnPause = tuning.spawnIntervals.conePatternPause * travelDuration / tuning.speed.startTravelDuration
             obstacleSpawnAccumulator = 0
             delegate?.engine(self, didRaiseAlert: .trafficZone)
         case nil:
@@ -536,13 +541,13 @@ final class GameEngine {
 
     private func tickSpeedRamp(dt: Double) {
         speedRampAccumulator += dt
-        guard speedRampAccumulator >= GameConfig.speedRampInterval else { return }
-        speedRampAccumulator -= GameConfig.speedRampInterval
-        travelDuration = max(travelDuration - GameConfig.speedRampStep, GameConfig.minTravelDuration)
+        guard speedRampAccumulator >= tuning.speed.rampInterval else { return }
+        speedRampAccumulator -= tuning.speed.rampInterval
+        travelDuration = max(travelDuration - tuning.speed.rampStep, tuning.speed.minTravelDuration)
     }
 
     private func tickScore(dt: Double) {
-        scoreAccumulator += GameConfig.scoreRatePerSecond * dt
+        scoreAccumulator += tuning.pointsPerSecond * dt
         let earned = Int(scoreAccumulator)
         guard earned > 0 else { return }
         scoreAccumulator -= Double(earned)
@@ -571,7 +576,7 @@ final class GameEngine {
         horns.removeAll()
         activePowerUps.removeAll()
         frameEvents.removeAll()
-        travelDuration              = GameConfig.startTravelDuration
+        travelDuration              = tuning.speed.startTravelDuration
         obstacleSpawnAccumulator    = 0
         envSpawnAccumulator         = 0
         powerUpSpawnAccumulator     = 0
@@ -580,16 +585,16 @@ final class GameEngine {
         obstacleSpawnPause          = 0
         nextTextMessageIndex        = 0
         horizontalInput             = 0
-        player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin)
+        player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin, lives: tuning.lives.start)
     }
 
-    private static func makePlayer(worldSize: CGSize, skin: CarSkin) -> PlayerEntity {
+    private static func makePlayer(worldSize: CGSize, skin: CarSkin, lives: Int) -> PlayerEntity {
         PlayerEntity(
             position: CGPoint(x: 0, y: -worldSize.height / 2 + GameConfig.playerBottomOffset),
             velocity: .zero,
             size:     GameConfig.playerSize,
             carSkin:  skin,
-            lives:    GameConfig.beginningLifeCount
+            lives:    lives
         )
     }
 }

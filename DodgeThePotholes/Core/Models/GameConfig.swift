@@ -1,7 +1,8 @@
 import Foundation
 
-/// Central configuration for all game constants.
+/// Fixed game constants: world geometry, sizes, controls and IDs.
 /// Replaces the scattered global `let` values in legacy GlobalConstants.swift.
+/// Balance values (lives, speed, spawn rates, durations) live in `GameTuning`.
 ///
 /// All sizes and positions are in **world units**. The legacy game ran in a
 /// fixed 750 × 1334 scene, so the world is always 750 units wide and as tall
@@ -46,34 +47,6 @@ enum GameConfig {
     /// Game Center leaderboard ID. Must match the leaderboard set up in App Store Connect.
     static let leaderboardID = "dodgethepotholes.highscore"
 
-    // MARK: - Lives
-
-    static let beginningLifeCount: Int = 3
-    static let maxLifeCount: Int       = 4
-
-    // MARK: - Scoring
-
-    /// Score points awarded per second of survival (legacy: +1 per frame at 60 fps).
-    static let scoreRatePerSecond: Double = 60
-
-    // MARK: - Speed ramp
-    // Legacy `gameSpeed`: the seconds an obstacle takes to cross the screen.
-
-    /// Starting travel duration (seconds to cross the full world height).
-    static let startTravelDuration: Double = 2.0
-    /// Fastest the game ever gets.
-    static let minTravelDuration: Double   = 0.2
-    /// How often (seconds) the travel duration steps down.
-    static let speedRampInterval: Double   = 10.0
-    /// How much the travel duration decreases each ramp step.
-    static let speedRampStep: Double       = 0.1
-
-    // MARK: - Spawn intervals (seconds between spawns)
-
-    static let obstacleSpawnInterval: Double    = 1.75
-    static let environmentSpawnInterval: Double = 1.0
-    static let powerUpSpawnInterval: Double     = 5.0
-
     // MARK: - Spawn X ranges (fraction of world width, legacy GlobalConstants)
 
     /// Potholes and black ice spawn within ±this fraction of the width.
@@ -95,8 +68,6 @@ enum GameConfig {
     static let coneTileSize = CGSize(width: 40, height: 40)
     /// Patterns taller than this many rows travel proportionally slower (legacy `minRows`).
     static let patternBaseRows: Int = 9
-    /// Seconds (at start speed) the obstacle spawner pauses for a cone pattern.
-    static let conePatternPause: Double = 25
 
     // MARK: - Horn
 
@@ -111,18 +82,6 @@ enum GameConfig {
 
     /// Seconds a scared or dying pedestrian takes for its reaction (legacy `runAway` duration).
     static let fleeDuration: Double = 2.0
-
-    // MARK: - Powerup durations (seconds)
-
-    static let wrapDuration: Double         = 15
-    static let multiplierDuration: Double   = 30
-    static let monsterTruckDuration: Double = 18
-    static let boozeDuration: Double        = 15
-
-    // MARK: - Recovery (post-collision invincibility, seconds)
-
-    /// Legacy flash: 8 × (0.3 s fade out + 0.3 s fade in).
-    static let recoveryDuration: Double = 4.8
 
     // MARK: - Shop costs
     // Note: car and song intentionally share the same price (500),
@@ -140,39 +99,6 @@ enum GameConfig {
     /// Number of lyric lines shown in order before wrapping back to the first.
     /// (Legacy wrapped at 57 and never showed its 58th line.)
     static var textMessageCount: Int { TextMessageLyrics.lines.count }
-
-    // MARK: - Spawn tables
-
-    /// Obstacle pool mirroring the legacy `possibleObstacles` array
-    /// (its "coin" entries fell through to pothole, hence 7).
-    static let obstacleWeights: [(ObstacleSpawn, Int)] = [
-        (.single(.pothole),   7),
-        (.single(.human),     4),
-        (.single(.dog),       3),
-        (.single(.movingCar), 3),
-        (.single(.blackIce),  3),
-        (.single(.policeCar), 2),
-        (.single(.ambulance), 2),
-        (.conePattern,        1),
-    ]
-
-    /// Environment pool (legacy: 9 in 10 plant, otherwise a coin pattern).
-    static let environmentWeights: [(EnvSpawnType, Int)] = [
-        (.plant,       9),
-        (.coinPattern, 1),
-    ]
-
-    /// Power-up pool. Reproduces the odds the legacy `addPowerUp()` actually
-    /// produced (it re-rolled the die in every `else if`), as an explicit table.
-    static let powerUpWeights: [(PowerUpSpawn, Int)] = [
-        (.powerUp(.oneUp),        14),
-        (.powerUp(.monsterTruck), 13),
-        (.powerUp(.wrap),         12),
-        (.multiplier,             10),
-        (.phone,                   9),
-        (.powerUp(.booze),         8),
-        (.nothing,                34),
-    ]
 }
 
 /// One roll of the obstacle spawner.

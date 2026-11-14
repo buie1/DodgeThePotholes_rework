@@ -36,6 +36,26 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(grid[0, pattern.numRows - 1], pattern.tiles[0][0] == 0 ? nil : pattern.tiles[0][0])
     }
 
+    func testBundledTuningKeepsLegacyBalance() throws {
+        let tuning = try GameTuning.load()
+        XCTAssertEqual(tuning.lives.start, 3)
+        XCTAssertEqual(tuning.lives.max, 4)
+        XCTAssertEqual(tuning.pointsPerSecond, 60)
+        XCTAssertEqual(tuning.speed.startTravelDuration, 2.0)
+        XCTAssertEqual(tuning.speed.minTravelDuration, 0.2)
+        XCTAssertEqual(tuning.spawnIntervals.obstacle, 1.75)
+        XCTAssertEqual(tuning.durations.recovery, 4.8)
+        XCTAssertEqual(tuning.weights.obstacles.first?.0, .single(.pothole))
+        XCTAssertEqual(tuning.weights.obstacles.map(\.1).reduce(0, +), 25)
+        XCTAssertEqual(tuning.weights.powerUps.map(\.1).reduce(0, +), 100)
+        XCTAssertEqual(tuning.weights.powerUps.last?.0, .nothing)
+    }
+
+    func testUnknownSpawnNameFailsToDecode() {
+        let json = #"{ "obstacles": [{ "spawn": "meteor", "weight": 1 }], "environment": [], "powerUps": [] }"#
+        XCTAssertThrowsError(try JSONDecoder().decode(SpawnTables.self, from: Data(json.utf8)))
+    }
+
     func testPixelFontIsRegistered() {
         XCTAssertNotNil(UIFont(name: "PressStart2P", size: 12))
     }

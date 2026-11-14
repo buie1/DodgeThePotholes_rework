@@ -65,7 +65,7 @@ final class GameEngineTests: XCTestCase {
         engine.insert(obstacle(.textMessage, at: hitPoint))
         engine.update(deltaTime: 0.016)
 
-        XCTAssertEqual(engine.player.lives, GameConfig.beginningLifeCount)
+        XCTAssertEqual(engine.player.lives, GameTuning.bundled.lives.start)
         XCTAssertEqual(recorder.lyricIndices, [0, 1])
         XCTAssertTrue(recorder.sounds.contains(.textTone))
         XCTAssertFalse(recorder.sounds.contains(.crash))
@@ -115,12 +115,12 @@ final class GameEngineTests: XCTestCase {
 
         engine.insert(obstacle(.pothole, at: hitPoint))
         engine.update(deltaTime: 0.016)
-        XCTAssertEqual(engine.player.lives, GameConfig.beginningLifeCount)
+        XCTAssertEqual(engine.player.lives, GameTuning.bundled.lives.start)
         XCTAssertTrue(engine.obstacles.isEmpty)
         XCTAssertEqual(engine.frameEvents.count, 1)
         XCTAssertTrue(recorder.sounds.contains(.explosion))
 
-        step(engine, GameConfig.monsterTruckDuration)
+        step(engine, GameTuning.bundled.durations.monsterTruck)
         XCTAssertFalse(engine.player.isMonsterTruck)
         XCTAssertEqual(engine.player.size, GameConfig.playerSize)
     }
@@ -187,7 +187,7 @@ final class GameEngineTests: XCTestCase {
         XCTAssertEqual(dog.phase, .fleeing)
         XCTAssertEqual(dog.facing, -1)
         XCTAssertTrue(engine.horns.isEmpty, "horn is used up by the hit")
-        XCTAssertEqual(engine.player.lives, GameConfig.beginningLifeCount)
+        XCTAssertEqual(engine.player.lives, GameTuning.bundled.lives.start)
     }
 
     // MARK: - Seeded runs

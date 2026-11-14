@@ -42,7 +42,7 @@ final class GameViewModel: GameEngineDelegate {
 
     private(set) var score: Int  = 0
     private(set) var money: Int  = 0
-    private(set) var lives: Int  = GameConfig.beginningLifeCount
+    private(set) var lives: Int
     private(set) var highScore: Int
     private(set) var playerState: PlayerState = .normal
     private(set) var isDrunkMode: Bool = false
@@ -80,6 +80,8 @@ final class GameViewModel: GameEngineDelegate {
     private let persistence:   any PersistenceServiceProtocol
     private let motionService: any MotionServiceProtocol
     private let leaderboard:   any LeaderboardServiceProtocol
+    /// Balance values each run's engine is built with.
+    private let tuning: GameTuning
 
     // MARK: - Steering input
 
@@ -96,18 +98,22 @@ final class GameViewModel: GameEngineDelegate {
     ///   - persistence: Saved progress; supplies the car, song, sound
     ///     settings and shop upgrades, and banks each run's earnings.
     ///   - leaderboard: Receives each finished run's score.
+    ///   - tuning: Balance values for each run's engine.
     init(
         persistence: any PersistenceServiceProtocol,
         audio:  any AudioServiceProtocol  = AudioService(),
         haptics: any HapticServiceProtocol = HapticService(),
         motion:  any MotionServiceProtocol = MotionService(),
-        leaderboard: any LeaderboardServiceProtocol = GameCenterLeaderboardService()
+        leaderboard: any LeaderboardServiceProtocol = GameCenterLeaderboardService(),
+        tuning: GameTuning = .bundled
     ) {
         self.persistence   = persistence
         self.audioService  = audio
         self.hapticService = haptics
         self.motionService = motion
         self.leaderboard   = leaderboard
+        self.tuning        = tuning
+        lives     = tuning.lives.start
         highScore = persistence.highScore
     }
 
@@ -126,7 +132,7 @@ final class GameViewModel: GameEngineDelegate {
     func startGame(screenSize: CGSize) {
         let carSkin = persistence.selectedCar
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
-        let eng = GameEngine(worldSize: worldSize, carSkin: carSkin, drivesOwnLoop: false)
+        let eng = GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning, drivesOwnLoop: false)
         eng.delegate = self
         engine = eng
         scene = GameRenderScene(engine: eng)
@@ -134,7 +140,7 @@ final class GameViewModel: GameEngineDelegate {
         // Reset HUD
         score            = 0
         money            = 0
-        lives            = GameConfig.beginningLifeCount
+        lives            = tuning.lives.start
         isDrunkMode      = false
         textMessageIndex = nil
         activeAlert      = nil

@@ -43,12 +43,12 @@ final class GameViewModelPersistenceTests: XCTestCase {
     func testExtraLifeIsUsedForOneRunOnly() {
         persistence.extraLifePending = true
         viewModel.startGame(screenSize: screen)
-        XCTAssertEqual(viewModel.lives, GameConfig.beginningLifeCount + 1)
-        XCTAssertEqual(viewModel.engine?.player.lives, GameConfig.beginningLifeCount + 1)
+        XCTAssertEqual(viewModel.lives, GameTuning.bundled.lives.start + 1)
+        XCTAssertEqual(viewModel.engine?.player.lives, GameTuning.bundled.lives.start + 1)
         XCTAssertFalse(persistence.extraLifePending)
 
         viewModel.startGame(screenSize: screen)
-        XCTAssertEqual(viewModel.lives, GameConfig.beginningLifeCount)
+        XCTAssertEqual(viewModel.lives, GameTuning.bundled.lives.start)
     }
 
     func testTankIsPassedToThePlayer() {

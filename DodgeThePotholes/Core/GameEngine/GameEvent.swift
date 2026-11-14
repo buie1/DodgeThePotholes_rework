@@ -32,11 +32,8 @@ struct SpawnTables {
     var environment: [(EnvSpawnType, Int)]
     var powerUps: [(PowerUpSpawn, Int)]
 
-    static let standard = SpawnTables(
-        obstacles: GameConfig.obstacleWeights,
-        environment: GameConfig.environmentWeights,
-        powerUps: GameConfig.powerUpWeights
-    )
+    /// The pools from the bundled `tuning.json`.
+    static var standard: SpawnTables { GameTuning.bundled.weights }
 
     /// Spawns nothing. Useful for tests that place entities by hand.
     static let none = SpawnTables(obstacles: [], environment: [], powerUps: [])

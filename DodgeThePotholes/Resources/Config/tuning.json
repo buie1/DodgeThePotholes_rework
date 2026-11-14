@@ -1,0 +1,48 @@
+{
+  "lives": { "start": 3, "max": 4 },
+  "pointsPerSecond": 60,
+  "speed": {
+    "startTravelDuration": 2.0,
+    "minTravelDuration": 0.2,
+    "rampInterval": 10.0,
+    "rampStep": 0.1
+  },
+  "spawnIntervals": {
+    "obstacle": 1.75,
+    "environment": 1.0,
+    "powerUp": 5.0,
+    "conePatternPause": 25
+  },
+  "durations": {
+    "wrap": 15,
+    "multiplier": 30,
+    "monsterTruck": 18,
+    "booze": 15,
+    "recovery": 4.8
+  },
+  "weights": {
+    "obstacles": [
+      { "spawn": "pothole",     "weight": 7 },
+      { "spawn": "human",       "weight": 4 },
+      { "spawn": "dog",         "weight": 3 },
+      { "spawn": "movingCar",   "weight": 3 },
+      { "spawn": "blackIce",    "weight": 3 },
+      { "spawn": "policeCar",   "weight": 2 },
+      { "spawn": "ambulance",   "weight": 2 },
+      { "spawn": "conePattern", "weight": 1 }
+    ],
+    "environment": [
+      { "spawn": "plant",       "weight": 9 },
+      { "spawn": "coinPattern", "weight": 1 }
+    ],
+    "powerUps": [
+      { "spawn": "oneUp",        "weight": 14 },
+      { "spawn": "monsterTruck", "weight": 13 },
+      { "spawn": "wrap",         "weight": 12 },
+      { "spawn": "multiplier",   "weight": 10 },
+      { "spawn": "phone",        "weight": 9 },
+      { "spawn": "booze",        "weight": 8 },
+      { "spawn": "nothing",      "weight": 34 }
+    ]
+  }
+}

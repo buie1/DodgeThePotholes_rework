@@ -47,7 +47,7 @@ DodgeThePotholes/
   App/          entry point
   Core/         GameEngine, Models (+ SwiftData), Rendering (SpriteKit), Services
   UI/           view models, Views, Components, Theme
-  Resources/    sprites, audio, fonts, tile patterns
+  Resources/    sprites, audio, fonts, tile patterns, Config/tuning.json (balance values)
 DodgeThePotholesTests/
 ```
 
