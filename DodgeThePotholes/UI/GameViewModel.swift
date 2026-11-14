@@ -86,6 +86,8 @@ final class GameViewModel: GameEngineDelegate {
     #if DEBUG
     /// Dev-mode setup applied to each run; `nil` for normal play.
     @ObservationIgnored var devScenario: DevScenario?
+    /// The seed of the current dev run, to replay its road.
+    @ObservationIgnored private(set) var devSeed: UInt64?
     #endif
 
     // MARK: - Steering input
@@ -139,6 +141,13 @@ final class GameViewModel: GameEngineDelegate {
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
         let eng = makeEngine(worldSize: worldSize, carSkin: carSkin)
         eng.delegate = self
+        #if DEBUG
+        if let devScenario, let devSeed {
+            // Log the dev run, forwarding every callback on to this view model.
+            DevEventLog.shared.beginRun(devScenario, seed: devSeed, forwardingTo: self)
+            eng.delegate = DevEventLog.shared
+        }
+        #endif
         engine = eng
         scene = GameRenderScene(engine: eng)
 
@@ -169,7 +178,7 @@ final class GameViewModel: GameEngineDelegate {
         let extraLives = persistence.consumeExtraLife() ? 1 : 0
         eng.start(carSkin: carSkin, extraLives: extraLives, hasTank: persistence.hasTank)
         #if DEBUG
-        if let devScenario { apply(devScenario, to: eng) }
+        devScenario?.apply(to: eng)
         #endif
         lives = eng.player.lives
     }
@@ -177,11 +186,11 @@ final class GameViewModel: GameEngineDelegate {
     /// A fresh engine for one run, set up by the dev scenario when there is one.
     private func makeEngine(worldSize: CGSize, carSkin: CarSkin) -> GameEngine {
         #if DEBUG
+        devSeed = nil
         if let devScenario {
-            return GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning,
-                              tables: devScenario.spawnTables(base: tuning.weights),
-                              rng: SplitMix64(seed: devScenario.seed ?? .random(in: .min ... .max)),
-                              drivesOwnLoop: false)
+            let (engine, seed) = devScenario.makeEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning)
+            devSeed = seed
+            return engine
         }
         #endif
         return GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning, drivesOwnLoop: false)
@@ -204,17 +213,6 @@ final class GameViewModel: GameEngineDelegate {
         return true
         #endif
     }
-
-    #if DEBUG
-    /// Applies a dev scenario's in-run setup to a just-started engine.
-    private func apply(_ scenario: DevScenario, to engine: GameEngine) {
-        engine.debug.godMode = scenario.godMode
-        engine.debug.timeScale = scenario.timeScale
-        if let elapsed = scenario.startElapsed { engine.fastForwardSpeedRamp(by: elapsed) }
-        if let lives = scenario.lives { engine.setLives(lives) }
-        scenario.startPowerUps.forEach(engine.activatePowerUp)
-    }
-    #endif
 
     func pauseGame() {
         engine?.pause()

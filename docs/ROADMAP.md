@@ -9,7 +9,7 @@ Approved 2026-11-13 after a design interview. Each item ships one step at a time
 | Item | Status |
 |------|--------|
 | #0 Shared groundwork | ✅ Done: seeded RNG (`44798f8`), tuning JSON (`ba08e27`), catalog JSON (`15a10d5`) |
-| Dev mode and test hooks | 🚧 In progress (see `docs/DEV_MODE.md` once written) |
+| Dev mode and test hooks | 🚧 In progress: D0–D2 done (scenarios, autopilot, `scripts/dev-run.sh`; see `docs/DEV_MODE.md`), D3–D4 (DEV menu, in-run overlay) next |
 | #1–#11 | Not started; paused until dev mode lands |
 
 ## Decisions

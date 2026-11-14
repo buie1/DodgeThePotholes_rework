@@ -45,6 +45,10 @@ and [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md).
 What's next for the game (features, monetization, launch) is tracked in
 [docs/ROADMAP.md](docs/ROADMAP.md).
 
+To test a specific situation (god mode, a chosen seed, a power-up from the start, an
+autopilot run in the simulator with screenshots and an event log), see
+[docs/DEV_MODE.md](docs/DEV_MODE.md).
+
 ```
 DodgeThePotholes/
   App/          entry point

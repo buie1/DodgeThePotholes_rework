@@ -24,6 +24,8 @@ struct DevScenario {
     var godMode = false
     /// Simulation speed: `0.5` is slow motion, `2` is double speed.
     var timeScale: Double = 1
+    /// A bot drives (see `Autopilot`), for unattended runs.
+    var autopilot = false
     /// Bank balance for the throwaway profile.
     var bank: Int?
     /// Owns every shop item on the throwaway profile.
@@ -37,6 +39,29 @@ struct DevScenario {
         SpawnTables(obstacles: obstacles ?? base.obstacles,
                     environment: environment ?? base.environment,
                     powerUps: powerUps ?? base.powerUps)
+    }
+
+    /// A fresh engine for one run of this scenario, and the seed it uses
+    /// (`seed`, or a random one) so the road can be replayed.
+    @MainActor
+    func makeEngine(worldSize: CGSize, carSkin: CarSkin = GameCatalog.bundled.defaultCar,
+                    tuning: GameTuning = .bundled) -> (engine: GameEngine, seed: UInt64) {
+        let seed = seed ?? .random(in: .min ... .max)
+        let engine = GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning,
+                                tables: spawnTables(base: tuning.weights),
+                                rng: SplitMix64(seed: seed), drivesOwnLoop: false)
+        return (engine, seed)
+    }
+
+    /// Applies the in-run setup to a just-started engine.
+    @MainActor
+    func apply(to engine: GameEngine) {
+        engine.debug.godMode = godMode
+        engine.debug.timeScale = timeScale
+        engine.debug.autopilot = autopilot ? Autopilot() : nil
+        if let startElapsed { engine.fastForwardSpeedRamp(by: startElapsed) }
+        if let lives { engine.setLives(lives) }
+        startPowerUps.forEach(engine.activatePowerUp)
     }
 }
 
@@ -79,7 +104,14 @@ extension DevScenario {
 
     /// The scenario named by `-devScenario <preset>` or given inline by
     /// `-devScenarioJSON '<json>'`, or `nil` when neither is present.
+    /// `-devAutopilot` turns the autopilot on for either.
     static func fromLaunchArguments(_ arguments: [String]) throws -> DevScenario? {
+        var scenario = try scenario(fromArguments: arguments)
+        if arguments.contains("-devAutopilot") { scenario?.autopilot = true }
+        return scenario
+    }
+
+    private static func scenario(fromArguments arguments: [String]) throws -> DevScenario? {
         func value(after flag: String) throws -> String? {
             guard let index = arguments.firstIndex(of: flag) else { return nil }
             guard arguments.indices.contains(index + 1) else { throw LaunchError.missingValue(flag) }
@@ -103,7 +135,7 @@ extension DevScenario {
 extension DevScenario: Decodable {
     private enum CodingKeys: String, CodingKey {
         case seed, obstacles, environment, powerUps, startElapsed, startPowerUps
-        case lives, godMode, timeScale, bank, unlockAll, useRealProfile
+        case lives, godMode, timeScale, autopilot, bank, unlockAll, useRealProfile
     }
 
     struct UnknownPowerUp: Error {
@@ -128,6 +160,7 @@ extension DevScenario: Decodable {
             lives: try c.decodeIfPresent(Int.self, forKey: .lives),
             godMode: try c.decodeIfPresent(Bool.self, forKey: .godMode) ?? false,
             timeScale: try c.decodeIfPresent(Double.self, forKey: .timeScale) ?? 1,
+            autopilot: try c.decodeIfPresent(Bool.self, forKey: .autopilot) ?? false,
             bank: try c.decodeIfPresent(Int.self, forKey: .bank),
             unlockAll: try c.decodeIfPresent(Bool.self, forKey: .unlockAll) ?? false,
             useRealProfile: try c.decodeIfPresent(Bool.self, forKey: .useRealProfile) ?? false

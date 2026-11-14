@@ -34,6 +34,8 @@ final class GameEngine {
     private(set) var activePowerUps: [PowerUpState] = []
     /// Seconds a newly spawned obstacle takes to cross the screen (legacy `gameSpeed`).
     private(set) var travelDuration: Double
+    /// Seconds of play this run (excludes pauses).
+    private(set) var elapsed: Double = 0
     /// One-shot visual effects emitted during the most recent `update`.
     private(set) var frameEvents: [GameEvent] = []
 
@@ -191,6 +193,10 @@ final class GameEngine {
 
     /// One simulation step of at most 50 ms.
     private func step(dt: Double) {
+        #if DEBUG
+        if let autopilot = debug.autopilot { drive(with: autopilot) }
+        #endif
+        elapsed += dt
         updatePlayer(dt: dt)
         moveEntities(dt: dt)
         updateHorns(dt: dt)
@@ -604,6 +610,7 @@ final class GameEngine {
         activePowerUps.removeAll()
         frameEvents.removeAll()
         travelDuration              = tuning.speed.startTravelDuration
+        elapsed                     = 0
         obstacleSpawnAccumulator    = 0
         envSpawnAccumulator         = 0
         powerUpSpawnAccumulator     = 0
@@ -649,6 +656,15 @@ extension GameEngine {
         var godMode = false
         /// Simulation speed: `0.5` is slow motion, `2` is double speed.
         var timeScale: Double = 1
+        /// Steers (and honks) instead of the player when set.
+        var autopilot: Autopilot?
+    }
+
+    /// Feeds the autopilot's decision through the normal steering and horn inputs.
+    private func drive(with autopilot: Autopilot) {
+        let decision = autopilot.decide(player: player, obstacles: obstacles, worldWidth: worldSize.width)
+        horizontalInput = decision.input
+        if decision.honk && horns.isEmpty { honk() }
     }
 
     /// Spawns `spawn` now, as if the obstacle spawner had rolled it.
