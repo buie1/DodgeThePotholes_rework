@@ -35,6 +35,20 @@
                ReferencedContainer = "container:DodgeThePotholes.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "349E0B7D321B9F2D7C03F936"
+               BuildableName = "DodgeThePotholesUITests.xctest"
+               BlueprintName = "DodgeThePotholesUITests"
+               ReferencedContainer = "container:DodgeThePotholes.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -61,6 +75,17 @@
                BlueprintIdentifier = "36C105F33FF91B871E966371"
                BuildableName = "DodgeThePotholesTests.xctest"
                BlueprintName = "DodgeThePotholesTests"
+               ReferencedContainer = "container:DodgeThePotholes.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "349E0B7D321B9F2D7C03F936"
+               BuildableName = "DodgeThePotholesUITests.xctest"
+               BlueprintName = "DodgeThePotholesUITests"
                ReferencedContainer = "container:DodgeThePotholes.xcodeproj">
             </BuildableReference>
          </TestableReference>

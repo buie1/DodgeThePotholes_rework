@@ -182,6 +182,9 @@ final class GameEngine {
         let isMissile = player.isMonsterTruck
         horns.append(spawner.horn(from: player.position, isMissile: isMissile))
         delegate?.engine(self, requestsSound: isMissile ? .pewPew : .carHonk)
+        #if DEBUG
+        debug.honks += 1
+        #endif
     }
 
     // MARK: - Simulation step
@@ -772,6 +775,9 @@ extension GameEngine {
         var timeScale: Double = 1
         /// Steers (and honks) instead of the player when set.
         var autopilot: Autopilot?
+        /// Honks this run, shown in the DEV panel readout so UI tests can tell a tap
+        /// on the panel from a tap on the road.
+        var honks = 0
     }
 
     /// Feeds the autopilot's decision through the normal steering and horn inputs.

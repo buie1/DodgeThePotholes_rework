@@ -95,6 +95,7 @@ struct DevButton: View {
                 .background(Capsule().fill(Color.red.opacity(0.85)))
         }
         .accessibilityLabel("Developer mode")
+        .accessibilityIdentifier("dev.button")
     }
 }
 

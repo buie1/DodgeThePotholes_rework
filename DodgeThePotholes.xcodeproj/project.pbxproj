@@ -12,6 +12,7 @@
 		02B76A6AABF35CDE43DCCEB9 /* car_honk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9AFE4367F246F0DC7C3D6B39 /* car_honk.mp3 */; };
 		02DBB0BAFA9DDD3FD209D774 /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97B1D75537D18F110D82B235 /* LeaderboardView.swift */; };
 		038A19CF9B7BC9A139090404 /* TextMessageOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1325C00EBECD4E09CF876C13 /* TextMessageOverlayView.swift */; };
+		044058B271B41079D2012984 /* DevModeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB25F4ACD8F538E1C1791A /* DevModeUITests.swift */; };
 		04569D019A0E4B4DE944A0C0 /* LeaderboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B34DAEE5C425B8A59CF4568 /* LeaderboardEntry.swift */; };
 		053AA5E93A9D6F3476CD53D5 /* GameCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BD70365F8105272919F8A8 /* GameCatalog.swift */; };
 		0629E177C6F5FF2654E30C2E /* DevMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F58D92CA559D11917C4717 /* DevMenuViewModel.swift */; };
@@ -144,6 +145,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C6520FCCA43DD4F0475F27FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9E743677374AEDB606F3DC22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A455FBA3C3CC474D6326047D;
+			remoteInfo = DodgeThePotholes;
+		};
 		DC3786AEB2D48DD48351862B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9E743677374AEDB606F3DC22 /* Project object */;
@@ -184,6 +192,7 @@
 		31F46F0C5BE23EA35DC50D98 /* HapticPatternTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPatternTests.swift; sourceTree = "<group>"; };
 		36BD70365F8105272919F8A8 /* GameCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
 		37ECF6E6F884D64E311AF977 /* dog_wimper.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dog_wimper.mp3; sourceTree = "<group>"; };
+		383508118F1A7A3120CB8CB0 /* DodgeThePotholesUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DodgeThePotholesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		389E96CFDB3CAA46E9005EAA /* TextMessageLyrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMessageLyrics.swift; sourceTree = "<group>"; };
 		3A6158693C96912A463D4BDC /* ComboMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComboMeterView.swift; sourceTree = "<group>"; };
 		3A81341E67EC2645EC447D6B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
@@ -250,6 +259,7 @@
 		B05D887BB1B8707054EED7EE /* DrunkGogglesOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrunkGogglesOverlay.swift; sourceTree = "<group>"; };
 		B2117657443EDAACD0D935FD /* Obstacle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
 		B25D65C913261D3A351C0444 /* SpeedFeelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedFeelTests.swift; sourceTree = "<group>"; };
+		B2FB25F4ACD8F538E1C1791A /* DevModeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevModeUITests.swift; sourceTree = "<group>"; };
 		B33D5585DBEFEA579129409D /* ResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceTests.swift; sourceTree = "<group>"; };
 		B6174851FD947D07571C9E86 /* PersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceServiceTests.swift; sourceTree = "<group>"; };
 		B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevOverlayTests.swift; sourceTree = "<group>"; };
@@ -462,6 +472,7 @@
 			children = (
 				EF006AC7994D336B4A600B01 /* DodgeThePotholes */,
 				7709047DE5E62B7300D658ED /* DodgeThePotholesTests */,
+				FFEFF127BB26314F61094BE1 /* DodgeThePotholesUITests */,
 				423FBA2579C21976BDCE30F6 /* Frameworks */,
 				BD9F80C0F1DDB73C00FC1E2A /* Products */,
 			);
@@ -552,6 +563,7 @@
 			children = (
 				F508B4226498081E7697C47A /* DodgeThePotholes.app */,
 				A30933A47FB78319DD612D1B /* DodgeThePotholesTests.xctest */,
+				383508118F1A7A3120CB8CB0 /* DodgeThePotholesUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -651,9 +663,35 @@
 			path = DodgeThePotholes;
 			sourceTree = "<group>";
 		};
+		FFEFF127BB26314F61094BE1 /* DodgeThePotholesUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B2FB25F4ACD8F538E1C1791A /* DevModeUITests.swift */,
+			);
+			path = DodgeThePotholesUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		349E0B7D321B9F2D7C03F936 /* DodgeThePotholesUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82A7F0F158AFA258BECF3588 /* Build configuration list for PBXNativeTarget "DodgeThePotholesUITests" */;
+			buildPhases = (
+				DD0683172602777DE4E8E88F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EAC0CFF2F21041B63F94F75A /* PBXTargetDependency */,
+			);
+			name = DodgeThePotholesUITests;
+			packageProductDependencies = (
+			);
+			productName = DodgeThePotholesUITests;
+			productReference = 383508118F1A7A3120CB8CB0 /* DodgeThePotholesUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		36C105F33FF91B871E966371 /* DodgeThePotholesTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5C773A019B40B1EA98E74D2E /* Build configuration list for PBXNativeTarget "DodgeThePotholesTests" */;
@@ -700,6 +738,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
+					349E0B7D321B9F2D7C03F936 = {
+						TestTargetID = A455FBA3C3CC474D6326047D;
+					};
 					A455FBA3C3CC474D6326047D = {
 						DevelopmentTeam = L986M8KB6K;
 						ProvisioningStyle = Automatic;
@@ -722,6 +763,7 @@
 			targets = (
 				A455FBA3C3CC474D6326047D /* DodgeThePotholes */,
 				36C105F33FF91B871E966371 /* DodgeThePotholesTests */,
+				349E0B7D321B9F2D7C03F936 /* DodgeThePotholesUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -795,6 +837,14 @@
 				38C98A369705617FA69FF98B /* SettingsViewModelTests.swift in Sources */,
 				A2C5D092CFBD89286FF8FE89 /* ShopViewModelTests.swift in Sources */,
 				8871CBD05AF527F00043B187 /* SpeedFeelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0683172602777DE4E8E88F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				044058B271B41079D2012984 /* DevModeUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -888,6 +938,11 @@
 			isa = PBXTargetDependency;
 			target = A455FBA3C3CC474D6326047D /* DodgeThePotholes */;
 			targetProxy = DC3786AEB2D48DD48351862B /* PBXContainerItemProxy */;
+		};
+		EAC0CFF2F21041B63F94F75A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A455FBA3C3CC474D6326047D /* DodgeThePotholes */;
+			targetProxy = C6520FCCA43DD4F0475F27FE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1033,6 +1088,25 @@
 			};
 			name = Release;
 		};
+		8EDF1E039C644C271FA6CB19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jonbuie.dodgethepotholes.app.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = DodgeThePotholes;
+			};
+			name = Debug;
+		};
 		A9D620F26FB378EB9ABEC808 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1099,6 +1173,25 @@
 			};
 			name = Debug;
 		};
+		B916CBECB41BDF256F8404F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jonbuie.dodgethepotholes.app.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = DodgeThePotholes;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1107,6 +1200,15 @@
 			buildConfigurations = (
 				0E5A890AD1A0E8F6C63DD323 /* Debug */,
 				29BB5F8F75CB0144FAE36E63 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		82A7F0F158AFA258BECF3588 /* Build configuration list for PBXNativeTarget "DodgeThePotholesUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8EDF1E039C644C271FA6CB19 /* Debug */,
+				B916CBECB41BDF256F8404F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

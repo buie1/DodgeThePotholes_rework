@@ -68,15 +68,32 @@ targets:
     dependencies:
       - target: DodgeThePotholes
 
+  DodgeThePotholesUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: DodgeThePotholesUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jonbuie.dodgethepotholes.app.uitests
+        GENERATE_INFOPLIST_FILE: true
+        SWIFT_VERSION: "6.0"
+        TEST_TARGET_NAME: DodgeThePotholes
+    dependencies:
+      - target: DodgeThePotholes
+
 schemes:
   DodgeThePotholes:
     build:
       targets:
         DodgeThePotholes: all
         DodgeThePotholesTests: [test]
+        DodgeThePotholesUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
         - DodgeThePotholesTests
+        - DodgeThePotholesUITests

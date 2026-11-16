@@ -114,6 +114,7 @@ private struct DevReadout: View {
             Text(text)
                 .monospacedDigit()
                 .foregroundStyle(.white.opacity(0.85))
+                .accessibilityIdentifier("dev.readout")
         }
     }
 
@@ -121,8 +122,9 @@ private struct DevReadout: View {
         guard let engine = viewModel.engine else { return "" }
         let fps = Int(viewModel.scene?.debugFPS ?? 0)
         let seed = viewModel.devSeed.map(String.init) ?? "random"
-        return String(format: "t %.1fs · travel %.2fs · x%d (%d) · %d fps · seed %@",
-                      engine.elapsed, engine.travelDuration, engine.combo.multiplier, engine.combo.chain, fps, seed)
+        return String(format: "t %.1fs · travel %.2fs · speed %@× · x%d (%d) · honks %d · %d fps · seed %@",
+                      engine.elapsed, engine.travelDuration, engine.debug.timeScale.formatted(),
+                      engine.combo.multiplier, engine.combo.chain, engine.debug.honks, fps, seed)
     }
 }
 #endif

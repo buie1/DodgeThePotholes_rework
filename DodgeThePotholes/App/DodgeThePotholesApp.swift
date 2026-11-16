@@ -21,10 +21,12 @@ struct DodgeThePotholesApp: App {
         } catch {
             preconditionFailure("Dev scenario: \(error)")
         }
-        if let launchScenario, !launchScenario.useRealProfile {
-            // Throwaway in-memory profile: nothing a dev run does reaches the real save.
+        let wantsFreshProfile = ProcessInfo.processInfo.arguments.contains("-freshProfile")
+        if wantsFreshProfile || launchScenario.map({ !$0.useRealProfile }) == true {
+            // Throwaway in-memory profile: nothing a dev run (or a UI test) does reaches the
+            // real save. `-freshProfile` asks for one without starting a scenario.
             let store = SwiftDataPersistenceService.inMemory(defaults: UserDefaults(suiteName: "dev-scenario")!)
-            store.applyDevSetup(launchScenario)
+            if let launchScenario { store.applyDevSetup(launchScenario) }
             _persistence = State(initialValue: store)
             return
         }

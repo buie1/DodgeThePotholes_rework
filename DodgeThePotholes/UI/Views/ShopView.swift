@@ -61,6 +61,7 @@ struct ShopView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Bank: $\(viewModel.money)")
+        .accessibilityIdentifier("shop.bank")
     }
 }
 
