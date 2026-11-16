@@ -62,6 +62,22 @@ final class GameViewModel: GameEngineDelegate {
     private(set) var finalScore: Int     = 0
     private(set) var finalMoney: Int     = 0
     private(set) var isNewHighScore: Bool = false
+    /// Seconds the last run lasted.
+    private(set) var finalTime: Double   = 0
+    /// Counts from the last run.
+    private(set) var finalStats = RunStats()
+    /// The best score before the last run, to show how close it came.
+    private(set) var previousBest: Int   = 0
+
+    /// Points the last run needed to beat the previous best; `nil` when it did beat it
+    /// (or there was no best yet).
+    var pointsToBeatBest: Int? {
+        guard !isNewHighScore, previousBest > 0 else { return nil }
+        return max(1, previousBest - finalScore + 1)
+    }
+
+    /// `true` while a run's road is on screen but play hasn't begun (see `prepareGame`).
+    var isAwaitingStart: Bool { route == .playing && engine?.state == .idle }
 
     // MARK: - Engine & renderer
 
@@ -130,19 +146,26 @@ final class GameViewModel: GameEngineDelegate {
     // MARK: - Lifecycle
 
     /// Transition to the game screen without starting the engine.
-    /// `GameView.onAppear` calls `startGame(worldSize:)` once it knows the canvas size.
+    /// `GameView` calls `prepareGame(screenSize:)` once it knows the canvas size, then
+    /// `beginRun()` when it has finished sliding in.
     func navigateToGame() {
         route = .playing
     }
 
-    /// Start (or restart) a new game session.
-    /// Uses the saved car, song and sound settings, and spends a bought extra life.
+    /// Start (or restart) a new game session straight away, using the saved car, song
+    /// and sound settings, and spending a bought extra life.
     /// - Parameter screenSize: The on-screen canvas size in points, from `GeometryReader`.
     ///   It is converted to the 750-unit-wide game world.
     func startGame(screenSize: CGSize) {
-        let carSkin = persistence.selectedCar
+        prepareGame(screenSize: screenSize)
+        beginRun()
+    }
+
+    /// Builds a run's engine and scene so the road is on screen, without starting play.
+    /// `beginRun()` starts it; `GameView` waits for its slide-in to finish first.
+    func prepareGame(screenSize: CGSize) {
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
-        let eng = makeEngine(worldSize: worldSize, carSkin: carSkin)
+        let eng = makeEngine(worldSize: worldSize, carSkin: persistence.selectedCar)
         eng.delegate = self
         #if DEBUG
         isDevAdjustedRun = false
@@ -164,6 +187,12 @@ final class GameViewModel: GameEngineDelegate {
         activeAlert      = nil
         playerState      = .normal
         route            = .playing
+    }
+
+    /// Starts play on the prepared run: music, steering and the engine clock.
+    /// Does nothing if there is no prepared run or it has already begun.
+    func beginRun() {
+        guard let eng = engine, eng.state == .idle else { return }
 
         // Audio: apply saved settings, start the chosen track, then the game-start SFX.
         audioService.isMusicEnabled = persistence.isMusicEnabled
@@ -180,7 +209,7 @@ final class GameViewModel: GameEngineDelegate {
         }
 
         let extraLives = persistence.consumeExtraLife() ? 1 : 0
-        eng.start(carSkin: carSkin, extraLives: extraLives, hasTank: persistence.hasTank)
+        eng.start(carSkin: persistence.selectedCar, extraLives: extraLives, hasTank: persistence.hasTank)
         #if DEBUG
         devScenario?.apply(to: eng)
         scene?.showsHitboxes = devScenario?.hitboxes ?? false
@@ -347,6 +376,9 @@ final class GameViewModel: GameEngineDelegate {
     func engineDidEnd(_ engine: GameEngine, finalScore: Int, moneyEarned: Int) {
         self.finalScore = finalScore
         self.finalMoney = moneyEarned
+        finalTime       = engine.elapsed
+        finalStats      = engine.stats
+        previousBest    = highScore
 
         if recordsRuns {
             isNewHighScore = persistence.recordRun(score: finalScore, moneyEarned: moneyEarned)

@@ -2,40 +2,52 @@ import SwiftUI
 
 /// Shown as a full-screen overlay when `route == .gameOver`.
 /// Presented inside `GameView`'s ZStack so the frozen canvas is visible behind it.
+///
+/// Leads with the score and how close it came to the best, then the run's stats,
+/// so the next goal is the first thing the player sees.
 struct GameOverView: View {
 
     let viewModel: GameViewModel
     /// Canvas size from `GameView`'s `GeometryReader`, used for "Play Again" restarts.
     let screenSize: CGSize
 
-    /// Drives the "NEW HIGH SCORE" flash animation.
+    /// Drives the "NEW BEST" flash animation.
     @State private var highScoreGlow = false
 
     var body: some View {
         ZStack {
             // Dim the frozen canvas behind
-            Color.black.opacity(0.78).ignoresSafeArea()
+            Color.black.opacity(0.8).ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: 28) {
                 Spacer()
 
-                // Title
-                Text("GAME OVER")
-                    .font(.pixel(26).weight(.bold))
-                    .foregroundStyle(.red)
-                    .shadow(color: .red.opacity(0.6), radius: 12)
-                    .padding(.bottom, 32)
+                Text(viewModel.isNewHighScore ? "NEW BEST!" : "GAME OVER")
+                    .font(.pixel(24).weight(.bold))
+                    .foregroundStyle(viewModel.isNewHighScore ? .yellow : .red)
+                    .shadow(color: (viewModel.isNewHighScore ? Color.yellow : .red).opacity(0.6), radius: 12)
 
-                // Scores card
-                scoresCard
+                scoreBlock
+
+                RunStatsGrid(time: viewModel.finalTime, stats: viewModel.finalStats)
+
+                Text("EARNED $\(viewModel.finalMoney)")
+                    .font(.pixel(10))
+                    .foregroundStyle(.green)
 
                 Spacer()
 
-                // Buttons
-                buttonStack
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 40)
+                VStack(spacing: 14) {
+                    MenuButton(title: "PLAY AGAIN", color: .yellow) {
+                        viewModel.startGame(screenSize: screenSize)
+                    }
+                    MenuButton(title: "MAIN MENU", color: .gray) {
+                        viewModel.returnToMenu()
+                    }
+                }
+                .padding(.bottom, 24)
             }
+            .padding(.horizontal, 32)
         }
         .onAppear {
             if viewModel.isNewHighScore {
@@ -46,62 +58,36 @@ struct GameOverView: View {
         }
     }
 
-    // MARK: - Scores card
+    // MARK: - Score
 
-    private var scoresCard: some View {
-        VStack(spacing: 20) {
-            if viewModel.isNewHighScore {
-                Text("NEW HIGH SCORE!")
-                    .font(.pixel(11))
-                    .foregroundStyle(highScoreGlow ? Color.yellow : Color.orange)
-                    .shadow(color: .yellow.opacity(highScoreGlow ? 0.9 : 0.2), radius: 10)
-            }
-
-            ScoreRow(label: "SCORE",    value: "\(viewModel.finalScore)", color: .white)
-            ScoreRow(label: "BEST",     value: "\(viewModel.highScore)",  color: .yellow)
-            ScoreRow(label: "EARNED",   value: "$\(viewModel.finalMoney)", color: .green)
-        }
-        .padding(.vertical, 28)
-        .padding(.horizontal, 32)
-        .background(Color.white.opacity(0.06))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal, 32)
-    }
-
-    // MARK: - Buttons
-
-    private var buttonStack: some View {
-        VStack(spacing: 14) {
-            MenuButton(title: "PLAY AGAIN", color: .yellow) {
-                viewModel.startGame(screenSize: screenSize)
-            }
-            MenuButton(title: "MAIN MENU", color: .gray) {
-                viewModel.returnToMenu()
-            }
+    private var scoreBlock: some View {
+        VStack(spacing: 10) {
+            Text(viewModel.finalScore.formatted())
+                .font(.pixel(32))
+                .foregroundStyle(.white)
+            Text(bestLine)
+                .font(.pixel(9))
+                .foregroundStyle(viewModel.isNewHighScore
+                                 ? (highScoreGlow ? Color.yellow : .orange)
+                                 : .white.opacity(0.7))
+                .multilineTextAlignment(.center)
         }
     }
-}
 
-// MARK: - Helpers
-
-private struct ScoreRow: View {
-    let label: String
-    let value: String
-    let color: Color
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .font(.pixel(10))
-                .foregroundStyle(.white.opacity(0.6))
-            Spacer()
-            Text(value)
-                .font(.pixel(16))
-                .foregroundStyle(color)
+    /// The next goal: how far the run beat the old best, or how far short it fell.
+    private var bestLine: String {
+        if viewModel.isNewHighScore {
+            let margin = viewModel.finalScore - viewModel.previousBest
+            return viewModel.previousBest > 0 ? "+\(margin.formatted()) OVER YOUR OLD BEST" : "YOUR FIRST BEST SCORE"
         }
+        if let toBeat = viewModel.pointsToBeatBest {
+            return "\(toBeat.formatted()) TO BEAT YOUR BEST"
+        }
+        return "BEST \(viewModel.highScore.formatted())"
     }
 }
 
 #Preview {
-    GameOverView(viewModel: GameViewModel(persistence: SwiftDataPersistenceService.inMemory()), screenSize: CGSize(width: 390, height: 844))
+    GameOverView(viewModel: GameViewModel(persistence: SwiftDataPersistenceService.inMemory()),
+                 screenSize: CGSize(width: 390, height: 844))
 }

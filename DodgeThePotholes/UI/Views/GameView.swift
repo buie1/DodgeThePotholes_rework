@@ -14,7 +14,11 @@ struct GameView: View {
 
     @Bindable var viewModel: GameViewModel
 
-    // Track whether the engine has been started for this presentation.
+    /// How long the full-screen cover takes to slide in. Play begins after it, so a run
+    /// never ticks while the road is still moving into view.
+    private static let slideInDuration: Duration = .milliseconds(600)
+
+    // Track whether the run has been prepared for this presentation.
     @State private var hasStarted = false
 
     var body: some View {
@@ -46,7 +50,11 @@ struct GameView: View {
             .onAppear {
                 guard !hasStarted else { return }
                 hasStarted = true
-                viewModel.startGame(screenSize: screenSize)
+                viewModel.prepareGame(screenSize: screenSize)
+            }
+            .task {
+                try? await Task.sleep(for: Self.slideInDuration)
+                viewModel.beginRun()
             }
             .gesture(steeringGesture(width: screenSize.width))
         }
@@ -57,6 +65,14 @@ struct GameView: View {
     private var overlays: some View {
         ZStack {
             HUDOverlayView(viewModel: viewModel)
+
+            if viewModel.isAwaitingStart {
+                Text("GET READY")
+                    .font(.pixel(18))
+                    .foregroundStyle(.yellow)
+                    .shadow(color: .yellow.opacity(0.6), radius: 10)
+                    .transition(.opacity)
+            }
 
             if let alert = viewModel.activeAlert {
                 AlertBannerView(alert: alert)
@@ -74,6 +90,7 @@ struct GameView: View {
             #endif
         }
         .animation(.easeInOut(duration: 0.6), value: viewModel.activeAlert)
+        .animation(.easeOut(duration: 0.2), value: viewModel.isAwaitingStart)
         .animation(.spring(duration: 0.3), value: viewModel.textMessageIndex)
     }
 

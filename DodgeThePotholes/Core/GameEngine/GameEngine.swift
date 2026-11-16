@@ -36,6 +36,8 @@ final class GameEngine {
     private(set) var travelDuration: Double
     /// Seconds of play this run (excludes pauses).
     private(set) var elapsed: Double = 0
+    /// Counts from this run, for the game-over screen.
+    private(set) var stats = RunStats()
     /// One-shot visual effects emitted during the most recent `update`.
     private(set) var frameEvents: [GameEvent] = []
 
@@ -356,6 +358,7 @@ final class GameEngine {
     private func handlePlayerHitObstacle(at index: Int) {
         if player.isMonsterTruck {
             obstacles[index].isRemoved = true
+            stats.smashed += 1
             frameEvents.append(.explosion(at: obstacles[index].position))
             delegate?.engine(self, requestsSound: .explosion)
             delegate?.engine(self, requestsHaptic: .explosion)
@@ -405,6 +408,7 @@ final class GameEngine {
         let targetY = -worldSize.height / 2 - size.height
         obstacles[index].phase = .fleeing
         obstacles[index].facing = -side
+        stats.scared += 1
         frameEvents.append(.scared(at: position))
         delegate?.engine(self, requestsHaptic: .hornScare)
         obstacles[index].velocity = CGVector(
@@ -425,6 +429,7 @@ final class GameEngine {
             powerUpEntities[index].isCollected = true
             guard player.lives < tuning.lives.max else { return }
             player.lives += 1
+            stats.powerUps += 1
             frameEvents.append(.powerUpCollected(type, at: powerUpEntities[index].position))
             delegate?.engine(self, didUpdateLives: player.lives)
             delegate?.engine(self, requestsHaptic: .lifeGained)
@@ -452,6 +457,7 @@ final class GameEngine {
             delegate?.engine(self, didRaiseAlert: .dontDrinkAndDrive)
         }
         powerUpEntities[index].isCollected = true
+        stats.powerUps += 1
         frameEvents.append(.powerUpCollected(type, at: powerUpEntities[index].position))
         delegate?.engine(self, requestsHaptic: .powerUpActivated)
     }
@@ -468,6 +474,7 @@ final class GameEngine {
 
     private func collectCoin(at index: Int) {
         coins[index].isCollected = true
+        stats.coins += 1
         frameEvents.append(.coinCollected(at: coins[index].position))
         let multiplier = activePowerUps.lazy.compactMap { state -> Int? in
             if case .multiplier(let value) = state.type { return value }
@@ -628,6 +635,7 @@ final class GameEngine {
         frameEvents.removeAll()
         travelDuration              = tuning.speed.startTravelDuration
         elapsed                     = 0
+        stats                       = RunStats()
         obstacleSpawnAccumulator    = 0
         envSpawnAccumulator         = 0
         powerUpSpawnAccumulator     = 0
