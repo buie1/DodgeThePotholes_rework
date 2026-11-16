@@ -19,13 +19,14 @@ is optional; an empty scenario is a normal run.
 | `godMode` | Hits flash the car but never cost a life |
 | `timeScale` | `0.5` is slow motion, `2` is double speed |
 | `autopilot` | A simple bot drives and honks (`Debug/Autopilot.swift`) |
+| `chaseNearMisses` | The bot drives close on purpose to chain near-misses (`Autopilot.comboChaser`), like a player building a combo |
 | `hitboxes` | Outlines every hit box on screen |
 | `bank`, `unlockAll` | Money and unlocks for the throwaway profile |
 | `useRealProfile` | Play on your real save. Runs are then **not recorded** |
 
 **Presets** (all seed 42): `godCruise`, `monsterTruck`, `potholeRain`, `lateGame`,
-`coinShower`, `textMessages`, `trafficZone`, `nearMiss` (autopilot weaving through
-potholes, traffic and dogs, with hitboxes).
+`coinShower`, `textMessages`, `trafficZone`, `nearMiss` (the combo-chasing bot weaving
+through potholes, traffic and dogs, with hitboxes).
 
 **Rules for dev runs:**
 - They never submit to Game Center.
@@ -149,7 +150,9 @@ frame rate and returns a summary (`elapsed`, `score`, `money`, `livesLost`, `isG
 let summary = ScenarioRunner.run(DevScenario(seed: 3, autopilot: true), seconds: 120)
 ```
 
-Use it for balance checks that would take minutes of real play.
+Use it for balance checks that would take minutes of real play; pass `pilot:` to drive
+with a specific `Autopilot` (e.g. `.comboChaser`). `ComboBalanceTests` uses it to keep
+combos in their intended range.
 
 ## Engine hooks
 

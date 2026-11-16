@@ -26,6 +26,8 @@ struct DevScenario {
     var timeScale: Double = 1
     /// A bot drives (see `Autopilot`), for unattended runs.
     var autopilot = false
+    /// The bot drives close on purpose to chain near-misses, like a player building a combo.
+    var chaseNearMisses = false
     /// Outlines every hit box on screen.
     var hitboxes = false
     /// Bank balance for the throwaway profile.
@@ -60,7 +62,7 @@ struct DevScenario {
     func apply(to engine: GameEngine) {
         engine.debug.godMode = godMode
         engine.debug.timeScale = timeScale
-        engine.debug.autopilot = autopilot ? Autopilot() : nil
+        engine.debug.autopilot = chaseNearMisses ? .comboChaser : autopilot ? Autopilot() : nil
         if let startElapsed { engine.fastForwardSpeedRamp(by: startElapsed) }
         if let lives { engine.setLives(lives) }
         startPowerUps.forEach(engine.activatePowerUp)
@@ -81,7 +83,7 @@ extension DevScenario {
         ("textMessages", DevScenario(seed: 42, powerUps: [(.phone, 1)], godMode: true)),
         ("trafficZone",  DevScenario(seed: 42, obstacles: [(.conePattern, 1)], godMode: true)),
         ("nearMiss",     DevScenario(seed: 42, obstacles: [(.single(.pothole), 2), (.single(.movingCar), 1),
-                                                           (.single(.dog), 1)], autopilot: true, hitboxes: true)),
+                                                           (.single(.dog), 1)], chaseNearMisses: true, hitboxes: true)),
     ]
 
     static func preset(named name: String) -> DevScenario? {
@@ -139,7 +141,7 @@ extension DevScenario {
 extension DevScenario: Decodable {
     private enum CodingKeys: String, CodingKey {
         case seed, obstacles, environment, powerUps, startElapsed, startPowerUps
-        case lives, godMode, timeScale, autopilot, hitboxes, bank, unlockAll, useRealProfile
+        case lives, godMode, timeScale, autopilot, chaseNearMisses, hitboxes, bank, unlockAll, useRealProfile
     }
 
     struct UnknownPowerUp: Error {
@@ -165,6 +167,7 @@ extension DevScenario: Decodable {
             godMode: try c.decodeIfPresent(Bool.self, forKey: .godMode) ?? false,
             timeScale: try c.decodeIfPresent(Double.self, forKey: .timeScale) ?? 1,
             autopilot: try c.decodeIfPresent(Bool.self, forKey: .autopilot) ?? false,
+            chaseNearMisses: try c.decodeIfPresent(Bool.self, forKey: .chaseNearMisses) ?? false,
             hitboxes: try c.decodeIfPresent(Bool.self, forKey: .hitboxes) ?? false,
             bank: try c.decodeIfPresent(Int.self, forKey: .bank),
             unlockAll: try c.decodeIfPresent(Bool.self, forKey: .unlockAll) ?? false,

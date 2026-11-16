@@ -15,6 +15,12 @@ struct Autopilot {
     var candidateSpacing: Double = 25
     /// Extra clearance (world units) kept on each side of the car.
     var margin: Double = 20
+    /// When set, the pilot chases near-misses: among safe positions it prefers passing the
+    /// next road obstacle about this many units clear, like a player building a combo.
+    var nearMissTarget: Double?
+
+    /// Drives close on purpose to chain near-misses: a stand-in for a skilled player.
+    static let comboChaser = Autopilot(margin: 4, nearMissTarget: 14)
 
     /// Steering in [-1, 1], and whether to honk this step.
     struct Decision: Equatable {
@@ -28,13 +34,14 @@ struct Autopilot {
         let front = player.position.y + player.size.height / 2
 
         // Each threat: when it reaches the car's front, and the x range it covers then.
-        var threats: [(time: Double, minX: Double, maxX: Double, isMoveable: Bool)] = []
+        var threats: [(time: Double, minX: Double, maxX: Double, isMoveable: Bool, nearMissable: Bool)] = []
         for obstacle in obstacles where obstacle.isCollidable && obstacle.velocity.dy < 0 {
             let gap = obstacle.boundingRect.minY - front
             let time = max(0, gap / -obstacle.velocity.dy)
             guard time <= lookahead, obstacle.boundingRect.maxY > player.position.y - player.size.height / 2 else { continue }
             let x = obstacle.position.x + obstacle.velocity.dx * time
-            threats.append((time, x - obstacle.size.width / 2, x + obstacle.size.width / 2, obstacle.type.isMoveable))
+            threats.append((time, x - obstacle.size.width / 2, x + obstacle.size.width / 2,
+                            obstacle.type.isMoveable, obstacle.type.countsForNearMiss))
         }
 
         // Danger of driving at x: sooner collisions weigh more.
@@ -50,10 +57,20 @@ struct Autopilot {
         let current = player.position.x
         let offsets = Array(stride(from: 0, through: bound, by: candidateSpacing))
         let candidates = offsets + offsets.dropFirst().map { -$0 } + [current]
+        // Chasing near-misses: how far `x` is from passing the soonest road obstacle at the target gap.
+        let soonest = threats.filter(\.nearMissable).min { $0.time < $1.time }
+        func nearMissCost(at x: Double) -> Double {
+            guard let target = nearMissTarget, let soonest else { return 0 }
+            let halfCar = player.size.width / 2
+            let gap = max(soonest.minX - (x + halfCar), (x - halfCar) - soonest.maxX)
+            return abs(gap - target) * 3
+        }
+
         let target = candidates.min { a, b in
-            // Danger first; then stay close to the current position, then near the centre.
-            let costA = danger(at: a) * 1_000 + abs(a - current) + abs(a) * 0.1
-            let costB = danger(at: b) * 1_000 + abs(b - current) + abs(b) * 0.1
+            // Danger first; then (when chasing) a near-miss pass; then stay close to the
+            // current position, then near the centre.
+            let costA = danger(at: a) * 1_000 + nearMissCost(at: a) + abs(a - current) + abs(a) * 0.1
+            let costB = danger(at: b) * 1_000 + nearMissCost(at: b) + abs(b - current) + abs(b) * 0.1
             return costA < costB
         } ?? current
 

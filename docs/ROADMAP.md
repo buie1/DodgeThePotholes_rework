@@ -11,7 +11,8 @@ Approved 2026-11-13 after a design interview. Each item ships one step at a time
 | #0 Shared groundwork | ✅ Done: seeded RNG (`44798f8`), tuning JSON (`ba08e27`), catalog JSON (`15a10d5`) |
 | Dev mode and test hooks | ✅ Done (D0–D4): scenarios, autopilot, `scripts/dev-run.sh`, DEV menu, in-run DEV panel. See `docs/DEV_MODE.md` |
 | #8 Game feel | ✅ Done (8.1–8.6): HUD in safe area, impact shake/hit-stop/flash, pickup bursts, speed lines + road trail, per-event haptics, new game-over screen, play starts after the slide-in. Near-miss/combo effects move to #1, zone sweep to #4, mission progress to #2 |
-| #1–#7, #9–#11 | Not started. Next: #1 near-misses and combos |
+| #1 Near-misses and combos | ✅ Done (1.1–1.5): car width fix, combo engine (near-misses, smashes, clean Traffic Zones; x1–x5, 3 s window), HUD meter, bonus pop-ups, combo haptics, game-over NEAR MISSES / BEST COMBO, balance tests |
+| #2–#7, #9–#11 | Not started. Next: #5 onboarding and controls |
 
 ## Decisions
 
@@ -136,7 +137,7 @@ Foundations to build on:
 
 ## Order of work
 1. ~~**Dev mode and test hooks** (D0–D4)~~ ✅
-2. **Groundwork and feel:** ~~#0~~ → ~~#8 visual effects/haptics~~ → #1 combos → #5
+2. **Groundwork and feel:** ~~#0~~ → ~~#8 visual effects/haptics~~ → ~~#1 combos~~ → #5
    onboarding/controls.
 3. **Content and tone:** #11 style guide + packs → #4 zones → tone pass (#7) → #6 catalog.
 4. **Retention:** #2 missions/levels → #3 daily run → #9 achievements/friends/review.
