@@ -84,6 +84,9 @@ final class GameEngine {
     @ObservationIgnored private var obstacleSpawnPause: Double       = 0
     /// Next rickroll lyric to show.
     @ObservationIgnored private var nextTextMessageIndex: Int        = 0
+    /// Traffic Zones still passing the car, and whether the car has touched one of their cones.
+    @ObservationIgnored private var zonesTouched: [Int: Bool]        = [:]
+    @ObservationIgnored private var nextZoneID: Int                  = 0
 
     @ObservationIgnored private var loopTask: Task<Void, Never>?
     @ObservationIgnored private var lastUpdateDate: Date = .now
@@ -216,6 +219,7 @@ final class GameEngine {
         checkCollisions()
         guard state == .playing else { return }
         judgeNearMisses()
+        judgeZones()
         tickSpawners(dt: dt)
         tickSpeedRamp(dt: dt)
         tickScore(dt: dt)
@@ -361,6 +365,8 @@ final class GameEngine {
     }
 
     private func handlePlayerHitObstacle(at index: Int) {
+        // Any contact spoils a Traffic Zone, even while the truck or recovery makes it harmless.
+        if let zone = obstacles[index].zoneID { zonesTouched[zone] = true }
         if player.isMonsterTruck {
             obstacles[index].isRemoved = true
             stats.smashed += 1
@@ -552,7 +558,7 @@ final class GameEngine {
             obstacles.append(spawner.obstacle(type, travel: travelDuration, rng: &obstacleRNG))
         case .conePattern?:
             guard let pattern = conePatterns.randomElement(using: &obstacleRNG) else { return }
-            obstacles += spawner.conePattern(pattern, travel: travelDuration, rng: &obstacleRNG)
+            openZone(spawner.conePattern(pattern, travel: travelDuration, rng: &obstacleRNG))
             // Hold other obstacles back until the traffic zone has passed.
             obstacleSpawnPause = tuning.spawnIntervals.conePatternPause * travelDuration / tuning.speed.startTravelDuration
             obstacleSpawnAccumulator = 0
@@ -627,6 +633,34 @@ final class GameEngine {
         }
     }
 
+    /// Adds a Traffic Zone's cones and barricades, tagged so the zone can be judged as a whole.
+    private func openZone(_ cones: [ObstacleEntity]) {
+        let zone = nextZoneID
+        nextZoneID += 1
+        zonesTouched[zone] = false
+        obstacles += cones.map { cone in
+            var cone = cone
+            cone.zoneID = zone
+            return cone
+        }
+    }
+
+    /// Pays a Traffic Zone bonus once every cone of an untouched zone has passed the car.
+    private func judgeZones() {
+        guard !zonesTouched.isEmpty else { return }
+        let carBottom = player.boundingRect.minY
+        let stillComing = Set(obstacles.lazy
+            .filter { !$0.isRemoved && $0.collisionRect.maxY >= carBottom }
+            .compactMap(\.zoneID))
+        for (zone, touched) in zonesTouched where !stillComing.contains(zone) {
+            zonesTouched[zone] = nil
+            if !touched {
+                award(.zone, actions: tuning.combo.zoneActions, points: tuning.combo.zonePoints,
+                      at: player.position)
+            }
+        }
+    }
+
     /// Adds `actions` to the combo and scores `points` times the new multiplier.
     private func award(_ kind: BonusKind, actions: Int, points: Int, at point: CGPoint) {
         combo.add(actions: actions)
@@ -687,6 +721,7 @@ final class GameEngine {
         scoreAccumulator            = 0
         obstacleSpawnPause          = 0
         nextTextMessageIndex        = 0
+        zonesTouched                = [:]
         horizontalInput             = 0
         player = GameEngine.makePlayer(worldSize: worldSize, skin: carSkin, lives: tuning.lives.start)
     }
@@ -714,6 +749,9 @@ extension GameEngine {
 
     /// Places a coin directly into the world. Tests only.
     func insert(_ coin: CoinEntity) { coins.append(coin) }
+
+    /// Places cones directly into the world as one Traffic Zone. Tests only.
+    func insertZone(_ cones: [ObstacleEntity]) { openZone(cones) }
 }
 
 // MARK: - Dev mode

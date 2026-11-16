@@ -59,6 +59,8 @@ struct ObstacleEntity: Identifiable {
     var closestGap: Double?
     /// Set once the obstacle has passed the car and its near-miss has been judged.
     var nearMissJudged = false
+    /// The Traffic Zone (cone pattern) this cone or barricade belongs to.
+    var zoneID: Int?
 
     // MARK: - Geometry
 

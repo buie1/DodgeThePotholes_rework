@@ -128,6 +128,45 @@ final class ComboTests: XCTestCase {
         XCTAssertEqual(engine.score - before, 120, "survival points are doubled at x2")
     }
 
+    // MARK: - Traffic Zones
+
+    /// A small zone: two cone walls either side of the car, `inset` units from it.
+    private func zone(around car: CGRect, inset: Double) -> [ObstacleEntity] {
+        let size = ObstacleType.cone.size
+        return [-1.0, 1.0].flatMap { side in
+            (0..<4).map { row in
+                let x = side < 0 ? car.minX - inset - size.width / 2 : car.maxX + inset + size.width / 2
+                return ObstacleEntity(id: UUID(), position: CGPoint(x: x, y: car.maxY + 60 + Double(row) * size.height),
+                                      size: size, velocity: CGVector(dx: 0, dy: -800), type: .cone)
+            }
+        }
+    }
+
+    func testCleanTrafficZonePaysAZoneBonus() {
+        let engine = makeEngine()
+        engine.insertZone(zone(around: engine.player.boundingRect, inset: 20))
+        var events: [GameEvent] = []
+        for _ in 0..<60 {
+            engine.update(deltaTime: 1.0 / 60)
+            events += engine.frameEvents
+        }
+        let zonePoints = rules.zonePoints * 2   // its 3 actions take the combo to x2
+        XCTAssertEqual(events.filter { if case .bonus(.zone, _, _) = $0 { true } else { false } }.count, 1)
+        XCTAssertTrue(events.contains(.bonus(.zone, points: zonePoints, at: engine.player.position)))
+        XCTAssertEqual(engine.combo.chain, rules.zoneActions)
+        XCTAssertEqual(engine.stats.nearMisses, 0, "cones never count as near-misses")
+    }
+
+    func testTouchingAConeSpoilsTheZone() {
+        let engine = makeEngine()
+        var cones = zone(around: engine.player.boundingRect, inset: 20)
+        cones[0].position.x = engine.player.position.x    // one cone in the car's path
+        engine.insertZone(cones)
+        for _ in 0..<60 { engine.update(deltaTime: 1.0 / 60) }
+        XCTAssertFalse(engine.combo.isActive)
+        XCTAssertEqual(engine.player.lives, GameTuning.bundled.lives.start - 1)
+    }
+
     func testMonsterTruckSmashFeedsTheCombo() {
         let engine = makeEngine()
         engine.activatePowerUp(.monsterTruck)
