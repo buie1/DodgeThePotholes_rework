@@ -1,13 +1,17 @@
 import SwiftUI
 
-/// In-game heads-up display: score, best, lives, active power-up timer, and money.
+/// In-game heads-up display: score and money, best, lives, and the active power-up timer.
+/// Laid out inside the safe area.
 struct HUDOverlayView: View {
     let viewModel: GameViewModel
 
     var body: some View {
         VStack {
             HStack(alignment: .top) {
-                stat("SCORE", "\(viewModel.score)", color: .white, alignment: .leading)
+                VStack(alignment: .leading, spacing: 6) {
+                    stat("SCORE", "\(viewModel.score)", color: .white, alignment: .leading)
+                    money
+                }
                 Spacer()
                 stat("BEST", "\(viewModel.highScore)", color: .yellow, alignment: .center)
                 Spacer()
@@ -26,17 +30,19 @@ struct HUDOverlayView: View {
             }
 
             Spacer()
-
-            HStack(spacing: 6) {
-                SpriteImage(.dollar)
-                    .frame(height: 20)
-                Text("$ \(viewModel.money)")
-                    .font(.pixel(11))
-                    .foregroundStyle(.yellow)
-            }
-            .padding(.bottom, 12)
         }
         .allowsHitTesting(false)
+    }
+
+    /// Money banked this run. Kept in the top bar so it never covers the car.
+    private var money: some View {
+        HStack(spacing: 6) {
+            SpriteImage(.dollar)
+                .frame(height: 16)
+            Text("$\(viewModel.money)")
+                .font(.pixel(10))
+                .foregroundStyle(.yellow)
+        }
     }
 
     private func stat(_ title: String, _ value: String, color: Color,

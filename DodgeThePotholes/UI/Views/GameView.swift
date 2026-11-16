@@ -18,7 +18,12 @@ struct GameView: View {
     @State private var hasStarted = false
 
     var body: some View {
+        // This reader respects the safe area, so its insets are real; the content below
+        // ignores it so the world fills the whole display.
         GeometryReader { geo in
+            let insets = geo.safeAreaInsets
+            let screenSize = CGSize(width: geo.size.width + insets.leading + insets.trailing,
+                                    height: geo.size.height + insets.top + insets.bottom)
             ZStack {
                 Color.black
 
@@ -28,39 +33,48 @@ struct GameView: View {
                     DrunkGogglesOverlay()
                 }
 
-                HUDOverlayView(viewModel: viewModel)
-                    .padding(.top, geo.safeAreaInsets.top)
-
-                if let alert = viewModel.activeAlert {
-                    AlertBannerView(alert: alert)
-                }
-
-                if let index = viewModel.textMessageIndex {
-                    TextMessageOverlayView(index: index)
-                }
-
-                #if DEBUG
-                if viewModel.route == .playing {
-                    DevOverlayView(viewModel: viewModel)
-                        .padding(.top, geo.safeAreaInsets.top + 64)
-                }
-                #endif
+                // HUD and messages stay inside the safe area, clear of the Dynamic Island.
+                overlays
+                    .padding(.top, insets.top)
+                    .padding(.bottom, insets.bottom)
 
                 if viewModel.route == .gameOver {
-                    GameOverView(viewModel: viewModel, screenSize: geo.size)
+                    GameOverView(viewModel: viewModel, screenSize: screenSize)
                 }
             }
-            .animation(.easeInOut(duration: 0.6), value: viewModel.activeAlert)
-            .animation(.spring(duration: 0.3), value: viewModel.textMessageIndex)
+            .ignoresSafeArea()
             .onAppear {
                 guard !hasStarted else { return }
                 hasStarted = true
-                viewModel.startGame(screenSize: geo.size)
+                viewModel.startGame(screenSize: screenSize)
             }
-            .gesture(steeringGesture(width: geo.size.width))
+            .gesture(steeringGesture(width: screenSize.width))
         }
-        // Full-screen geometry so the world matches the whole display's aspect ratio.
-        .ignoresSafeArea()
+    }
+
+    // MARK: - Overlays
+
+    private var overlays: some View {
+        ZStack {
+            HUDOverlayView(viewModel: viewModel)
+
+            if let alert = viewModel.activeAlert {
+                AlertBannerView(alert: alert)
+            }
+
+            if let index = viewModel.textMessageIndex {
+                TextMessageOverlayView(index: index)
+            }
+
+            #if DEBUG
+            if viewModel.route == .playing {
+                DevOverlayView(viewModel: viewModel)
+                    .padding(.top, 64)
+            }
+            #endif
+        }
+        .animation(.easeInOut(duration: 0.6), value: viewModel.activeAlert)
+        .animation(.spring(duration: 0.3), value: viewModel.textMessageIndex)
     }
 
     // MARK: - SpriteKit layer
