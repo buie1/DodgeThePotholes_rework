@@ -6,6 +6,8 @@ import CoreGraphics
 enum GameEvent: Equatable {
     /// The player hit a pothole or black ice and spins out.
     case spinOut
+    /// The player crashed into an obstacle at this point and loses a life.
+    case crash(at: CGPoint)
     /// An obstacle was destroyed by the monster truck, or a missile detonated.
     case explosion(at: CGPoint)
 }

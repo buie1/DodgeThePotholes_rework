@@ -2,15 +2,16 @@
 # Runs the game in the iOS simulator in a dev scenario, takes screenshots during the
 # run and copies out the event log. Debug builds only; see docs/DEV_MODE.md.
 #
-# Usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--overlay] [--no-build]
+# Usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--overlay] [--video] [--no-build]
 #   preset       a DevScenario preset name, e.g. monsterTruck, or inline scenario JSON
 #   seconds      how long to let the run play (default 15)
 #   --shots N    screenshots spread over the run (default 3)
 #   --autopilot  let the bot drive
 #   --overlay    open the in-run DEV panel
+#   --video      also record the screen to run.mp4 (see scripts/dev-frames.sh)
 #   --no-build   reuse the last build
 #
-# Output: build/dev-runs/<timestamp>-<name>/ with shot-N.png, devlog.jsonl and run.txt.
+# Output: build/dev-runs/<timestamp>-<name>/ with shot-N.png, devlog.jsonl, run.txt (and run.mp4).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -19,18 +20,20 @@ DEVICE_NAME="iPhone 17"
 DERIVED="$ROOT/build/DerivedData"
 APP="$DERIVED/Build/Products/Debug-iphonesimulator/DodgeThePotholes.app"
 
-scenario="${1:?usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--overlay] [--no-build]}"
+scenario="${1:?usage: scripts/dev-run.sh <preset | '{json}'> [seconds] [--shots N] [--autopilot] [--overlay] [--video] [--no-build]}"
 shift
 seconds=15
 shots=3
 autopilot=false
 overlay=false
+video=false
 build=true
 while (($#)); do
   case "$1" in
     --shots) shots="$2"; shift ;;
     --autopilot) autopilot=true ;;
     --overlay) overlay=true ;;
+    --video) video=true ;;
     --no-build) build=false ;;
     *) seconds="$1" ;;
   esac
@@ -65,6 +68,14 @@ out="$ROOT/build/dev-runs/$(date +%Y%m%d-%H%M%S)-$name"
 mkdir -p "$out"
 printf 'scenario: %s\nseconds: %s\nautopilot: %s\nargs: %s\n' "$scenario" "$seconds" "$autopilot" "${args[*]}" > "$out/run.txt"
 
+if $video; then
+  xcrun simctl io "$udid" recordVideo --codec=h264 --force "$out/run.mp4" > /dev/null 2>&1 &
+  recorder=$!
+  sleep 1   # let the recorder start before the app does
+  # The recording's start time, matched against the log's runStart clock.
+  echo "videoClock: $(python3 -c 'import time; print(time.time() - 1)')" >> "$out/run.txt"
+fi
+
 echo "Launching $name for ${seconds}s..."
 xcrun simctl launch "$udid" "$BUNDLE_ID" "${args[@]}" > /dev/null
 
@@ -73,6 +84,11 @@ for ((i = 1; i <= shots; i++)); do
   sleep "$interval"
   xcrun simctl io "$udid" screenshot "$out/shot-$i.png" > /dev/null 2>&1
 done
+
+if $video; then
+  kill -INT "$recorder"
+  wait "$recorder" 2>/dev/null || true
+fi
 
 container="$(xcrun simctl get_app_container "$udid" "$BUNDLE_ID" data)"
 cp "$container/Documents/devlog.jsonl" "$out/devlog.jsonl"

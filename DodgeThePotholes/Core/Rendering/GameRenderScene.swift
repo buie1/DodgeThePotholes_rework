@@ -24,6 +24,8 @@ final class GameRenderScene: SKScene {
     private let factory = EntityNodeFactory()
     private let road: SKSpriteNode
     private let playerNode: PlayerNode
+    /// Shakes, flashes and holds the action on impacts.
+    private let impactCamera: ImpactCamera
 
     private var obstacleNodes: [UUID: ObstacleNode] = [:]
     private var powerUpNodes: [UUID: SKSpriteNode] = [:]
@@ -48,6 +50,7 @@ final class GameRenderScene: SKScene {
         road = SKSpriteNode(texture: factory.texture(SpriteCatalog.Image.roadLong.rawValue),
                             size: CGSize(width: engine.worldSize.width, height: 4 * engine.worldSize.height))
         playerNode = PlayerNode(player: engine.player, factory: factory)
+        impactCamera = ImpactCamera(worldSize: engine.worldSize)
         super.init(size: engine.worldSize)
 
         anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -56,6 +59,8 @@ final class GameRenderScene: SKScene {
         road.zPosition = -1
         addChild(road)
         addChild(playerNode)
+        addChild(impactCamera)
+        camera = impactCamera
     }
 
     @available(*, unavailable)
@@ -69,10 +74,14 @@ final class GameRenderScene: SKScene {
         let dt = lastUpdateTime.map { currentTime - $0 } ?? 0
         lastUpdateTime = currentTime
 
-        engine.update(deltaTime: dt)
-        if engine.state == .playing { scrollRoad(dt: min(dt, 0.05)) }
-        syncEntities()
-        playEffects()
+        // During a hit-stop the engine doesn't advance, so gameplay is unchanged, just delayed.
+        if !impactCamera.holdsAction(for: dt) {
+            engine.update(deltaTime: dt)
+            if engine.state == .playing { scrollRoad(dt: min(dt, 0.05)) }
+            syncEntities()
+            playEffects()
+        }
+        impactCamera.update(dt: min(dt, 0.05))
         #if DEBUG
         if dt > 0 { debugFPS = debugFPS == 0 ? 1 / dt : debugFPS * 0.9 + 0.1 / dt }
         drawHitboxes()
@@ -135,8 +144,14 @@ final class GameRenderScene: SKScene {
             switch event {
             case .spinOut:
                 playerNode.spinOut()
+                impactCamera.impact(.spinOut)
+            case .crash(let point):
+                addRing(at: point, color: .white)
+                impactCamera.impact(.crash)
             case .explosion(let point):
                 addExplosion(at: point)
+                addRing(at: point, color: .orange)
+                impactCamera.impact(.explosion)
             }
         }
     }
@@ -147,6 +162,21 @@ final class GameRenderScene: SKScene {
         explosion.zPosition = 3
         addChild(explosion)
         explosion.run(.sequence([.wait(forDuration: 2), .removeFromParent()]))
+    }
+
+    /// A shock ring that bursts out from the point of impact.
+    private func addRing(at point: CGPoint, color: SKColor) {
+        let ring = SKShapeNode(circleOfRadius: 30)
+        ring.position = point
+        ring.strokeColor = color
+        ring.lineWidth = 8
+        ring.fillColor = .clear
+        ring.zPosition = 4
+        addChild(ring)
+        ring.run(.sequence([
+            .group([.scale(to: 3.5, duration: 0.3), .fadeOut(withDuration: 0.3)]),
+            .removeFromParent(),
+        ]))
     }
 }
 

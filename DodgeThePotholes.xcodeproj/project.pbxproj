@@ -64,6 +64,7 @@
 		65C9244319B8ACA5818404E8 /* dog_wimper.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 37ECF6E6F884D64E311AF977 /* dog_wimper.mp3 */; };
 		674A3F3C1EC8784DD66EC1A7 /* PressStart2P.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22D94FA505301C94F69978C3 /* PressStart2P.ttf */; };
 		68AC46007CA215AA209814EE /* text_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 946F1202D54B6150731E0036 /* text_tone.mp3 */; };
+		6908EBEC6ADDA593197AB7CF /* ImpactFeelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89832AE267676E0E0628294 /* ImpactFeelTests.swift */; };
 		6A043815999B4B3904F7701C /* cone_pattern2.json in Resources */ = {isa = PBXBuildFile; fileRef = 87919EC119F7F54EA67229F2 /* cone_pattern2.json */; };
 		6BD895D428C968E9B7415D1F /* GameEngineDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB22DABA61FA6B18DE9A036E /* GameEngineDelegate.swift */; };
 		6C018280E4C3363366BDD985 /* urban_chase.wav in Resources */ = {isa = PBXBuildFile; fileRef = 71F873B23E3A9681490EB626 /* urban_chase.wav */; };
@@ -92,6 +93,7 @@
 		9BCC8B985CCAD4F1088971C6 /* race_duel.wav in Resources */ = {isa = PBXBuildFile; fileRef = A3669642EA8D974AFB1786DB /* race_duel.wav */; };
 		9C603EFC940BAC90C8EF9DCF /* LeaderboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B074A9B698247E4F3FB7381 /* LeaderboardViewModelTests.swift */; };
 		A0D9BEE46B0C0274075D7A1A /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEC3285123F99306E99F497 /* Player.swift */; };
+		A16998A89AC66ACC7FFAD05D /* ImpactFeel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A562F76005A5DF23ED0D15F9 /* ImpactFeel.swift */; };
 		A29C8E5CD9BB2CBA31FB7CA2 /* money.aiff in Resources */ = {isa = PBXBuildFile; fileRef = CEACCA45AA1E7496AD95F35E /* money.aiff */; };
 		A2C5D092CFBD89286FF8FE89 /* ShopViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */; };
 		A3A21ED9DC30412718D6306C /* DevOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */; };
@@ -218,6 +220,7 @@
 		A3669642EA8D974AFB1786DB /* race_duel.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = race_duel.wav; sourceTree = "<group>"; };
 		A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DodgeThePotholesApp.swift; sourceTree = "<group>"; };
 		A47D32FE4AF1445606414A4B /* CarSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSelectView.swift; sourceTree = "<group>"; };
+		A562F76005A5DF23ED0D15F9 /* ImpactFeel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpactFeel.swift; sourceTree = "<group>"; };
 		A5941A87F7B8299EFE61A232 /* MenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuButton.swift; sourceTree = "<group>"; };
 		A5D6094F52D834222B995365 /* money_pattern4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern4.json; sourceTree = "<group>"; };
 		A8ED4DFA4D223857F39FA984 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -233,6 +236,7 @@
 		C3288D1939235550FE52EE00 /* LeaderboardRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardRow.swift; sourceTree = "<group>"; };
 		C50A2E4C4B3D33177DDA3BD4 /* born-lucky.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "born-lucky.wav"; sourceTree = "<group>"; };
 		C58586542449D596808E89FA /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
+		C89832AE267676E0E0628294 /* ImpactFeelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImpactFeelTests.swift; sourceTree = "<group>"; };
 		CCDDE231821B345CEADF8478 /* GameTuning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTuning.swift; sourceTree = "<group>"; };
 		CD121AE19D3D10A21FDA99F7 /* Autopilot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Autopilot.swift; sourceTree = "<group>"; };
 		CD567DA4CAEB430A021C569C /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
@@ -410,6 +414,7 @@
 				4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */,
 				91AFA1EFD343E7B4F23CE59E /* GameViewModelInputTests.swift */,
 				DDEFC0360A7DA277C8B4564A /* GameViewModelPersistenceTests.swift */,
+				C89832AE267676E0E0628294 /* ImpactFeelTests.swift */,
 				1B074A9B698247E4F3FB7381 /* LeaderboardViewModelTests.swift */,
 				B6174851FD947D07571C9E86 /* PersistenceServiceTests.swift */,
 				B33D5585DBEFEA579129409D /* ResourceTests.swift */,
@@ -501,6 +506,7 @@
 			children = (
 				5986DEDD27CB4DFAE02478C9 /* EntityNodeFactory.swift */,
 				FFDA19FE3EA0592B2675D594 /* GameRenderScene.swift */,
+				A562F76005A5DF23ED0D15F9 /* ImpactFeel.swift */,
 				7922CB280A4A8C1C244034B6 /* PlayerNode.swift */,
 				7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */,
 			);
@@ -740,6 +746,7 @@
 				118C7E1BCB6F0EE8458B33BA /* GameEngineTests.swift in Sources */,
 				09D2C9D5451596375B79619E /* GameViewModelInputTests.swift in Sources */,
 				144F3B2856A51D2D45EDBE57 /* GameViewModelPersistenceTests.swift in Sources */,
+				6908EBEC6ADDA593197AB7CF /* ImpactFeelTests.swift in Sources */,
 				9C603EFC940BAC90C8EF9DCF /* LeaderboardViewModelTests.swift in Sources */,
 				26FE01179AAC1E7C5A078C26 /* PersistenceServiceTests.swift in Sources */,
 				91E0F084971ACB4C51486D24 /* ResourceTests.swift in Sources */,
@@ -787,6 +794,7 @@
 				5524644435F9480491F8D435 /* GameViewModel.swift in Sources */,
 				3387B9A6216313CFDC48852A /* HUDOverlayView.swift in Sources */,
 				40BFF8504740F037B9E2EEF3 /* HapticService.swift in Sources */,
+				A16998A89AC66ACC7FFAD05D /* ImpactFeel.swift in Sources */,
 				04569D019A0E4B4DE944A0C0 /* LeaderboardEntry.swift in Sources */,
 				3F67671F90C2C53918F5BD2A /* LeaderboardRow.swift in Sources */,
 				F7F2E8CC00438DF4CB31311C /* LeaderboardService.swift in Sources */,

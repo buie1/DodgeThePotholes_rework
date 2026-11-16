@@ -106,13 +106,27 @@ Results go to `build/dev-runs/<timestamp>-<name>/`, which is git-ignored:
 - `devlog.jsonl`
 - `run.txt`
 
+### Short effects: video and contact sheets
+
+A screenshot rarely catches a 0.3 s shake or flash. For those, record the run and turn a
+moment into a contact sheet:
+
+```sh
+scripts/dev-run.sh potholeRain 9 --shots 1 --video   # also writes run.mp4
+grep '"sound"' build/dev-runs/<run>/devlog.jsonl      # find the moment, e.g. t 5.11
+scripts/dev-frames.sh build/dev-runs/<run> 5.11 0.8   # frames-5.11.png: 0.8 s at 15 fps
+```
+
+Video recording needs `ffmpeg` (`brew install ffmpeg`). Log times line up with the
+video through the `clock` field on `runStart`.
+
 ### The event log
 
 `devlog.jsonl` has one JSON object per line, each with `t` (seconds of play) and `event`:
 
 | Event | Fields |
 |-------|--------|
-| `runStart` | `seed`, `godMode`, `timeScale`, `autopilot`, `startElapsed` |
+| `runStart` | `seed`, `godMode`, `timeScale`, `autopilot`, `startElapsed`, `clock` (Unix time, to align with a recording) |
 | `snapshot` (≈ every second) | `score`, `money`, `lives`, `state`, `x`, `travelDuration`, `obstacles`, `powerUps`, `coins` |
 | `lives` | `lives` |
 | `playerState` | `state` |

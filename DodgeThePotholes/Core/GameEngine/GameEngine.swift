@@ -381,6 +381,9 @@ final class GameEngine {
         case .cone, .barricade:
             obstacles[index].isRemoved = true
         }
+        if !obstacles[index].type.causesSpinOut {
+            frameEvents.append(.crash(at: obstacles[index].position))
+        }
         delegate?.engine(self, requestsHaptic: .collision)
         loseLife()
     }
