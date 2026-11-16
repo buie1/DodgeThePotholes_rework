@@ -27,6 +27,12 @@ struct DodgeThePotholesApp: App {
             // real save. `-freshProfile` asks for one without starting a scenario.
             let store = SwiftDataPersistenceService.inMemory(defaults: UserDefaults(suiteName: "dev-scenario")!)
             if let launchScenario { store.applyDevSetup(launchScenario) }
+            // `-devBank <amount>` funds the throwaway profile, e.g. for Shop UI tests.
+            let arguments = ProcessInfo.processInfo.arguments
+            if let index = arguments.firstIndex(of: "-devBank"), arguments.indices.contains(index + 1),
+               let amount = Int(arguments[index + 1]) {
+                store.devSetMoney(amount)
+            }
             _persistence = State(initialValue: store)
             return
         }

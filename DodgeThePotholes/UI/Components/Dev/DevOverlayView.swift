@@ -24,7 +24,10 @@ struct DevOverlayView: View {
             Spacer()
         }
         .padding(.horizontal, 12)
-        .onAppear(perform: syncFromEngine)
+        // A dev run's scenario is applied when play begins (after the slide-in), and Play
+        // Again builds a new engine, so re-read the engine then and whenever the panel opens.
+        .onChange(of: viewModel.engine?.state, initial: true) { syncFromEngine() }
+        .onChange(of: isOpen) { syncFromEngine() }
     }
 
     // MARK: - Panel
@@ -92,6 +95,7 @@ struct DevOverlayView: View {
                 .background(isOn ? Color.green.opacity(0.8) : Color.white.opacity(0.15), in: Capsule())
                 .foregroundStyle(.white)
         }
+        .accessibilityValue(isOn ? "on" : "off")
     }
 
     private func button(_ title: String, action: @escaping () -> Void) -> some View {

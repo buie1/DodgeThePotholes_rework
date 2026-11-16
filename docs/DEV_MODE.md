@@ -151,10 +151,18 @@ The log starts fresh each app launch.
 
 ## UI tests
 
-`DodgeThePotholesUITests` taps through the app like a person (XCUITest). It covers the
-DEV menu's money and high-score tools, the Shop, the in-game panel, and steering. The tests
-run with `-freshProfile`, which starts the app on an empty throwaway profile without
-starting a scenario, so they never touch real saves.
+`DodgeThePotholesUITests` taps through the app like a person (XCUITest):
+
+| File | Covers |
+|------|--------|
+| `MenuAndShopUITests` | every menu screen opens and returns; Shop insufficient-funds and already-purchased alerts; extra life used next run; only owned cars selectable; audio settings stick |
+| `GameFlowUITests` | NEW GAME starts a run; game over → Play Again → Main Menu |
+| `DevModeUITests` | DEV menu: add money / set bank reach the Shop, set high score shows as BEST, unlock everything + reset progress, a preset starts a dev run |
+| `DevPanelUITests` | in-game panel: chips match the scenario and toggle; time scale, pause/step, +30 s and spawn menus work without honking; open road still steers and honks |
+
+The tests run with `-freshProfile`, which starts the app on an empty throwaway profile
+without starting a scenario, so they never touch real saves. `-devBank <amount>` funds that
+profile. Shared steps live in `UITestSupport.swift`.
 
 ```sh
 # Everything (unit + UI tests; the UI tests take a few minutes)

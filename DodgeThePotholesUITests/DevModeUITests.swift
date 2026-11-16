@@ -1,46 +1,10 @@
 import XCTest
 
-/// Taps through Dev mode the way a person would: the DEV menu, the Shop, and the
-/// in-game DEV panel. Every test starts on a throwaway profile (`-freshProfile`), so
-/// nothing touches real saves.
+/// The DEV menu's real-profile tools and presets, as a person would use them.
 final class DevModeUITests: XCTestCase {
 
     override func setUp() {
         continueAfterFailure = false
-    }
-
-    @MainActor
-    private func launch(_ arguments: [String] = []) -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments = ["-freshProfile"] + arguments
-        app.launch()
-        return app
-    }
-
-    /// The DEV panel readout, e.g. "t 3.1s · … · speed 4× · … · honks 0 · …".
-    @MainActor
-    private func readout(_ app: XCUIApplication) -> String {
-        let element = app.staticTexts["dev.readout"]
-        XCTAssertTrue(element.waitForExistence(timeout: 5))
-        return element.label
-    }
-
-    /// Swipes the DEV menu up until `element` is on screen (its form loads rows lazily).
-    @MainActor
-    private func scroll(to element: XCUIElement, in app: XCUIApplication) {
-        for _ in 0..<8 where !element.isHittable {
-            app.swipeUp()
-        }
-        XCTAssertTrue(element.isHittable, "\(element) never came on screen")
-    }
-
-    // MARK: - Real profile: money and high score
-
-    /// Opens the DEV menu, whose Real Profile section is at the top.
-    @MainActor
-    private func openDevMenu(_ app: XCUIApplication) {
-        app.buttons["dev.button"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["dev.bank"].waitForExistence(timeout: 5))
     }
 
     /// Types `value` into a DEV menu number field and taps its Set button.
@@ -53,89 +17,80 @@ final class DevModeUITests: XCTestCase {
     }
 
     @MainActor
-    private func shopBank(_ app: XCUIApplication) -> String {
-        app.buttons["SHOP"].tap()
-        let bank = app.descendants(matching: .any)["shop.bank"]
-        XCTAssertTrue(bank.waitForExistence(timeout: 5))
-        return bank.label
-    }
-
-    @MainActor
     func testAddedMoneyShowsInShop() {
-        let app = launch()
+        let app = launchApp()
         openDevMenu(app)
         app.buttons["dev.add10000"].tap()
         app.buttons["dev.add1000"].tap()
-        XCTAssertEqual(app.descendants(matching: .any)["dev.bank"].label, "Bank, $11,000")
+        XCTAssertEqual(element("dev.bank", in: app).label, "Bank, $11,000")
         app.buttons["Done"].tap()
 
-        XCTAssertEqual(shopBank(app), "Bank: $11,000")
+        XCTAssertEqual(openShop(app).label, "Bank: $11,000")
     }
 
     @MainActor
     func testSetBankThenBuyInShop() {
-        let app = launch()
+        let app = launchApp()
         openDevMenu(app)
         set("dev.setBank", to: "5000", in: app)
         app.buttons["Done"].tap()
-        XCTAssertEqual(shopBank(app), "Bank: $5,000")
+        let bank = openShop(app)
+        XCTAssertEqual(bank.label, "Bank: $5,000")
 
         app.buttons["Red Rocket, $500"].tap()
         app.buttons["Buy for $500"].tap()
-        let bank = app.descendants(matching: .any)["shop.bank"]
         XCTAssertTrue(bank.waitForLabel("Bank: $4,500"), bank.label)
     }
 
     @MainActor
     func testSetHighScoreShowsAsBestInGame() {
-        let app = launch()
+        let app = launchApp()
         openDevMenu(app)
         set("dev.setHighScore", to: "777", in: app)
-        XCTAssertEqual(app.descendants(matching: .any)["dev.highScore"].label, "High score, 777")
+        XCTAssertEqual(element("dev.highScore", in: app).label, "High score, 777")
         app.buttons["Done"].tap()
 
         app.buttons["NEW GAME"].tap()
-        let best = app.descendants(matching: .any)["hud.best"]
+        let best = element("hud.best", in: app)
         XCTAssertTrue(best.waitForExistence(timeout: 5))
         XCTAssertTrue(best.label.contains("777"), best.label)
     }
 
-    // MARK: - In-game DEV panel
-
     @MainActor
-    func testTimeScaleBarChangesSpeedWithoutHonking() {
-        let app = launch(["-devScenario", "godCruise", "-devOverlay"])
-        XCTAssertTrue(readout(app).contains("speed 1×"))
+    func testUnlockEverythingThenResetProgress() {
+        let app = launchApp(bank: 300)
+        openDevMenu(app)
+        app.buttons["dev.unlockAll"].tap()
+        app.sheets.buttons["Unlock everything"].tap()
+        app.buttons["Done"].tap()
+        _ = openShop(app)
+        XCTAssertTrue(app.buttons["Red Rocket, owned"].exists)
+        goBack(app)
 
-        app.buttons["4×"].tap()
-        sleep(1)   // the readout refreshes twice a second
-        let text = readout(app)
-        XCTAssertTrue(text.contains("speed 4×"), text)
-        XCTAssertTrue(text.contains("honks 0"), "a tap on the panel must not honk: \(text)")
+        openDevMenu(app)
+        app.buttons["dev.resetProgress"].tap()
+        app.sheets.buttons["Reset progress"].tap()
+        XCTAssertEqual(element("dev.bank", in: app).label, "Bank, $0")
+        app.buttons["Done"].tap()
+        _ = openShop(app)
+        XCTAssertTrue(app.buttons["Red Rocket, $500"].exists, "reset takes the unlocks back")
     }
 
-    /// The road below the panel still steers and honks.
     @MainActor
-    func testOpenRoadStillSteersAndHonks() {
-        let app = launch(["-devScenario", "godCruise", "-devOverlay"])
-        XCTAssertTrue(readout(app).contains("car 0"))
+    func testPresetStartsADevRun() {
+        let app = launchApp()
+        app.buttons["dev.button"].tap()
+        // A form picker's label includes its value, e.g. "Preset, None".
+        tapWhenReady(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Preset")).firstMatch)
+        tapWhenReady(app.buttons["lateGame"])
+        let start = app.buttons["Start Run"]
+        scroll(to: start, in: app)
+        start.tap()
 
-        let road = app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8))
-        road.tap()
-        sleep(1)
-        XCTAssertTrue(readout(app).contains("honks 1"), "a tap on the road honks")
-
-        road.press(forDuration: 0.1, thenDragTo: road.withOffset(CGVector(dx: 120, dy: 0)))
-        sleep(1)
-        let text = readout(app)
-        XCTAssertFalse(text.contains("car 0 "), "dragging right steers the car: \(text)")
-    }
-}
-
-extension XCUIElement {
-    /// Waits up to `timeout` seconds for the element's label to become `label`.
-    func waitForLabel(_ label: String, timeout: TimeInterval = 5) -> Bool {
-        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", label), object: self)
-        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+        // lateGame starts near top speed (travel 0.30 s instead of 2.00 s).
+        // The main menu's DEV button stays in the tree behind the run; the run's comes first.
+        let inGameDev = app.buttons.matching(identifier: "dev.button").firstMatch
+        tapWhenReady(inGameDev)
+        XCTAssertTrue(waitForReadout("travel 0.30s", in: app), readout(app))
     }
 }
