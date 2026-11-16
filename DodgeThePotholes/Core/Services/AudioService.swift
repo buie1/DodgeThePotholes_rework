@@ -19,6 +19,12 @@ protocol AudioServiceProtocol: AnyObject {
     /// Fades out and stops the current music track.
     func stopMusic()
 
+    /// Pauses the current track where it is (the game is paused).
+    func pauseMusic()
+
+    /// Continues a paused track.
+    func resumeMusic()
+
     /// Applies a slow-down effect to the current music track (drunk power-up).
     func setDrunkMode(_ enabled: Bool)
 }
@@ -82,6 +88,14 @@ final class AudioService: AudioServiceProtocol {
         player.prepareToPlay()
         player.play()
         musicPlayer = player
+    }
+
+    func pauseMusic() {
+        musicPlayer?.pause()
+    }
+
+    func resumeMusic() {
+        musicPlayer?.play()
     }
 
     func stopMusic() {

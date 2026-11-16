@@ -26,6 +26,32 @@ final class GameFlowUITests: XCTestCase {
     }
 
     @MainActor
+    func testPauseThenResumeWithCountdown() {
+        let app = launchApp()
+        app.buttons["NEW GAME"].tap()
+        tapWhenReady(app.buttons["hud.pause"])
+        XCTAssertTrue(app.staticTexts["PAUSED"].waitForExistence(timeout: 5))
+
+        app.buttons["RESUME"].tap()
+        XCTAssertTrue(element("pause.countdown", in: app).waitForExistence(timeout: 2), "3-2-1 shows")
+        XCTAssertTrue(app.buttons["hud.pause"].waitForExistence(timeout: 6), "play resumes after the countdown")
+        XCTAssertFalse(app.staticTexts["PAUSED"].exists)
+    }
+
+    @MainActor
+    func testLeavingTheAppPausesTheRun() {
+        let app = launchApp()
+        app.buttons["NEW GAME"].tap()
+        XCTAssertTrue(app.buttons["hud.pause"].waitForExistence(timeout: 5))
+
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.staticTexts["PAUSED"].waitForExistence(timeout: 5), "the run waits for the player")
+        app.buttons["MAIN MENU"].tap()
+        XCTAssertTrue(app.buttons["NEW GAME"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
     func testNewGameStartsARun() {
         let app = launchApp()
         app.buttons["NEW GAME"].tap()

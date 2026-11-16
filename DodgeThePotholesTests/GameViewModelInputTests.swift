@@ -119,6 +119,9 @@ final class MockAudioService: AudioServiceProtocol {
     func play(_ sound: GameSound) {}
     func startMusic(_ track: GameSound) { startedTrack = track }
     func stopMusic() {}
+    private(set) var isMusicPaused = false
+    func pauseMusic() { isMusicPaused = true }
+    func resumeMusic() { isMusicPaused = false }
     func setDrunkMode(_ enabled: Bool) {}
 }
 

@@ -13,6 +13,7 @@ import SpriteKit
 struct GameView: View {
 
     @Bindable var viewModel: GameViewModel
+    @Environment(\.scenePhase) private var scenePhase
 
     /// How long the full-screen cover takes to slide in. Play begins after it, so a run
     /// never ticks while the road is still moving into view.
@@ -48,11 +49,17 @@ struct GameView: View {
                     .padding(.top, insets.top)
                     .padding(.bottom, insets.bottom)
 
+                PauseOverlayView(viewModel: viewModel)
+
                 if viewModel.route == .gameOver {
                     GameOverView(viewModel: viewModel, screenSize: screenSize)
                 }
             }
             .ignoresSafeArea()
+            // Leaving the app (home, a call, the app switcher) pauses the run.
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { viewModel.pause() }
+            }
             .onAppear {
                 guard !hasStarted else { return }
                 hasStarted = true
@@ -86,6 +93,12 @@ struct GameView: View {
 
             if let index = viewModel.textMessageIndex {
                 TextMessageOverlayView(index: index)
+            }
+
+            if viewModel.route == .playing, viewModel.pauseState == .running, !viewModel.isAwaitingStart {
+                PauseButton(action: viewModel.pause)
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .padding(.top, 58)
             }
 
             #if DEBUG

@@ -178,6 +178,8 @@ final class GameViewModel: GameEngineDelegate {
         engine = eng
         scene = GameRenderScene(engine: eng)
 
+        clearPause()
+
         // Reset HUD. The best score is re-read, as the DEV menu can change it.
         highScore        = persistence.highScore
         score            = 0
@@ -266,6 +268,63 @@ final class GameViewModel: GameEngineDelegate {
     }
     #endif
 
+    // MARK: - Pause
+
+    /// The player's pause: the HUD's pause button, or leaving the app. (The DEV panel's
+    /// instant Pause/Resume uses `pauseGame()` / `resumeGame()` directly.)
+    enum PauseState: Equatable {
+        case running
+        case paused
+        /// Resuming after a 3-2-1 countdown; the number on screen.
+        case countingDown(Int)
+    }
+
+    private(set) var pauseState: PauseState = .running
+    /// Seconds each countdown number shows; shortened in tests.
+    @ObservationIgnored var countdownStep: Duration = .seconds(1)
+    @ObservationIgnored private var countdownTask: Task<Void, Never>?
+
+    /// Pauses a run in progress, or cancels a countdown back to paused.
+    func pause() {
+        if case .countingDown = pauseState {
+            countdownTask?.cancel()
+            countdownTask = nil
+            pauseState = .paused
+            return
+        }
+        guard route == .playing, engine?.state == .playing else { return }
+        pauseGame()
+        audioService.pauseMusic()
+        pauseState = .paused
+    }
+
+    /// Counts 3-2-1 so the player can get ready, then resumes.
+    func resumeAfterCountdown() {
+        guard pauseState == .paused else { return }
+        countdownTask?.cancel()
+        // Enter the countdown now, not when the task first runs, so a pause straight
+        // after tapping Resume always finds (and cancels) it.
+        pauseState = .countingDown(3)
+        countdownTask = Task { [weak self] in
+            for number in stride(from: 3, through: 1, by: -1) {
+                guard let self, !Task.isCancelled else { return }
+                self.pauseState = .countingDown(number)
+                try? await Task.sleep(for: self.countdownStep)
+            }
+            guard let self, !Task.isCancelled else { return }
+            self.pauseState = .running
+            self.resumeGame()
+            self.audioService.resumeMusic()
+        }
+    }
+
+    /// Clears any pause, e.g. when a run starts or ends.
+    private func clearPause() {
+        countdownTask?.cancel()
+        countdownTask = nil
+        pauseState = .running
+    }
+
     func pauseGame() {
         engine?.pause()
         scene?.isPaused = true
@@ -278,6 +337,7 @@ final class GameViewModel: GameEngineDelegate {
 
     /// Called from `GameOverView` "Main Menu" button.
     func returnToMenu() {
+        clearPause()
         engine?.forceStop()
         engine = nil
         scene  = nil
