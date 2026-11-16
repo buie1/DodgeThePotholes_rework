@@ -34,16 +34,21 @@ through potholes, traffic and dogs, with hitboxes).
 
 ## The DEV menu
 
-In debug builds the main menu has a red **DEV** button (top right). It opens a menu where
-you can:
+In debug builds the main menu has a red **DEV** button (top right). It opens a menu with,
+from the top:
 
-- **Set up a run:** pick a preset or edit a scenario (seed, god mode, autopilot, time scale,
-  starting speed and lives, power-ups to start with, which obstacles / roadside items /
-  power-ups spawn, throwaway bank and unlocks).
-- **Start Run:** plays the scenario on its own throwaway profile, or on your real one if
-  "Use real profile" is on. Closing the run returns you to the DEV menu.
-- **Edit your real profile:** add $10,000, unlock everything, or reset progress (keeps
-  sound settings). Each asks for confirmation first.
+- **Real Profile:** your actual saved progress, which the Shop and the game's BEST use.
+  - **Bank:** +$1,000 / +$10,000 / +$100,000, or "Set bank to…". Adding money is instant.
+  - **High score:** "Set high score to…" or "Reset high score". Lowering it asks first.
+    Each run re-reads it, so a new value shows as BEST in the next game.
+  - **Unlock everything** and **Reset progress** (keeps sound settings). Both ask first.
+- **Preset and scenario:** seed, god mode, autopilot, time scale, starting speed and lives,
+  power-ups to start with, and which obstacles / roadside items / power-ups spawn.
+- **Dev-Run Profile:** the **dev-run** bank and unlocks. These only apply to the throwaway
+  profile a dev run plays on, and **never** reach the Shop. To give yourself money to spend,
+  use Real Profile.
+- **Start Run:** plays the scenario on its throwaway profile, or on your real one if
+  "Use real profile" is on (not recorded). Closing the run returns you to the DEV menu.
 
 The `-devMenu` launch argument opens the menu on launch.
 
@@ -66,6 +71,9 @@ top of the screen. It stays at the top so it never hides your car.
 
 **Using the panel on a normal run:** that run is marked dev-adjusted, so it is **not
 recorded or submitted**. The next untouched run counts normally.
+
+The panel and the HUD sit above the steering layer. Panel controls get their own taps
+without honking or steering, while touches on open road still steer and honk.
 
 The `-devOverlay` launch argument opens the panel at the start of a run.
 
@@ -140,6 +148,27 @@ video through the `clock` field on snapshots.
 | `gameOver` | `score`, `money` |
 
 The log starts fresh each app launch.
+
+## UI tests
+
+`DodgeThePotholesUITests` taps through the app like a person (XCUITest). It covers the
+DEV menu's money and high-score tools, the Shop, the in-game panel, and steering. The tests
+run with `-freshProfile`, which starts the app on an empty throwaway profile without
+starting a scenario, so they never touch real saves.
+
+```sh
+# Everything (unit + UI tests; the UI tests take a few minutes)
+xcodebuild -scheme DodgeThePotholes -destination 'platform=iOS Simulator,name=iPhone 17' test
+# Only the fast unit tests
+xcodebuild -scheme DodgeThePotholes -destination 'platform=iOS Simulator,name=iPhone 17' test -only-testing:DodgeThePotholesTests
+# Only the UI tests
+xcodebuild -scheme DodgeThePotholes -destination 'platform=iOS Simulator,name=iPhone 17' test -only-testing:DodgeThePotholesUITests
+```
+
+Elements the tests use carry accessibility identifiers (`dev.button`, `dev.bank`,
+`dev.add10000`, `dev.setBank`, `dev.highScore`, `shop.bank`, `hud.best`, `dev.readout`…).
+The DEV panel readout also shows the time scale, the car's x position and a honk count, so
+a test can tell a panel tap from a road tap.
 
 ## Headless runs (tests)
 

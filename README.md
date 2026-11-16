@@ -31,6 +31,10 @@ xcodebuild -scheme DodgeThePotholes -destination 'platform=iOS Simulator,name=iP
 xcodebuild -scheme DodgeThePotholes -destination 'platform=iOS Simulator,name=iPhone 17' test
 ```
 
+`test` runs the unit tests (`DodgeThePotholesTests`) and the UI tests
+(`DodgeThePotholesUITests`, a few minutes). Add `-only-testing:DodgeThePotholesTests` for
+just the fast unit tests.
+
 Tilt steering needs a real device; in the simulator, drag to steer.
 
 ## Architecture
