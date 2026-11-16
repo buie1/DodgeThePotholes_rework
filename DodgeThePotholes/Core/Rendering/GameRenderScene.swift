@@ -23,6 +23,9 @@ final class GameRenderScene: SKScene {
 
     private let factory = EntityNodeFactory()
     private let road: SKSpriteNode
+    /// A faint copy of the road trailing behind it: a motion blur that builds with speed.
+    private let roadTrail: SKSpriteNode
+    private let speedLines: SpeedLines
     private let playerNode: PlayerNode
     /// Shakes, flashes and holds the action on impacts.
     private let impactCamera: ImpactCamera
@@ -49,6 +52,8 @@ final class GameRenderScene: SKScene {
         // Legacy road: one `road_long` sprite four screens tall, scrolled and reset every screen.
         road = SKSpriteNode(texture: factory.texture(SpriteCatalog.Image.roadLong.rawValue),
                             size: CGSize(width: engine.worldSize.width, height: 4 * engine.worldSize.height))
+        roadTrail = road.copy() as! SKSpriteNode
+        speedLines = SpeedLines(worldSize: engine.worldSize)
         playerNode = PlayerNode(player: engine.player, factory: factory)
         impactCamera = ImpactCamera(worldSize: engine.worldSize)
         super.init(size: engine.worldSize)
@@ -58,6 +63,10 @@ final class GameRenderScene: SKScene {
         backgroundColor = .black
         road.zPosition = -1
         addChild(road)
+        roadTrail.zPosition = -0.9
+        roadTrail.alpha = 0
+        addChild(roadTrail)
+        addChild(speedLines)
         addChild(playerNode)
         addChild(impactCamera)
         camera = impactCamera
@@ -93,6 +102,12 @@ final class GameRenderScene: SKScene {
     private func scrollRoad(dt: Double) {
         roadOffset = (roadOffset + engine.roadSpeed * dt).truncatingRemainder(dividingBy: size.height)
         road.position.y = -roadOffset
+
+        // Speed feel: the trail sits where the road was a moment ago, and streaks rush past.
+        let intensity = engine.speedProgress
+        roadTrail.position.y = road.position.y + engine.roadSpeed * 0.03
+        roadTrail.alpha = 0.3 * intensity
+        speedLines.update(dt: dt, intensity: intensity, roadSpeed: engine.roadSpeed)
     }
 
     // MARK: - Entity sync

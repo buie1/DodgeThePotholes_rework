@@ -42,6 +42,13 @@ final class GameEngine {
     /// Road scroll speed in world units per second.
     var roadSpeed: Double { worldSize.height / travelDuration }
 
+    /// How far the speed ramp has gone: 0 at the starting speed, 1 at top speed.
+    var speedProgress: Double {
+        let range = tuning.speed.startTravelDuration - tuning.speed.minTravelDuration
+        guard range > 0 else { return 0 }
+        return min(1, max(0, (tuning.speed.startTravelDuration - travelDuration) / range))
+    }
+
     // MARK: - Configuration
 
     let worldSize: CGSize

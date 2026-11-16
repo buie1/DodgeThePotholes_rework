@@ -80,6 +80,7 @@
 		7E3D4CBB5294E8B508AD0BDE /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 043C8A01C890EE2D173D93AF /* SpriteKit.framework */; };
 		81D2EE13AC3DF6F0734FB0A6 /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8190660069AA56E2865F6832 /* CoreHaptics.framework */; };
 		81DBC5742DA40697F3AFEFBD /* police_s.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3D6098674B5E16EB4CAFF8E8 /* police_s.wav */; };
+		8871CBD05AF527F00043B187 /* SpeedFeelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25D65C913261D3A351C0444 /* SpeedFeelTests.swift */; };
 		89F9BB517F64C73454F66C9C /* UnlockRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546537AA7FBEB9453ACED722 /* UnlockRecord.swift */; };
 		8A1718225C981137034FC31B /* RoadStripes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A355F7294E00AA3210CD09F /* RoadStripes.swift */; };
 		8D5BEC90B3E415F3DC7F8EE5 /* cone_pattern1.json in Resources */ = {isa = PBXBuildFile; fileRef = D6B77B07A57D31294EBCA7D3 /* cone_pattern1.json */; };
@@ -112,6 +113,7 @@
 		BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */; };
 		BEF29EBFABC42CCCC3F9996B /* Array2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D53B029975DF13D6E8D645 /* Array2D.swift */; };
 		C48001D96F93BDC63D470BC3 /* DodgeThePotholesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A2197B95B77BA23579207F /* DodgeThePotholesApp.swift */; };
+		CC394C2081074D12CBD596AB /* SpeedLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45045FDB67D0DFA0795DF7B4 /* SpeedLines.swift */; };
 		CE857E244C0C9CAB223D9BA4 /* DevProfileToolsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F56096B6BCD63993B28B7A /* DevProfileToolsSection.swift */; };
 		D089222678702D815931ADBC /* CarSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A47D32FE4AF1445606414A4B /* CarSelectView.swift */; };
 		D41A420B9C705FA3C17E2217 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727E4CA002959AEA1AB50CEA /* AppFonts.swift */; };
@@ -177,6 +179,7 @@
 		3D6098674B5E16EB4CAFF8E8 /* police_s.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = police_s.wav; sourceTree = "<group>"; };
 		3F7476FC4015C83B5C5EC961 /* AlertBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertBannerView.swift; sourceTree = "<group>"; };
 		421964D192A64B06E29C1B0A /* LivesDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivesDisplayView.swift; sourceTree = "<group>"; };
+		45045FDB67D0DFA0795DF7B4 /* SpeedLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedLines.swift; sourceTree = "<group>"; };
 		4580F01BB70C79ABEFC360C6 /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		498FBB401194B789C3369283 /* ObstacleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstacleType.swift; sourceTree = "<group>"; };
 		4A24EBBD681EF45029F86C97 /* GameEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngineTests.swift; sourceTree = "<group>"; };
@@ -231,6 +234,7 @@
 		B04389AB0A6117773D7538F0 /* PlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerState.swift; sourceTree = "<group>"; };
 		B05D887BB1B8707054EED7EE /* DrunkGogglesOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrunkGogglesOverlay.swift; sourceTree = "<group>"; };
 		B2117657443EDAACD0D935FD /* Obstacle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
+		B25D65C913261D3A351C0444 /* SpeedFeelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedFeelTests.swift; sourceTree = "<group>"; };
 		B33D5585DBEFEA579129409D /* ResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceTests.swift; sourceTree = "<group>"; };
 		B6174851FD947D07571C9E86 /* PersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceServiceTests.swift; sourceTree = "<group>"; };
 		B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevOverlayTests.swift; sourceTree = "<group>"; };
@@ -426,6 +430,7 @@
 				168B7A4C5CA1225589A49B95 /* ScenarioRunner.swift */,
 				5F2BBF06B0337343C7A833A7 /* SettingsViewModelTests.swift */,
 				EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */,
+				B25D65C913261D3A351C0444 /* SpeedFeelTests.swift */,
 			);
 			path = DodgeThePotholesTests;
 			sourceTree = "<group>";
@@ -514,6 +519,7 @@
 				FFDA19FE3EA0592B2675D594 /* GameRenderScene.swift */,
 				A562F76005A5DF23ED0D15F9 /* ImpactFeel.swift */,
 				7922CB280A4A8C1C244034B6 /* PlayerNode.swift */,
+				45045FDB67D0DFA0795DF7B4 /* SpeedLines.swift */,
 				7FCA40628C27714C128C2E5C /* SpriteCatalog.swift */,
 			);
 			path = Rendering;
@@ -760,6 +766,7 @@
 				8F5DFB59E6FA3B94CB8CABEF /* ScenarioRunner.swift in Sources */,
 				38C98A369705617FA69FF98B /* SettingsViewModelTests.swift in Sources */,
 				A2C5D092CFBD89286FF8FE89 /* ShopViewModelTests.swift in Sources */,
+				8871CBD05AF527F00043B187 /* SpeedFeelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -831,6 +838,7 @@
 				BB328BECDE95BE966D7948F3 /* ShopItemRow.swift in Sources */,
 				41E0DB98A2FCA7F340C527E3 /* ShopView.swift in Sources */,
 				3332B3A5450D3B0593E714B0 /* ShopViewModel.swift in Sources */,
+				CC394C2081074D12CBD596AB /* SpeedLines.swift in Sources */,
 				10929E5791A3E28A202ABA3D /* SplitMix64.swift in Sources */,
 				BE35836F9CF93D5C2B468F5F /* SpriteCatalog.swift in Sources */,
 				AEF6ECE1D31DA0B9F8A97FD6 /* SpriteImage.swift in Sources */,
