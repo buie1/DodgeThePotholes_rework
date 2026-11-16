@@ -11,6 +11,8 @@ struct DevMenuView: View {
     var body: some View {
         NavigationStack {
             Form {
+                DevProfileToolsSection(viewModel: viewModel)
+
                 Section {
                     Picker("Preset", selection: presetBinding) {
                         Text("None").tag(String?.none)
@@ -32,8 +34,6 @@ struct DevMenuView: View {
                          ? "Runs on your real profile are not recorded."
                          : "Runs use a throwaway profile. Dev runs never reach Game Center.")
                 }
-
-                DevProfileToolsSection(viewModel: viewModel)
             }
             .navigationTitle("Dev Mode")
             .navigationBarTitleDisplayMode(.inline)

@@ -178,7 +178,8 @@ final class GameViewModel: GameEngineDelegate {
         engine = eng
         scene = GameRenderScene(engine: eng)
 
-        // Reset HUD
+        // Reset HUD. The best score is re-read, as the DEV menu can change it.
+        highScore        = persistence.highScore
         score            = 0
         money            = 0
         lives            = tuning.lives.start

@@ -51,12 +51,18 @@ struct DevScenarioForm: View {
             }
         }
 
-        Section("Profile") {
+        Section {
             Toggle("Use real profile", isOn: $viewModel.scenario.useRealProfile)
             if !viewModel.scenario.useRealProfile {
-                Stepper("Bank: $\(bank.wrappedValue)", value: bank, in: 0...1_000_000, step: 1_000)
-                Toggle("Unlock everything", isOn: $viewModel.scenario.unlockAll)
+                Stepper("Dev-run bank: $\(bank.wrappedValue)", value: bank, in: 0...1_000_000, step: 1_000)
+                Toggle("Dev-run unlocks everything", isOn: $viewModel.scenario.unlockAll)
             }
+        } header: {
+            Text("Dev-Run Profile")
+        } footer: {
+            Text(viewModel.scenario.useRealProfile
+                 ? "The run plays on your real profile but isn't recorded."
+                 : "Only for the throwaway profile a dev run uses. To change your real bank, use Real Profile at the top.")
         }
     }
 

@@ -17,6 +17,8 @@ struct HUDOverlayView: View {
                 }
                 Spacer()
                 stat("BEST", "\(viewModel.highScore)", color: .yellow, alignment: .center)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("hud.best")
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
                     label("LIVES")

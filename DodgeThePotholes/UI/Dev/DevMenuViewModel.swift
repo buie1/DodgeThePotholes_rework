@@ -104,12 +104,19 @@ final class DevMenuViewModel {
     /// The real profile's bank balance.
     var realMoney: Int { persistence.money }
 
+    /// The real profile's best score.
+    var realHighScore: Int { persistence.highScore }
+
     private var tools: (any DevProfileTools)? { persistence as? any DevProfileTools }
 
     /// Whether the real profile can be edited (false for test mocks).
     var hasProfileTools: Bool { tools != nil }
 
     func addMoney(_ amount: Int) { tools?.devAddMoney(amount) }
+
+    func setMoney(_ amount: Int) { tools?.devSetMoney(amount) }
+
+    func setHighScore(_ score: Int) { tools?.devSetHighScore(score) }
 
     func unlockEverything() { tools?.devUnlockAll(catalog: .bundled) }
 

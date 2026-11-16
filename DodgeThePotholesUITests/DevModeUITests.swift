@@ -34,22 +34,70 @@ final class DevModeUITests: XCTestCase {
         XCTAssertTrue(element.isHittable, "\(element) never came on screen")
     }
 
-    // MARK: - Money for the Shop
+    // MARK: - Real profile: money and high score
+
+    /// Opens the DEV menu, whose Real Profile section is at the top.
+    @MainActor
+    private func openDevMenu(_ app: XCUIApplication) {
+        app.buttons["dev.button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["dev.bank"].waitForExistence(timeout: 5))
+    }
+
+    /// Types `value` into a DEV menu number field and taps its Set button.
+    @MainActor
+    private func set(_ id: String, to value: String, in app: XCUIApplication) {
+        let field = app.textFields["\(id)Field"]
+        field.tap()
+        field.typeText(value)
+        app.buttons[id].tap()
+    }
+
+    @MainActor
+    private func shopBank(_ app: XCUIApplication) -> String {
+        app.buttons["SHOP"].tap()
+        let bank = app.descendants(matching: .any)["shop.bank"]
+        XCTAssertTrue(bank.waitForExistence(timeout: 5))
+        return bank.label
+    }
 
     @MainActor
     func testAddedMoneyShowsInShop() {
         let app = launch()
-        app.buttons["dev.button"].tap()
-        let addMoney = app.buttons["Add $10,000"].firstMatch
-        scroll(to: addMoney, in: app)
-        addMoney.tap()
-        app.sheets.buttons["Add $10,000"].firstMatch.tap()
+        openDevMenu(app)
+        app.buttons["dev.add10000"].tap()
+        app.buttons["dev.add1000"].tap()
+        XCTAssertEqual(app.descendants(matching: .any)["dev.bank"].label, "Bank, $11,000")
         app.buttons["Done"].tap()
 
-        app.buttons["SHOP"].tap()
+        XCTAssertEqual(shopBank(app), "Bank: $11,000")
+    }
+
+    @MainActor
+    func testSetBankThenBuyInShop() {
+        let app = launch()
+        openDevMenu(app)
+        set("dev.setBank", to: "5000", in: app)
+        app.buttons["Done"].tap()
+        XCTAssertEqual(shopBank(app), "Bank: $5,000")
+
+        app.buttons["Red Rocket, $500"].tap()
+        app.buttons["Buy for $500"].tap()
         let bank = app.descendants(matching: .any)["shop.bank"]
-        XCTAssertTrue(bank.waitForExistence(timeout: 5))
-        XCTAssertEqual(bank.label, "Bank: $10,000")
+        XCTAssertTrue(bank.waitForLabel("Bank: $4,500"), bank.label)
+    }
+
+    @MainActor
+    func testSetHighScoreShowsAsBestInGame() {
+        let app = launch()
+        openDevMenu(app)
+        set("dev.setHighScore", to: "777", in: app)
+        XCTAssertEqual(app.descendants(matching: .any)["dev.highScore"].label, "High score, 777")
+        app.buttons["Done"].tap()
+
+        app.buttons["NEW GAME"].tap()
+        let best = app.descendants(matching: .any)["hud.best"]
+        XCTAssertTrue(best.waitForExistence(timeout: 5))
+        XCTAssertTrue(best.label.contains("777"), best.label)
     }
 
     // MARK: - In-game DEV panel
@@ -81,5 +129,13 @@ final class DevModeUITests: XCTestCase {
         sleep(1)
         let text = readout(app)
         XCTAssertFalse(text.contains("car 0 "), "dragging right steers the car: \(text)")
+    }
+}
+
+extension XCUIElement {
+    /// Waits up to `timeout` seconds for the element's label to become `label`.
+    func waitForLabel(_ label: String, timeout: TimeInterval = 5) -> Bool {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", label), object: self)
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
     }
 }

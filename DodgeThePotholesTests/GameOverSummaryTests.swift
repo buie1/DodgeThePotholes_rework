@@ -68,6 +68,13 @@ final class GameOverSummaryTests: XCTestCase {
         XCTAssertEqual(RunStatsGrid.clock(83), "1:23")
     }
 
+    func testEachRunRereadsTheBestScore() {
+        viewModel.startGame(screenSize: screen)
+        persistence.highScore = 9_000          // e.g. set from the DEV menu
+        viewModel.startGame(screenSize: screen)
+        XCTAssertEqual(viewModel.highScore, 9_000)
+    }
+
     // MARK: - Starting after the slide-in
 
     func testPreparedRunWaitsForBeginRun() {

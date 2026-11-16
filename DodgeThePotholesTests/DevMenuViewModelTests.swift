@@ -70,6 +70,11 @@ final class DevMenuViewModelTests: XCTestCase {
         XCTAssertEqual(menu.realMoney, 10_005)
         XCTAssertTrue(store.hasTank)
 
+        menu.setMoney(2_500)
+        XCTAssertEqual(store.money, 2_500)
+        menu.setHighScore(42_000)
+        XCTAssertEqual(menu.realHighScore, 42_000)
+
         menu.resetProgress()
         XCTAssertEqual(store.money, 0)
         XCTAssertEqual(store.highScore, 0)

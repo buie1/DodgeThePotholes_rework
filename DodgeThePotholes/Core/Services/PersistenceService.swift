@@ -253,6 +253,8 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
 @MainActor
 protocol DevProfileTools: AnyObject {
     func devAddMoney(_ amount: Int)
+    func devSetMoney(_ amount: Int)
+    func devSetHighScore(_ score: Int)
     /// Owns every shop item except the consumable extra life.
     func devUnlockAll(catalog: GameCatalog)
     /// Clears money, high score, run history, unlocks and the car/song choice.
@@ -263,6 +265,16 @@ protocol DevProfileTools: AnyObject {
 extension SwiftDataPersistenceService: DevProfileTools {
     func devAddMoney(_ amount: Int) {
         profile.money += amount
+        save()
+    }
+
+    func devSetMoney(_ amount: Int) {
+        profile.money = max(0, amount)
+        save()
+    }
+
+    func devSetHighScore(_ score: Int) {
+        profile.highScore = max(0, score)
         save()
     }
 
