@@ -192,6 +192,34 @@ struct EntitySpawner {
         )
     }
 
+    // MARK: - Placed (tutorial)
+
+    /// A `type` obstacle dropping straight down the road at `x`.
+    func placedObstacle(_ type: ObstacleType, x: Double, travel: Double) -> ObstacleEntity {
+        falling(type, x: x, travel: travel)
+    }
+
+    /// A `type` pickup dropping straight down the road at `x`.
+    func placedPowerUp(_ type: PowerUpType, x: Double, travel: Double) -> PowerUpEntity {
+        let size = type.spawnSize
+        let startY = halfH + size.height / 2
+        let endY = -halfH - size.height
+        return PowerUpEntity(id: UUID(), position: CGPoint(x: x, y: startY), size: size,
+                             velocity: CGVector(dx: 0, dy: (endY - startY) / travel), type: type)
+    }
+
+    /// A column of `count` coins dropping down the road at `x`.
+    func coinColumn(count: Int, x: Double, travel: Double) -> [CoinEntity] {
+        let tile = GameConfig.coinTileSize
+        let speed = (world.height + 2 * tile.height * Double(count)) / travel
+        return (0..<count).map { row in
+            CoinEntity(id: UUID(),
+                       position: CGPoint(x: x, y: halfH + tile.height / 2 + Double(row) * tile.height),
+                       size: CGSize(width: tile.width / 2, height: tile.height / 2),
+                       velocity: CGVector(dx: 0, dy: -speed))
+        }
+    }
+
     // MARK: - Horn
 
     /// A horn blast or missile launched from the player toward a quarter of the way up the screen.

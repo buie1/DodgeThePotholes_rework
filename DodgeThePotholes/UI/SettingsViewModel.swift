@@ -69,6 +69,14 @@ final class SettingsViewModel {
     /// `true` until a new player picks Tilt or Drag.
     var needsControlChoice: Bool { persistence.needsControlChoice }
 
+    /// `true` while a replay of the tutorial is waiting for the next game.
+    var isTutorialQueued: Bool { persistence.tutorialStatus == .requested }
+
+    /// Plays the tutorial again on the next game.
+    func replayTutorial() {
+        persistence.tutorialStatus = .requested
+    }
+
     /// The first-launch choice: saves the scheme and doesn't ask again.
     func chooseControls(_ scheme: ControlScheme) {
         persistence.controlScheme = scheme

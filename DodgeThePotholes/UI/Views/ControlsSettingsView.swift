@@ -18,6 +18,13 @@ struct ControlsSettingsView: View {
                 if viewModel.controlScheme == .tilt {
                     calibration
                 }
+
+                MenuButton(title: "REPLAY TUTORIAL", color: .gray, action: viewModel.replayTutorial)
+                if viewModel.isTutorialQueued {
+                    Text("PLAYS ON YOUR NEXT GAME")
+                        .font(.pixel(7))
+                        .foregroundStyle(.yellow)
+                }
             }
         }
         .onAppear(perform: viewModel.startTiltPreview)
@@ -35,9 +42,13 @@ struct ControlsSettingsView: View {
                     .multilineTextAlignment(.center)
                 MenuButton(title: "CALIBRATE", color: .cyan, action: viewModel.calibrateTilt)
                 if viewModel.isTiltCalibrated {
-                    Button("RESET CALIBRATION", action: viewModel.resetTiltCalibration)
-                        .font(.pixel(8))
-                        .foregroundStyle(.yellow)
+                    Button(action: viewModel.resetTiltCalibration) {
+                        Text("RESET CALIBRATION")
+                            .font(.pixel(8))
+                            .foregroundStyle(.yellow)
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
                 }
             }
         } else {

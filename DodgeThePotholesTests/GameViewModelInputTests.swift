@@ -167,6 +167,7 @@ final class MockPersistenceService: PersistenceServiceProtocol {
     var controlScheme: ControlScheme = .tilt
     var tiltNeutral: Double = 0
     var hasChosenControls = false
+    var tutorialStatus: TutorialStatus = .done
     var hasTank = false
     var extraLifePending = false
     var unlocked: Set<String> = []

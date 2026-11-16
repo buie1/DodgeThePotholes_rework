@@ -23,6 +23,8 @@ final class PlayerProfile {
     var tiltNeutral: Double = 0
     /// Set once the player has picked Tilt or Drag on first launch.
     var hasChosenControls: Bool = false
+    /// `TutorialStatus.rawValue`.
+    var tutorialStatusKey: String = TutorialStatus.new.rawValue
 
     @Relationship(deleteRule: .cascade) var unlocks: [UnlockRecord] = []
     @Relationship(deleteRule: .cascade) var scoreHistory: [ScoreEntry] = []

@@ -96,6 +96,10 @@ final class DevEventLog: GameEngineDelegate {
         forward?.engine(engine, didScoreBonus: kind, points: points)
     }
 
+    func engineDidStep(_ engine: GameEngine) {
+        forward?.engineDidStep(engine)
+    }
+
     func engine(_ engine: GameEngine, requestsHaptic pattern: HapticPattern) {
         if pattern != .coinPickup { write(engine, "haptic", ["pattern": "\(pattern)"]) }
         forward?.engine(engine, requestsHaptic: pattern)

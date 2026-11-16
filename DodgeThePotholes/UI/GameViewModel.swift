@@ -99,6 +99,12 @@ final class GameViewModel: GameEngineDelegate {
     /// Balance values each run's engine is built with.
     private let tuning: GameTuning
 
+    /// The first-run tutorial while one is playing; `nil` in a normal run.
+    private(set) var tutorial: Tutorial?
+    @ObservationIgnored private var tutorialClock: Double = 0
+    /// Canvas size of the current run, to start the real run after the tutorial.
+    @ObservationIgnored private var screenSize: CGSize = .zero
+
     #if DEBUG
     /// Dev-mode setup applied to each run; `nil` for normal play.
     @ObservationIgnored var devScenario: DevScenario?
@@ -164,6 +170,14 @@ final class GameViewModel: GameEngineDelegate {
     /// Builds a run's engine and scene so the road is on screen, without starting play.
     /// `beginRun()` starts it; `GameView` waits for its slide-in to finish first.
     func prepareGame(screenSize: CGSize) {
+        self.screenSize = screenSize
+        var playsTutorial = persistence.needsTutorial
+        #if DEBUG
+        playsTutorial = playsTutorial && devScenario == nil
+        #endif
+        tutorial = playsTutorial ? Tutorial(controls: persistence.controlScheme) : nil
+        tutorialClock = 0
+
         let worldSize = GameConfig.worldSize(forScreen: screenSize)
         let eng = makeEngine(worldSize: worldSize, carSkin: persistence.selectedCar)
         eng.delegate = self
@@ -215,7 +229,8 @@ final class GameViewModel: GameEngineDelegate {
             }
         }
 
-        let extraLives = persistence.consumeExtraLife() ? 1 : 0
+        // A bought extra life waits for a real run, not the tutorial.
+        let extraLives = tutorial == nil && persistence.consumeExtraLife() ? 1 : 0
         eng.start(carSkin: persistence.selectedCar, extraLives: extraLives, hasTank: persistence.hasTank)
         #if DEBUG
         devScenario?.apply(to: eng)
@@ -234,12 +249,17 @@ final class GameViewModel: GameEngineDelegate {
             return engine
         }
         #endif
-        return GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning, drivesOwnLoop: false)
+        // The tutorial's road starts empty; it places only what each step needs.
+        let engine = GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning,
+                                tables: tutorial == nil ? nil : SpawnTables.none, drivesOwnLoop: false)
+        engine.isPractice = tutorial != nil
+        return engine
     }
 
-    /// `false` for dev runs on the real profile, and for normal runs changed from the
-    /// DEV overlay, so they never touch saved progress.
+    /// `false` for the tutorial, dev runs on the real profile, and normal runs changed
+    /// from the DEV overlay, so they never touch saved progress.
     private var recordsRuns: Bool {
+        if tutorial != nil { return false }
         #if DEBUG
         if devScenario?.useRealProfile == true { return false }
         return devScenario != nil || !isDevAdjustedRun
@@ -248,8 +268,9 @@ final class GameViewModel: GameEngineDelegate {
         #endif
     }
 
-    /// Dev runs, and runs changed from the DEV overlay, never reach Game Center.
+    /// The tutorial, dev runs, and runs changed from the DEV overlay never reach Game Center.
     private var submitsScores: Bool {
+        if tutorial != nil { return false }
         #if DEBUG
         return devScenario == nil && !isDevAdjustedRun
         #else
@@ -267,6 +288,22 @@ final class GameViewModel: GameEngineDelegate {
         scene?.debugRedraw()
     }
     #endif
+
+    // MARK: - Tutorial
+
+    /// Follows the tutorial after every engine step.
+    func engineDidStep(_ engine: GameEngine) {
+        guard tutorial != nil else { return }
+        let dt = engine.elapsed - tutorialClock
+        tutorialClock = engine.elapsed
+        tutorial?.update(engine: engine, dt: dt)
+    }
+
+    /// Ends the tutorial (finished or skipped) and starts a real run.
+    func finishTutorial() {
+        persistence.tutorialStatus = .done
+        startGame(screenSize: screenSize)
+    }
 
     // MARK: - Pause
 

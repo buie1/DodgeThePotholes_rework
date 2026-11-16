@@ -36,6 +36,7 @@ protocol PersistenceServiceProtocol: AnyObject {
     var tiltNeutral: Double { get set }
     /// Set once the player has picked Tilt or Drag on first launch.
     var hasChosenControls: Bool { get set }
+    var tutorialStatus: TutorialStatus { get set }
 
     /// `true` once the tank is bought. It replaces the monster-truck sprite.
     var hasTank: Bool { get }
@@ -67,6 +68,16 @@ extension PersistenceServiceProtocol {
     /// A new player who hasn't picked controls yet. Players with finished runs (e.g. from
     /// before the choice existed) already know the game, so they skip it.
     var needsControlChoice: Bool { !hasChosenControls && bestRuns(limit: 1).isEmpty }
+
+    /// The next game should be the tutorial: asked for from Settings, or a new player's
+    /// first game (players with finished runs skip it unless they ask).
+    var needsTutorial: Bool {
+        switch tutorialStatus {
+        case .requested: return true
+        case .new:       return bestRuns(limit: 1).isEmpty
+        case .done:      return false
+        }
+    }
 
     /// A car with no unlock key is free; the others need their unlock.
     func isUnlocked(_ car: CarSkin) -> Bool {
@@ -165,6 +176,11 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
     var hasChosenControls: Bool {
         get { profile.hasChosenControls }
         set { profile.hasChosenControls = newValue; save() }
+    }
+
+    var tutorialStatus: TutorialStatus {
+        get { TutorialStatus(rawValue: profile.tutorialStatusKey) ?? .new }
+        set { profile.tutorialStatusKey = newValue.rawValue; save() }
     }
 
     // MARK: - Shop

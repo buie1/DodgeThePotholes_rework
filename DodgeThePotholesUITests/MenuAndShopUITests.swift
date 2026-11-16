@@ -47,6 +47,38 @@ final class MenuAndShopUITests: XCTestCase {
         XCTAssertEqual(app.buttons["controls.drag"].value as? String, "selected", "the choice was saved")
     }
 
+    @MainActor
+    func testFirstGameIsTheTutorialAndCanBeSkipped() {
+        let app = launchApp(onboarding: true)
+        tapWhenReady(app.buttons["choose.drag"])
+        XCTAssertTrue(app.buttons["choose.drag"].waitForNonExistence(timeout: 5), "the choice screen closes")
+        app.buttons["NEW GAME"].tap()
+
+        // Worded for the chosen controls.
+        let prompt = app.staticTexts["DRAG LEFT AND RIGHT TO STEER"]
+        XCTAssertTrue(prompt.waitForExistence(timeout: 5), "the first game is the tutorial")
+
+        app.buttons["SKIP TUTORIAL"].tap()
+        XCTAssertTrue(prompt.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["hud.pause"].waitForExistence(timeout: 5), "a real run starts")
+    }
+
+    @MainActor
+    func testReplayTutorialFromSettings() {
+        let app = launchApp()
+        app.buttons["SETTINGS"].tap()
+        app.buttons["CONTROLS"].tap()
+        let replay = app.buttons["REPLAY TUTORIAL"]
+        scroll(to: replay, in: app)
+        replay.tap()
+        XCTAssertTrue(app.staticTexts["PLAYS ON YOUR NEXT GAME"].waitForExistence(timeout: 2))
+        goBack(app)
+        goBack(app)
+
+        app.buttons["NEW GAME"].tap()
+        XCTAssertTrue(app.staticTexts["STEP 1 OF 4"].waitForExistence(timeout: 5))
+    }
+
     // MARK: - Shop
 
     @MainActor

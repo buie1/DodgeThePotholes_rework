@@ -40,6 +40,8 @@ final class GameEngine {
     private(set) var stats = RunStats()
     /// Near-misses, smashes and clean Traffic Zones chained into a score multiplier.
     private(set) var combo: Combo
+    /// A practice run (the tutorial): hits flash the car but never cost a life.
+    @ObservationIgnored var isPractice = false
     /// One-shot visual effects emitted during the most recent `update`.
     private(set) var frameEvents: [GameEvent] = []
 
@@ -228,6 +230,7 @@ final class GameEngine {
         tickScore(dt: dt)
         combo.tick(dt: dt)
         pruneOffScreen()
+        delegate?.engineDidStep(self)
     }
 
     // MARK: - Internal Task loop (~60 fps)
@@ -505,14 +508,16 @@ final class GameEngine {
 
     private func loseLife() {
         combo.reset()
+        var costsNothing = isPractice
         #if DEBUG
-        if debug.godMode {
+        costsNothing = costsNothing || debug.godMode
+        #endif
+        if costsNothing {
             // The hit still flashes the car, but costs nothing.
             player.recoveryRemaining = tuning.durations.recovery
             delegate?.engine(self, didChangePlayerState: player.state)
             return
         }
-        #endif
         player.lives = max(0, player.lives - 1)
         delegate?.engine(self, didUpdateLives: player.lives)
 
@@ -608,6 +613,23 @@ final class GameEngine {
             if roll < 0 { return item }
         }
         return pool.last?.0
+    }
+
+    // MARK: - Placing (tutorial)
+
+    /// Drops a `type` obstacle straight down the road at `x`.
+    func place(_ type: ObstacleType, atX x: Double) {
+        obstacles.append(spawner.placedObstacle(type, x: x, travel: travelDuration))
+    }
+
+    /// Drops a `type` pickup straight down the road at `x`.
+    func place(_ type: PowerUpType, atX x: Double) {
+        powerUpEntities.append(spawner.placedPowerUp(type, x: x, travel: travelDuration))
+    }
+
+    /// Drops a column of `count` coins down the road at `x`.
+    func placeCoins(_ count: Int, atX x: Double) {
+        coins += spawner.coinColumn(count: count, x: x, travel: travelDuration)
     }
 
     // MARK: - Near-misses and combo

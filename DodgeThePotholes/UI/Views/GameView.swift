@@ -77,6 +77,7 @@ struct GameView: View {
     private var overlays: some View {
         ZStack {
             HUDOverlayView(viewModel: viewModel)
+            TutorialOverlayView(viewModel: viewModel)
 
             if viewModel.isAwaitingStart {
                 Text("GET READY")

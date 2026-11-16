@@ -36,6 +36,7 @@ struct DodgeThePotholesApp: App {
             // Dev runs and UI tests start past the first-launch onboarding unless they test it.
             if launchScenario != nil || arguments.contains("-skipOnboarding") {
                 store.hasChosenControls = true
+                store.tutorialStatus = .done
             }
             _persistence = State(initialValue: store)
             return

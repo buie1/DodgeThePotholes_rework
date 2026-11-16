@@ -32,8 +32,12 @@ protocol GameEngineDelegate: AnyObject {
     /// Fired when a combo action scores; `points` is already multiplied. Optional: the HUD
     /// reads `GameEngine.combo` and the renderer draws `GameEvent.bonus`.
     func engine(_ engine: GameEngine, didScoreBonus kind: BonusKind, points: Int)
+    /// Fired after every simulation step while playing. Optional: the tutorial uses it
+    /// to follow the player's progress.
+    func engineDidStep(_ engine: GameEngine)
 }
 
 extension GameEngineDelegate {
     func engine(_ engine: GameEngine, didScoreBonus kind: BonusKind, points: Int) {}
+    func engineDidStep(_ engine: GameEngine) {}
 }
