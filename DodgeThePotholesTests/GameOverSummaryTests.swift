@@ -75,6 +75,16 @@ final class GameOverSummaryTests: XCTestCase {
         XCTAssertEqual(viewModel.highScore, 9_000)
     }
 
+    func testFirstRunsStartSlowerThenNormal() {
+        let beginner = GameTuning.bundled.beginner
+        viewModel.startGame(screenSize: screen)
+        XCTAssertEqual(viewModel.engine?.travelDuration, beginner.startTravelDuration, "a new player's first run")
+
+        for score in 1...beginner.runs { persistence.recordRun(score: score, moneyEarned: 0) }
+        viewModel.startGame(screenSize: screen)
+        XCTAssertEqual(viewModel.engine?.travelDuration, GameTuning.bundled.speed.startTravelDuration, "normal after \(beginner.runs) runs")
+    }
+
     // MARK: - Starting after the slide-in
 
     func testPreparedRunWaitsForBeginRun() {

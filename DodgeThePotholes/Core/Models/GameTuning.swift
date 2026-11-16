@@ -63,6 +63,16 @@ struct GameTuning: Decodable, Equatable {
         let drunkNearMissActions: Int
     }
 
+    /// A gentler start for a new player's first few runs.
+    struct Beginner: Decodable, Equatable {
+        /// Runs (finished) before the normal speed applies.
+        let runs: Int
+        /// Starting travel duration: higher is slower.
+        let startTravelDuration: Double
+        /// Seconds between speed-ramp steps: higher ramps more gently.
+        let rampInterval: Double
+    }
+
     let lives: Lives
     /// Score points awarded per second of survival (legacy: +1 per frame at 60 fps).
     let pointsPerSecond: Double
@@ -70,9 +80,20 @@ struct GameTuning: Decodable, Equatable {
     let spawnIntervals: SpawnIntervals
     let durations: Durations
     let combo: Combo
+    let beginner: Beginner
     /// Spawn pools. The power-up pool reproduces the odds the legacy `addPowerUp()`
     /// actually produced (it re-rolled the die in every `else if`).
     let weights: SpawnTables
+
+    /// This tuning with the beginner's slower start and gentler speed ramp.
+    func easedForBeginners() -> GameTuning {
+        GameTuning(lives: lives, pointsPerSecond: pointsPerSecond,
+                   speed: Speed(startTravelDuration: beginner.startTravelDuration,
+                                minTravelDuration: speed.minTravelDuration,
+                                rampInterval: beginner.rampInterval, rampStep: speed.rampStep),
+                   spawnIntervals: spawnIntervals, durations: durations, combo: combo,
+                   beginner: beginner, weights: weights)
+    }
 
     // MARK: - Loading
 

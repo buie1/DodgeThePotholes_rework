@@ -250,10 +250,17 @@ final class GameViewModel: GameEngineDelegate {
         }
         #endif
         // The tutorial's road starts empty; it places only what each step needs.
-        let engine = GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: tuning,
+        let engine = GameEngine(worldSize: worldSize, carSkin: carSkin, tuning: runTuning,
                                 tables: tutorial == nil ? nil : SpawnTables.none, drivesOwnLoop: false)
         engine.isPractice = tutorial != nil
         return engine
+    }
+
+    /// A new player's first few runs (tutorials don't count) start slower and ramp up
+    /// more gently; after that, the normal tuning.
+    private var runTuning: GameTuning {
+        let runs = tuning.beginner.runs
+        return persistence.bestRuns(limit: runs).count < runs ? tuning.easedForBeginners() : tuning
     }
 
     /// `false` for the tutorial, dev runs on the real profile, and normal runs changed

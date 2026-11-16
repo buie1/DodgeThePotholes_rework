@@ -20,6 +20,11 @@
     "booze": 15,
     "recovery": 4.8
   },
+  "beginner": {
+    "runs": 3,
+    "startTravelDuration": 2.4,
+    "rampInterval": 14
+  },
   "combo": {
     "window": 3,
     "actionsPerLevel": 3,
