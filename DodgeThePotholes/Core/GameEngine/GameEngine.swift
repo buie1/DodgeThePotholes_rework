@@ -38,6 +38,8 @@ final class GameEngine {
     private(set) var elapsed: Double = 0
     /// Counts from this run, for the game-over screen.
     private(set) var stats = RunStats()
+    /// Near-misses, smashes and clean Traffic Zones chained into a score multiplier.
+    private(set) var combo: Combo
     /// One-shot visual effects emitted during the most recent `update`.
     private(set) var frameEvents: [GameEvent] = []
 
@@ -118,6 +120,7 @@ final class GameEngine {
         self.tuning = tuning
         self.tables = tables ?? tuning.weights
         self.travelDuration = tuning.speed.startTravelDuration
+        self.combo = Combo(rules: tuning.combo)
         self.coinPatterns = TilePattern.loadAll(TilePattern.Name.money)
         self.conePatterns = TilePattern.loadAll(TilePattern.Name.cone)
         var source = rng
@@ -212,9 +215,11 @@ final class GameEngine {
         updateTimers(dt: dt)
         checkCollisions()
         guard state == .playing else { return }
+        judgeNearMisses()
         tickSpawners(dt: dt)
         tickSpeedRamp(dt: dt)
         tickScore(dt: dt)
+        combo.tick(dt: dt)
         pruneOffScreen()
     }
 
@@ -360,6 +365,7 @@ final class GameEngine {
             obstacles[index].isRemoved = true
             stats.smashed += 1
             frameEvents.append(.explosion(at: obstacles[index].position))
+            award(.smash, actions: 1, points: tuning.combo.smashPoints, at: obstacles[index].position)
             delegate?.engine(self, requestsSound: .explosion)
             delegate?.engine(self, requestsHaptic: .explosion)
             return
@@ -489,6 +495,7 @@ final class GameEngine {
     // MARK: - Life management
 
     private func loseLife() {
+        combo.reset()
         #if DEBUG
         if debug.godMode {
             // The hit still flashes the car, but costs nothing.
@@ -594,6 +601,42 @@ final class GameEngine {
         return pool.last?.0
     }
 
+    // MARK: - Near-misses and combo
+
+    /// Tracks how close each road obstacle comes to the car while level with it, and
+    /// scores a near-miss once one has passed within `nearMissGap` without a hit.
+    /// Hit obstacles are removed or dying, so they never get here.
+    private func judgeNearMisses() {
+        let car = player.boundingRect
+        for i in obstacles.indices where obstacles[i].isCollidable && !obstacles[i].nearMissJudged
+            && obstacles[i].type.countsForNearMiss {
+            let rect = obstacles[i].collisionRect
+            if rect.maxY < car.minY {
+                obstacles[i].nearMissJudged = true
+                if let gap = obstacles[i].closestGap, gap <= tuning.combo.nearMissGap {
+                    stats.nearMisses += 1
+                    let actions = player.isDrunk ? tuning.combo.drunkNearMissActions : 1
+                    award(.nearMiss, actions: actions, points: tuning.combo.nearMissPoints,
+                          at: obstacles[i].position)
+                }
+            } else if rect.minY <= car.maxY, !player.isInvincible {
+                // Level with the car. Gaps while invincible don't count: nothing could hit.
+                let gap = max(rect.minX - car.maxX, car.minX - rect.maxX, 0)
+                obstacles[i].closestGap = min(obstacles[i].closestGap ?? .infinity, gap)
+            }
+        }
+    }
+
+    /// Adds `actions` to the combo and scores `points` times the new multiplier.
+    private func award(_ kind: BonusKind, actions: Int, points: Int, at point: CGPoint) {
+        combo.add(actions: actions)
+        stats.bestMultiplier = max(stats.bestMultiplier, combo.multiplier)
+        let earned = points * combo.multiplier
+        score += earned
+        delegate?.engine(self, didUpdateScore: score)
+        frameEvents.append(.bonus(kind, points: earned, at: point))
+    }
+
     // MARK: - Speed & score
 
     private func tickSpeedRamp(dt: Double) {
@@ -604,7 +647,7 @@ final class GameEngine {
     }
 
     private func tickScore(dt: Double) {
-        scoreAccumulator += tuning.pointsPerSecond * dt
+        scoreAccumulator += tuning.pointsPerSecond * Double(combo.multiplier) * dt
         let earned = Int(scoreAccumulator)
         guard earned > 0 else { return }
         scoreAccumulator -= Double(earned)
@@ -636,6 +679,7 @@ final class GameEngine {
         travelDuration              = tuning.speed.startTravelDuration
         elapsed                     = 0
         stats                       = RunStats()
+        combo                       = Combo(rules: tuning.combo)
         obstacleSpawnAccumulator    = 0
         envSpawnAccumulator         = 0
         powerUpSpawnAccumulator     = 0

@@ -43,6 +43,15 @@ enum ObstacleType: String, CaseIterable, Equatable {
         self == .dog || self == .human
     }
 
+    /// `true` for road obstacles that score a near-miss when passed closely. Roadside
+    /// plants, phones and cones (Traffic Zones score as a whole) don't.
+    var countsForNearMiss: Bool {
+        switch self {
+        case .pothole, .blackIce, .movingCar, .policeCar, .ambulance, .dog, .human: return true
+        case .cone, .barricade, .plant, .textMessage:                            return false
+        }
+    }
+
     /// `true` for obstacles that produce a spin-out rather than a crash sound.
     var causesSpinOut: Bool {
         self == .pothole || self == .blackIce

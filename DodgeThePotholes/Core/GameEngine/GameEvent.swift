@@ -16,6 +16,16 @@ enum GameEvent: Equatable {
     case powerUpCollected(PowerUpType, at: CGPoint)
     /// The horn scared a dog or person off the road from here.
     case scared(at: CGPoint)
+    /// A combo action scored `points` (already multiplied) here.
+    case bonus(BonusKind, points: Int, at: CGPoint)
+}
+
+/// What earned a combo bonus.
+enum BonusKind: Equatable {
+    case nearMiss
+    case smash
+    /// A Traffic Zone cleared without touching a cone.
+    case zone
 }
 
 /// Banner messages the UI flies across the screen.

@@ -55,6 +55,10 @@ struct ObstacleEntity: Identifiable {
     /// Set to `true` when the obstacle has been destroyed/collected.
     /// The engine prunes `isRemoved` entities at the end of each tick.
     var isRemoved: Bool = false
+    /// Smallest horizontal gap (world units) to the car while level with it; `nil` until then.
+    var closestGap: Double?
+    /// Set once the obstacle has passed the car and its near-miss has been judged.
+    var nearMissJudged = false
 
     // MARK: - Geometry
 

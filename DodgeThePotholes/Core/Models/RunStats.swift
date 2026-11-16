@@ -10,4 +10,8 @@ struct RunStats: Equatable {
     var scared = 0
     /// Power-ups that took effect.
     var powerUps = 0
+    /// Obstacles passed within a near-miss.
+    var nearMisses = 0
+    /// The highest combo multiplier reached.
+    var bestMultiplier = 1
 }

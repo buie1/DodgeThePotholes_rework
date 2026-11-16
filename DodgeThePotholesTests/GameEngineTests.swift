@@ -117,7 +117,7 @@ final class GameEngineTests: XCTestCase {
         engine.update(deltaTime: 0.016)
         XCTAssertEqual(engine.player.lives, GameTuning.bundled.lives.start)
         XCTAssertTrue(engine.obstacles.isEmpty)
-        XCTAssertEqual(engine.frameEvents.count, 1)
+        XCTAssertEqual(engine.frameEvents, [.explosion(at: hitPoint), .bonus(.smash, points: 50, at: hitPoint)])
         XCTAssertTrue(recorder.sounds.contains(.explosion))
 
         step(engine, GameTuning.bundled.durations.monsterTruck)

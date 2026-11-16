@@ -72,6 +72,8 @@
 		6BD895D428C968E9B7415D1F /* GameEngineDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB22DABA61FA6B18DE9A036E /* GameEngineDelegate.swift */; };
 		6C018280E4C3363366BDD985 /* urban_chase.wav in Resources */ = {isa = PBXBuildFile; fileRef = 71F873B23E3A9681490EB626 /* urban_chase.wav */; };
 		6C0E97FB0C15D2DB75E914C6 /* tuning.json in Resources */ = {isa = PBXBuildFile; fileRef = 81311074D04960CE002851F4 /* tuning.json */; };
+		6C45D71D8B33487E4815BBA2 /* ComboTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A76813D18ADD52106B1A94 /* ComboTests.swift */; };
+		6C592630DC3C392D766B4D89 /* Combo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FAE8AF4A5407AA5C41C64D9 /* Combo.swift */; };
 		6FBC4B9F3D7560F8CFFA3BEA /* DrunkGogglesOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05D887BB1B8707054EED7EE /* DrunkGogglesOverlay.swift */; };
 		7359D13880FC9BB285F45B4A /* GameSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */; };
 		73DD4F47B90AC35F9C220E5B /* PlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7922CB280A4A8C1C244034B6 /* PlayerNode.swift */; };
@@ -150,6 +152,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00A76813D18ADD52106B1A94 /* ComboTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComboTests.swift; sourceTree = "<group>"; };
 		0348A92201F8A035FB87FA03 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		043C8A01C890EE2D173D93AF /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
 		08907C4B425146D48FB9C357 /* ShopItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopItemRow.swift; sourceTree = "<group>"; };
@@ -173,6 +176,7 @@
 		2A39CF3D3B2FDE82E5B0C06F /* AutopilotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutopilotTests.swift; sourceTree = "<group>"; };
 		2CCB09546504848C1B4237D8 /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
 		2D822AEFC9043DB8386D575A /* torpedo.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = torpedo.mp3; sourceTree = "<group>"; };
+		2FAE8AF4A5407AA5C41C64D9 /* Combo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Combo.swift; sourceTree = "<group>"; };
 		317114713DEF96BCEAA15D60 /* money_pattern1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = money_pattern1.json; sourceTree = "<group>"; };
 		31F46F0C5BE23EA35DC50D98 /* HapticPatternTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticPatternTests.swift; sourceTree = "<group>"; };
 		36BD70365F8105272919F8A8 /* GameCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
@@ -425,6 +429,7 @@
 			children = (
 				2A39CF3D3B2FDE82E5B0C06F /* AutopilotTests.swift */,
 				F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */,
+				00A76813D18ADD52106B1A94 /* ComboTests.swift */,
 				F7FE786691A0FA1C6A20E226 /* DevMenuViewModelTests.swift */,
 				B77713C6FF1F0343D515E6D1 /* DevOverlayTests.swift */,
 				53511C8B5C5C653033923FE1 /* DevScenarioTests.swift */,
@@ -586,6 +591,7 @@
 			children = (
 				10D53B029975DF13D6E8D645 /* Array2D.swift */,
 				4FF9F16B03415C2D66A8073C /* CarSkin.swift */,
+				2FAE8AF4A5407AA5C41C64D9 /* Combo.swift */,
 				36BD70365F8105272919F8A8 /* GameCatalog.swift */,
 				91079949E0AE64E60F81967E /* GameConfig.swift */,
 				E67A8FCB3301F20FAF2BF6FE /* GameSound.swift */,
@@ -764,6 +770,7 @@
 			files = (
 				FAF3F2D0EADEB3EC454339A4 /* AutopilotTests.swift in Sources */,
 				0D7B5B843F30BF26E9B2B446 /* CarSkin+Fixtures.swift in Sources */,
+				6C45D71D8B33487E4815BBA2 /* ComboTests.swift in Sources */,
 				49B479E618E477F05384B723 /* DevMenuViewModelTests.swift in Sources */,
 				A3A21ED9DC30412718D6306C /* DevOverlayTests.swift in Sources */,
 				2B40865E69B2C2B538D21CD5 /* DevScenarioTests.swift in Sources */,
@@ -796,6 +803,7 @@
 				337BD9E8FA6109D257EBC51F /* Autopilot.swift in Sources */,
 				D089222678702D815931ADBC /* CarSelectView.swift in Sources */,
 				B4A3FD7BE02FDEC58AA48B7F /* CarSkin.swift in Sources */,
+				6C592630DC3C392D766B4D89 /* Combo.swift in Sources */,
 				48019483816F73ED7FC17B71 /* DevEventLog.swift in Sources */,
 				1F67E4E33A708D6E2BDC3E87 /* DevMenuView.swift in Sources */,
 				0629E177C6F5FF2654E30C2E /* DevMenuViewModel.swift in Sources */,

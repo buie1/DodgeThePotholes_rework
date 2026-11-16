@@ -20,6 +20,17 @@
     "booze": 15,
     "recovery": 4.8
   },
+  "combo": {
+    "window": 3,
+    "actionsPerLevel": 3,
+    "maxMultiplier": 5,
+    "nearMissGap": 32,
+    "nearMissPoints": 50,
+    "smashPoints": 50,
+    "zonePoints": 500,
+    "zoneActions": 3,
+    "drunkNearMissActions": 2
+  },
   "weights": {
     "obstacles": [
       { "spawn": "pothole",     "weight": 7 },

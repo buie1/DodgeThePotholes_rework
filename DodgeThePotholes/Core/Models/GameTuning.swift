@@ -44,12 +44,32 @@ struct GameTuning: Decodable, Equatable {
         let recovery: Double
     }
 
+    /// Near-misses, smashes and clean Traffic Zones chain into a score multiplier.
+    struct Combo: Decodable, Equatable {
+        /// Seconds a combo survives without a new action.
+        let window: Double
+        /// Actions per multiplier level: x2 after this many, x3 after twice as many…
+        let actionsPerLevel: Int
+        let maxMultiplier: Int
+        /// Widest gap (world units) between an obstacle and the car that still counts as a near-miss.
+        let nearMissGap: Double
+        /// Points per near-miss, smash and clean Traffic Zone, before the multiplier.
+        let nearMissPoints: Int
+        let smashPoints: Int
+        let zonePoints: Int
+        /// Combo actions a clean Traffic Zone is worth.
+        let zoneActions: Int
+        /// Combo actions a near-miss is worth while drunk (risky, so it pays more).
+        let drunkNearMissActions: Int
+    }
+
     let lives: Lives
     /// Score points awarded per second of survival (legacy: +1 per frame at 60 fps).
     let pointsPerSecond: Double
     let speed: Speed
     let spawnIntervals: SpawnIntervals
     let durations: Durations
+    let combo: Combo
     /// Spawn pools. The power-up pool reproduces the odds the legacy `addPowerUp()`
     /// actually produced (it re-rolled the die in every `else if`).
     let weights: SpawnTables

@@ -36,7 +36,7 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(grid[0, pattern.numRows - 1], pattern.tiles[0][0] == 0 ? nil : pattern.tiles[0][0])
     }
 
-    func testBundledTuningKeepsLegacyBalance() throws {
+    func testBundledTuningKeepsBalance() throws {
         let tuning = try GameTuning.load()
         XCTAssertEqual(tuning.lives.start, 3)
         XCTAssertEqual(tuning.lives.max, 4)
@@ -45,6 +45,10 @@ final class ResourceTests: XCTestCase {
         XCTAssertEqual(tuning.speed.minTravelDuration, 0.2)
         XCTAssertEqual(tuning.spawnIntervals.obstacle, 1.75)
         XCTAssertEqual(tuning.durations.recovery, 4.8)
+        XCTAssertEqual(tuning.combo.window, 3)
+        XCTAssertEqual(tuning.combo.actionsPerLevel, 3)
+        XCTAssertEqual(tuning.combo.maxMultiplier, 5)
+        XCTAssertEqual(tuning.combo.nearMissGap, 32, "about half the car's 64-unit width")
         XCTAssertEqual(tuning.weights.obstacles.first?.0, .single(.pothole))
         XCTAssertEqual(tuning.weights.obstacles.map(\.1).reduce(0, +), 25)
         XCTAssertEqual(tuning.weights.powerUps.map(\.1).reduce(0, +), 100)

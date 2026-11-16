@@ -176,6 +176,8 @@ final class GameRenderScene: SKScene {
                 addChild(EffectNodes.ring(at: point, color: type.effectColor, growth: 4, duration: 0.4))
             case .scared(let point):
                 addChild(EffectNodes.ring(at: point, color: .cyan, radius: 20, growth: 2.5, duration: 0.25))
+            case .bonus:
+                break   // Floating score text arrives with the combo HUD.
             }
         }
     }
