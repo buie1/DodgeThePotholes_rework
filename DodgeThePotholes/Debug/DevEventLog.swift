@@ -33,9 +33,7 @@ final class DevEventLog: GameEngineDelegate {
         nextSnapshot = 0
         write(t: 0, "runStart", ["seed": String(seed), "godMode": scenario.godMode,
                                  "timeScale": scenario.timeScale, "autopilot": scenario.autopilot,
-                                 "startElapsed": scenario.startElapsed ?? 0,
-                                 // Lines log times up with a screen recording (scripts/dev-frames.sh).
-                                 "clock": Self.decimal(Date().timeIntervalSince1970, places: 3)])
+                                 "startElapsed": scenario.startElapsed ?? 0])
     }
 
     // MARK: - GameEngineDelegate
@@ -109,6 +107,8 @@ final class DevEventLog: GameEngineDelegate {
             "obstacles": engine.obstacles.count,
             "powerUps": engine.powerUpEntities.count,
             "coins": engine.coins.count,
+            // Lines play time up with a screen recording (scripts/dev-frames.sh).
+            "clock": Self.decimal(Date().timeIntervalSince1970, places: 3),
         ])
     }
 

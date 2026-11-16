@@ -17,7 +17,8 @@ window="${3:-1}"
 fps="${4:-15}"
 
 video_clock="$(sed -n 's/^videoClock: //p' "$dir/run.txt")"
-run_clock="$(grep '"runStart"' "$dir/devlog.jsonl" | tail -1 | python3 -c 'import json,sys; print(json.load(sys.stdin)["clock"])')"
+# Wall-clock time of play time 0, from the run's first snapshot (its first engine frame).
+run_clock="$(grep '"snapshot"' "$dir/devlog.jsonl" | head -1 | python3 -c 'import json,sys; e = json.load(sys.stdin); print(e["clock"] - e["t"])')"
 start="$(python3 -c "print(max(0, $run_clock - $video_clock + $t - $window / 2))")"
 frames="$(python3 -c "import math; print(math.ceil($window * $fps))")"
 cols=5

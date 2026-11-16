@@ -397,6 +397,7 @@ final class GameEngine {
         let targetY = -worldSize.height / 2 - size.height
         obstacles[index].phase = .fleeing
         obstacles[index].facing = -side
+        frameEvents.append(.scared(at: position))
         obstacles[index].velocity = CGVector(
             dx: (targetX - position.x) / (GameConfig.fleeDuration * 0.25),
             dy: (targetY - position.y) / (GameConfig.fleeDuration / 2)
@@ -415,6 +416,7 @@ final class GameEngine {
             powerUpEntities[index].isCollected = true
             guard player.lives < tuning.lives.max else { return }
             player.lives += 1
+            frameEvents.append(.powerUpCollected(type, at: powerUpEntities[index].position))
             delegate?.engine(self, didUpdateLives: player.lives)
             delegate?.engine(self, requestsHaptic: .lifeGained)
             return
@@ -441,6 +443,7 @@ final class GameEngine {
             delegate?.engine(self, didRaiseAlert: .dontDrinkAndDrive)
         }
         powerUpEntities[index].isCollected = true
+        frameEvents.append(.powerUpCollected(type, at: powerUpEntities[index].position))
         delegate?.engine(self, requestsHaptic: .powerUpActivated)
     }
 
@@ -456,6 +459,7 @@ final class GameEngine {
 
     private func collectCoin(at index: Int) {
         coins[index].isCollected = true
+        frameEvents.append(.coinCollected(at: coins[index].position))
         let multiplier = activePowerUps.lazy.compactMap { state -> Int? in
             if case .multiplier(let value) = state.type { return value }
             return nil

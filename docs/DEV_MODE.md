@@ -118,7 +118,7 @@ scripts/dev-frames.sh build/dev-runs/<run> 5.11 0.8   # frames-5.11.png: 0.8 s a
 ```
 
 Video recording needs `ffmpeg` (`brew install ffmpeg`). Log times line up with the
-video through the `clock` field on `runStart`.
+video through the `clock` field on snapshots.
 
 ### The event log
 
@@ -126,8 +126,8 @@ video through the `clock` field on `runStart`.
 
 | Event | Fields |
 |-------|--------|
-| `runStart` | `seed`, `godMode`, `timeScale`, `autopilot`, `startElapsed`, `clock` (Unix time, to align with a recording) |
-| `snapshot` (≈ every second) | `score`, `money`, `lives`, `state`, `x`, `travelDuration`, `obstacles`, `powerUps`, `coins` |
+| `runStart` | `seed`, `godMode`, `timeScale`, `autopilot`, `startElapsed` |
+| `snapshot` (≈ every second) | `score`, `money`, `lives`, `state`, `x`, `travelDuration`, `obstacles`, `powerUps`, `coins`, `clock` (Unix time, to align with a recording) |
 | `lives` | `lives` |
 | `playerState` | `state` |
 | `powerUpOn` / `powerUpOff` | `type` (and `seconds`) |

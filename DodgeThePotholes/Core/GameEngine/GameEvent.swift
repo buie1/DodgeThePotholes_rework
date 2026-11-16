@@ -10,6 +10,12 @@ enum GameEvent: Equatable {
     case crash(at: CGPoint)
     /// An obstacle was destroyed by the monster truck, or a missile detonated.
     case explosion(at: CGPoint)
+    /// A coin was collected here.
+    case coinCollected(at: CGPoint)
+    /// A power-up took effect when picked up here (an extra life at full lives doesn't).
+    case powerUpCollected(PowerUpType, at: CGPoint)
+    /// The horn scared a dog or person off the road from here.
+    case scared(at: CGPoint)
 }
 
 /// Banner messages the UI flies across the screen.

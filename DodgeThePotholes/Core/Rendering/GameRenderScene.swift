@@ -146,12 +146,21 @@ final class GameRenderScene: SKScene {
                 playerNode.spinOut()
                 impactCamera.impact(.spinOut)
             case .crash(let point):
-                addRing(at: point, color: .white)
+                addChild(EffectNodes.ring(at: point, color: .white))
                 impactCamera.impact(.crash)
             case .explosion(let point):
                 addExplosion(at: point)
-                addRing(at: point, color: .orange)
+                addChild(EffectNodes.ring(at: point, color: .orange))
                 impactCamera.impact(.explosion)
+            case .coinCollected(let point):
+                addChild(EffectNodes.sparks(at: point, color: .yellow, count: 5, size: 8,
+                                            distance: 40, duration: 0.25))
+            case .powerUpCollected(let type, let point):
+                addChild(EffectNodes.sparks(at: point, color: type.effectColor, count: 14, size: 12,
+                                            distance: 120, duration: 0.45))
+                addChild(EffectNodes.ring(at: point, color: type.effectColor, growth: 4, duration: 0.4))
+            case .scared(let point):
+                addChild(EffectNodes.ring(at: point, color: .cyan, radius: 20, growth: 2.5, duration: 0.25))
             }
         }
     }
@@ -162,21 +171,6 @@ final class GameRenderScene: SKScene {
         explosion.zPosition = 3
         addChild(explosion)
         explosion.run(.sequence([.wait(forDuration: 2), .removeFromParent()]))
-    }
-
-    /// A shock ring that bursts out from the point of impact.
-    private func addRing(at point: CGPoint, color: SKColor) {
-        let ring = SKShapeNode(circleOfRadius: 30)
-        ring.position = point
-        ring.strokeColor = color
-        ring.lineWidth = 8
-        ring.fillColor = .clear
-        ring.zPosition = 4
-        addChild(ring)
-        ring.run(.sequence([
-            .group([.scale(to: 3.5, duration: 0.3), .fadeOut(withDuration: 0.3)]),
-            .removeFromParent(),
-        ]))
     }
 }
 
