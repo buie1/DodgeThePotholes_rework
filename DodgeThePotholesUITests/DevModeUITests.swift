@@ -56,7 +56,6 @@ final class DevModeUITests: XCTestCase {
 
     @MainActor
     func testTimeScaleBarChangesSpeedWithoutHonking() {
-        XCTExpectFailure("Bug F2: the steering gesture takes taps meant for the DEV panel")
         let app = launch(["-devScenario", "godCruise", "-devOverlay"])
         XCTAssertTrue(readout(app).contains("speed 1×"))
 
@@ -65,5 +64,22 @@ final class DevModeUITests: XCTestCase {
         let text = readout(app)
         XCTAssertTrue(text.contains("speed 4×"), text)
         XCTAssertTrue(text.contains("honks 0"), "a tap on the panel must not honk: \(text)")
+    }
+
+    /// The road below the panel still steers and honks.
+    @MainActor
+    func testOpenRoadStillSteersAndHonks() {
+        let app = launch(["-devScenario", "godCruise", "-devOverlay"])
+        XCTAssertTrue(readout(app).contains("car 0"))
+
+        let road = app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8))
+        road.tap()
+        sleep(1)
+        XCTAssertTrue(readout(app).contains("honks 1"), "a tap on the road honks")
+
+        road.press(forDuration: 0.1, thenDragTo: road.withOffset(CGVector(dx: 120, dy: 0)))
+        sleep(1)
+        let text = readout(app)
+        XCTAssertFalse(text.contains("car 0 "), "dragging right steers the car: \(text)")
     }
 }

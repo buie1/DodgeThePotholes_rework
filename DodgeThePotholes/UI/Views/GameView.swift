@@ -37,6 +37,12 @@ struct GameView: View {
                     DrunkGogglesOverlay()
                 }
 
+                // Steering takes touches on open road only. It sits under the HUD, the DEV
+                // panel and game-over, so their controls get their own taps first.
+                Color.clear
+                    .contentShape(Rectangle())
+                    .gesture(steeringGesture(width: screenSize.width))
+
                 // HUD and messages stay inside the safe area, clear of the Dynamic Island.
                 overlays
                     .padding(.top, insets.top)
@@ -56,7 +62,6 @@ struct GameView: View {
                 try? await Task.sleep(for: Self.slideInDuration)
                 viewModel.beginRun()
             }
-            .gesture(steeringGesture(width: screenSize.width))
         }
     }
 
@@ -72,6 +77,7 @@ struct GameView: View {
                     .foregroundStyle(.yellow)
                     .shadow(color: .yellow.opacity(0.6), radius: 10)
                     .transition(.opacity)
+                    .allowsHitTesting(false)
             }
 
             if let alert = viewModel.activeAlert {
