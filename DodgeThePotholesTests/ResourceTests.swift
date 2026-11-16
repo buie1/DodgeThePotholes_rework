@@ -73,6 +73,18 @@ final class ResourceTests: XCTestCase {
         }
     }
 
+    /// Turn-signal frames are drawn into the car's fixed box, so a frame with a different
+    /// canvas size makes the car change width while steering.
+    func testEveryCarFrameMatchesItsStraightSprite() throws {
+        for car in try GameCatalog.load().cars {
+            let straight = try XCTUnwrap(UIImage(named: car.imageName, in: .main, with: nil))
+            for frame in car.leftFrames + car.rightFrames {
+                let image = try XCTUnwrap(UIImage(named: frame, in: .main, with: nil), frame)
+                XCTAssertEqual(image.size, straight.size, "\(car.id) frame \(frame)")
+            }
+        }
+    }
+
     func testEveryShopImageAndSongIsBundled() throws {
         for item in try GameCatalog.load().shopItems {
             XCTAssertNotNil(UIImage(named: item.imageName, in: .main, with: nil), "Missing shop image: \(item.imageName)")
