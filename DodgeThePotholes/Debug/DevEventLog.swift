@@ -90,6 +90,12 @@ final class DevEventLog: GameEngineDelegate {
         forward?.engine(engine, requestsSound: sound)
     }
 
+    func engine(_ engine: GameEngine, didScoreBonus kind: BonusKind, points: Int) {
+        write(engine, "bonus", ["kind": "\(kind)", "points": points,
+                                "multiplier": engine.combo.multiplier, "chain": engine.combo.chain])
+        forward?.engine(engine, didScoreBonus: kind, points: points)
+    }
+
     func engine(_ engine: GameEngine, requestsHaptic pattern: HapticPattern) {
         if pattern != .coinPickup { write(engine, "haptic", ["pattern": "\(pattern)"]) }
         forward?.engine(engine, requestsHaptic: pattern)
@@ -108,6 +114,11 @@ final class DevEventLog: GameEngineDelegate {
             "obstacles": engine.obstacles.count,
             "powerUps": engine.powerUpEntities.count,
             "coins": engine.coins.count,
+            "combo": engine.combo.chain,
+            "multiplier": engine.combo.multiplier,
+            "nearMisses": engine.stats.nearMisses,
+            "smashed": engine.stats.smashed,
+            "scared": engine.stats.scared,
             // Lines play time up with a screen recording (scripts/dev-frames.sh).
             "clock": Self.decimal(Date().timeIntervalSince1970, places: 3),
         ])

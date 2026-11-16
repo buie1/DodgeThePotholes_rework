@@ -58,11 +58,25 @@ final class HapticPatternTests: XCTestCase {
         XCTAssertEqual(recorder.haptics, [.hornScare])
     }
 
+    func testNearMissTicksAndTheThirdLevelsUp() {
+        let engine = makeEngine()
+        let car = engine.player.boundingRect
+        for _ in 0..<3 {
+            engine.insert(ObstacleEntity(id: UUID(), position: CGPoint(x: car.maxX + 10 + 33, y: car.maxY + 140),
+                                         size: ObstacleType.pothole.size, velocity: CGVector(dx: 0, dy: -800),
+                                         type: .pothole))
+            for _ in 0..<60 { engine.update(deltaTime: 1.0 / 60) }
+        }
+        XCTAssertEqual(recorder.haptics, [.nearMiss, .nearMiss, .comboLevelUp])
+    }
+
     func testThrottleSpacesCoinTicksButNothingElse() {
         var throttle = HapticThrottle()
         XCTAssertTrue(throttle.allows(.coinPickup, at: 1.00))
         XCTAssertFalse(throttle.allows(.coinPickup, at: 1.03))
-        XCTAssertTrue(throttle.allows(.crash, at: 1.03), "only coins are throttled")
+        XCTAssertTrue(throttle.allows(.crash, at: 1.03), "impacts are never throttled")
         XCTAssertTrue(throttle.allows(.coinPickup, at: 1.08))
+        XCTAssertTrue(throttle.allows(.nearMiss, at: 1.08), "each tick kind is spaced separately")
+        XCTAssertFalse(throttle.allows(.nearMiss, at: 1.10))
     }
 }

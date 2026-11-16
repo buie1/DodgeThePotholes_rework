@@ -44,4 +44,8 @@ enum HapticPattern: Equatable {
     case hornScare
     /// The last life lost: a long, fading thud.
     case gameOver
+    /// A near-miss: a light crisp tick; rate-limited like coins.
+    case nearMiss
+    /// The combo multiplier going up a level: a rising double pulse.
+    case comboLevelUp
 }

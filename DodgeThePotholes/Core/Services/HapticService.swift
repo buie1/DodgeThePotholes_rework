@@ -116,6 +116,17 @@ final class HapticService: HapticServiceProtocol {
                 makeTransient(intensity: 0.45, sharpness: 0.8, at: 0.08),
             ]
 
+        case .nearMiss:
+            // A quick, crisp tick: close, but clean.
+            events = [makeTransient(intensity: 0.55, sharpness: 1.0)]
+
+        case .comboLevelUp:
+            // Two rising taps: the combo stepping up.
+            events = [
+                makeTransient(intensity: 0.6, sharpness: 0.7),
+                makeTransient(intensity: 0.9, sharpness: 1.0, at: 0.09),
+            ]
+
         case .gameOver:
             // A long thud that fades out, after the crash that caused it.
             events = [
@@ -168,8 +179,10 @@ final class HapticService: HapticServiceProtocol {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         case .explosion:
             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-        case .coinPickup, .hornScare:
+        case .coinPickup, .hornScare, .nearMiss:
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        case .comboLevelUp:
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         case .powerUpActivated, .lifeGained:
             UINotificationFeedbackGenerator().notificationOccurred(.success)
         case .gameOver:
@@ -180,18 +193,19 @@ final class HapticService: HapticServiceProtocol {
 
 // MARK: - Throttle
 
-/// Drops haptics that would fire too close together to feel distinct.
+/// Drops light ticks that would fire too close together to feel distinct.
 struct HapticThrottle {
-    /// Coin ticks closer together than this blur into a buzz when driving through a pattern.
-    static let coinInterval: TimeInterval = 0.07
+    /// Ticks closer together than this blur into a buzz (e.g. driving through a coin pattern).
+    static let tickInterval: TimeInterval = 0.07
 
-    private var lastCoin: TimeInterval = -.infinity
+    private var lastTick: [HapticPattern: TimeInterval] = [:]
 
     /// Whether `pattern` should play at `time` (seconds); records it if so.
+    /// Only coin and near-miss ticks are throttled.
     mutating func allows(_ pattern: HapticPattern, at time: TimeInterval) -> Bool {
-        guard pattern == .coinPickup else { return true }
-        guard time - lastCoin >= Self.coinInterval else { return false }
-        lastCoin = time
+        guard pattern == .coinPickup || pattern == .nearMiss else { return true }
+        guard time - (lastTick[pattern] ?? -.infinity) >= Self.tickInterval else { return false }
+        lastTick[pattern] = time
         return true
     }
 }

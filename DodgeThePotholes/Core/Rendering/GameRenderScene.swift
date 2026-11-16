@@ -176,8 +176,10 @@ final class GameRenderScene: SKScene {
                 addChild(EffectNodes.ring(at: point, color: type.effectColor, growth: 4, duration: 0.4))
             case .scared(let point):
                 addChild(EffectNodes.ring(at: point, color: .cyan, radius: 20, growth: 2.5, duration: 0.25))
-            case .bonus:
-                break   // Floating score text arrives with the combo HUD.
+            case .bonus(let kind, let points, let point):
+                let effect = kind.effect
+                addChild(EffectNodes.floatingText("+\(points.formatted()) \(effect.label)", at: point,
+                                                  color: effect.color, worldWidth: size.width))
             }
         }
     }
@@ -202,7 +204,7 @@ extension GameRenderScene {
     }
 
     /// Outlines the rectangles the engine collides: player blue, obstacles red,
-    /// power-ups yellow, coins green, horns purple.
+    /// power-ups yellow, coins green, horns purple, and the near-miss band faint cyan.
     private func drawHitboxes() {
         guard showsHitboxes else {
             hitboxLayer?.removeFromParent()
@@ -217,6 +219,7 @@ extension GameRenderScene {
             engine.powerUpEntities.filter { !$0.isCollected }.map(\.boundingRect),
             engine.coins.filter { !$0.isCollected }.map(\.boundingRect),
             engine.horns.filter { !$0.isRemoved }.map(\.collisionRect),
+            [engine.nearMissBand],
         ]
         for (node, rects) in zip(layer.children.compactMap { $0 as? SKShapeNode }, boxes) {
             let path = CGMutablePath()
@@ -228,7 +231,8 @@ extension GameRenderScene {
     private func makeHitboxLayer() -> SKNode {
         let layer = SKNode()
         layer.zPosition = 10
-        for color in [SKColor.systemBlue, .systemRed, .systemYellow, .systemGreen, .systemPurple] {
+        for color in [SKColor.systemBlue, .systemRed, .systemYellow, .systemGreen, .systemPurple,
+                      .cyan.withAlphaComponent(0.5)] {
             let node = SKShapeNode()
             node.strokeColor = color
             node.lineWidth = 5

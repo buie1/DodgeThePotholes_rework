@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// In-game heads-up display: score and money, best, lives, and the active power-up timer.
+/// In-game heads-up display: score, money and combo, best, lives, and the active power-up timer.
 /// Laid out inside the safe area.
 struct HUDOverlayView: View {
     let viewModel: GameViewModel
@@ -11,6 +11,9 @@ struct HUDOverlayView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     stat("SCORE", "\(viewModel.score)", color: .white, alignment: .leading)
                     money
+                    if let combo = viewModel.engine?.combo {
+                        ComboMeterView(combo: combo)
+                    }
                 }
                 Spacer()
                 stat("BEST", "\(viewModel.highScore)", color: .yellow, alignment: .center)

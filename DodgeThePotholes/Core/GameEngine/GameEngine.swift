@@ -663,12 +663,19 @@ final class GameEngine {
 
     /// Adds `actions` to the combo and scores `points` times the new multiplier.
     private func award(_ kind: BonusKind, actions: Int, points: Int, at point: CGPoint) {
-        combo.add(actions: actions)
+        let leveledUp = combo.add(actions: actions)
         stats.bestMultiplier = max(stats.bestMultiplier, combo.multiplier)
         let earned = points * combo.multiplier
         score += earned
         delegate?.engine(self, didUpdateScore: score)
+        delegate?.engine(self, didScoreBonus: kind, points: earned)
         frameEvents.append(.bonus(kind, points: earned, at: point))
+        // Smashes already play the explosion haptic; a level-up outranks the near-miss tick.
+        if leveledUp {
+            delegate?.engine(self, requestsHaptic: .comboLevelUp)
+        } else if kind == .nearMiss {
+            delegate?.engine(self, requestsHaptic: .nearMiss)
+        }
     }
 
     // MARK: - Speed & score
@@ -800,6 +807,9 @@ extension GameEngine {
         update(deltaTime: dt)
         if state == .playing { state = .paused }
     }
+
+    /// The area around the car where a passing obstacle scores a near-miss.
+    var nearMissBand: CGRect { player.boundingRect.insetBy(dx: -tuning.combo.nearMissGap, dy: 0) }
 
     /// Applies the speed-ramp steps that `seconds` of play would have made.
     func fastForwardSpeedRamp(by seconds: Double) {

@@ -80,6 +80,8 @@ extension DevScenario {
         ("coinShower",   DevScenario(seed: 42, environment: [(.coinPattern, 1)], startPowerUps: [.multiplier(3)])),
         ("textMessages", DevScenario(seed: 42, powerUps: [(.phone, 1)], godMode: true)),
         ("trafficZone",  DevScenario(seed: 42, obstacles: [(.conePattern, 1)], godMode: true)),
+        ("nearMiss",     DevScenario(seed: 42, obstacles: [(.single(.pothole), 2), (.single(.movingCar), 1),
+                                                           (.single(.dog), 1)], autopilot: true, hitboxes: true)),
     ]
 
     static func preset(named name: String) -> DevScenario? {

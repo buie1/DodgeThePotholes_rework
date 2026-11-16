@@ -24,7 +24,8 @@ is optional; an empty scenario is a normal run.
 | `useRealProfile` | Play on your real save. Runs are then **not recorded** |
 
 **Presets** (all seed 42): `godCruise`, `monsterTruck`, `potholeRain`, `lateGame`,
-`coinShower`, `textMessages`, `trafficZone`.
+`coinShower`, `textMessages`, `trafficZone`, `nearMiss` (autopilot weaving through
+potholes, traffic and dogs, with hitboxes).
 
 **Rules for dev runs:**
 - They never submit to Game Center.
@@ -52,10 +53,10 @@ top of the screen. It stays at the top so it never hides your car.
 
 | Control | What it does |
 |---------|--------------|
-| Readout | Seconds of play, current travel duration, frame rate, and seed |
+| Readout | Seconds of play, current travel duration, combo (`x2 (4)` = multiplier and chain), frame rate, and seed |
 | **God** | Hits flash the car but cost nothing |
 | **Autopilot** | The bot drives |
-| **Hitboxes** | Draws the exact rectangles the engine collides: player blue, obstacles red, power-ups yellow, coins green, horns purple. The player's box covers only the front half of the car, as in the original game |
+| **Hitboxes** | Draws the exact rectangles the engine collides: player blue, obstacles red, power-ups yellow, coins green, horns purple, and the near-miss band faint cyan. The player's box covers only the front half of the car, as in the original game |
 | Time scale | 0.25× to 4× |
 | **Pause / Step** | Pause, then advance one frame per tap |
 | **+30 s** | Jumps the speed ramp forward 30 seconds |
@@ -127,7 +128,8 @@ video through the `clock` field on snapshots.
 | Event | Fields |
 |-------|--------|
 | `runStart` | `seed`, `godMode`, `timeScale`, `autopilot`, `startElapsed` |
-| `snapshot` (≈ every second) | `score`, `money`, `lives`, `state`, `x`, `travelDuration`, `obstacles`, `powerUps`, `coins`, `clock` (Unix time, to align with a recording) |
+| `snapshot` (≈ every second) | `score`, `money`, `lives`, `state`, `x`, `travelDuration`, `obstacles`, `powerUps`, `coins`, `combo`, `multiplier`, `nearMisses`, `smashed`, `scared`, `clock` (Unix time, to align with a recording) |
+| `bonus` | `kind` (`nearMiss`, `smash`, `zone`), `points` (multiplied), `multiplier`, `chain` |
 | `lives` | `lives` |
 | `playerState` | `state` |
 | `powerUpOn` / `powerUpOff` | `type` (and `seconds`) |

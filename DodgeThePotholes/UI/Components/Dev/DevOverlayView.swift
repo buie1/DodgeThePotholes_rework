@@ -121,8 +121,8 @@ private struct DevReadout: View {
         guard let engine = viewModel.engine else { return "" }
         let fps = Int(viewModel.scene?.debugFPS ?? 0)
         let seed = viewModel.devSeed.map(String.init) ?? "random"
-        return String(format: "t %.1fs · travel %.2fs · %d fps · seed %@",
-                      engine.elapsed, engine.travelDuration, fps, seed)
+        return String(format: "t %.1fs · travel %.2fs · x%d (%d) · %d fps · seed %@",
+                      engine.elapsed, engine.travelDuration, engine.combo.multiplier, engine.combo.chain, fps, seed)
     }
 }
 #endif

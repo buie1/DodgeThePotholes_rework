@@ -52,9 +52,11 @@ final class DevOverlayTests: XCTestCase {
         scene.showsHitboxes = true
         scene.debugRedraw()
         let shapes = scene.children.flatMap(\.children).compactMap { $0 as? SKShapeNode }
-        XCTAssertEqual(shapes.count, 5)
+        XCTAssertEqual(shapes.count, 6)
         XCTAssertEqual(shapes[0].path?.boundingBox, engine.player.collisionRect, "player box")
         XCTAssertEqual(shapes[1].path?.boundingBox, engine.obstacles[0].collisionRect, "pothole box")
+        XCTAssertEqual(shapes[5].path?.boundingBox, engine.nearMissBand, "near-miss band")
+        XCTAssertEqual(engine.nearMissBand.width, engine.player.size.width + 2 * GameTuning.bundled.combo.nearMissGap)
 
         scene.showsHitboxes = false
         scene.debugRedraw()

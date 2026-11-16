@@ -43,6 +43,38 @@ enum EffectNodes {
     }
 }
 
+extension EffectNodes {
+    /// Pixel-font text that rises from just above `point` and fades, e.g. "+150 NEAR MISS".
+    /// Starts about a car-length up so it never covers the car, and stays inside the
+    /// world's width so it never runs off screen.
+    static func floatingText(_ text: String, at point: CGPoint, color: SKColor, worldWidth: CGFloat) -> SKNode {
+        let label = SKLabelNode(fontNamed: "PressStart2P")
+        label.text = text
+        label.fontSize = 26
+        label.fontColor = color
+        label.verticalAlignmentMode = .center
+        label.zPosition = 6
+        let halfRoom = worldWidth / 2 - label.frame.width / 2 - 12
+        label.position = CGPoint(x: min(max(point.x, -halfRoom), halfRoom), y: point.y + 130)
+        label.run(.sequence([
+            .group([.moveBy(x: 0, y: 140, duration: 0.8), .sequence([.wait(forDuration: 0.4), .fadeOut(withDuration: 0.4)])]),
+            .removeFromParent(),
+        ]))
+        return label
+    }
+}
+
+extension BonusKind {
+    /// The floating text's label and colour for this bonus.
+    var effect: (label: String, color: SKColor) {
+        switch self {
+        case .nearMiss: return ("NEAR MISS", .yellow)
+        case .smash:    return ("SMASH", .orange)
+        case .zone:     return ("ZONE CLEAR", .green)
+        }
+    }
+}
+
 extension PowerUpType {
     /// The colour of this power-up's pickup burst.
     var effectColor: SKColor {

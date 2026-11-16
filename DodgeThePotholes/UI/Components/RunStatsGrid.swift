@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Four tiles summing up a run: time survived, coins, things smashed, animals scared.
+/// Four tiles summing up a run: time survived, coins, near-misses and best combo.
 struct RunStatsGrid: View {
     let time: Double
     let stats: RunStats
@@ -12,8 +12,8 @@ struct RunStatsGrid: View {
                 tile("COINS", "\(stats.coins)", color: .green)
             }
             GridRow {
-                tile("SMASHED", "\(stats.smashed)", color: .orange)
-                tile("SCARED", "\(stats.scared)", color: .cyan)
+                tile("NEAR MISSES", "\(stats.nearMisses)", color: .yellow)
+                tile("BEST COMBO", "x\(stats.bestMultiplier)", color: .orange)
             }
         }
     }
@@ -42,7 +42,7 @@ struct RunStatsGrid: View {
 }
 
 #Preview {
-    RunStatsGrid(time: 83, stats: RunStats(coins: 54, smashed: 4, scared: 3, powerUps: 2))
+    RunStatsGrid(time: 83, stats: RunStats(coins: 54, smashed: 4, scared: 3, powerUps: 2, nearMisses: 11, bestMultiplier: 3))
         .padding()
         .background(.black)
 }

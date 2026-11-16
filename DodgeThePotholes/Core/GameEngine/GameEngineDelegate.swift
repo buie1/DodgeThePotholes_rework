@@ -29,4 +29,11 @@ protocol GameEngineDelegate: AnyObject {
     func engine(_ engine: GameEngine, requestsSound sound: GameSound)
     /// Requests a haptic event to be played by the HapticsManager.
     func engine(_ engine: GameEngine, requestsHaptic pattern: HapticPattern)
+    /// Fired when a combo action scores; `points` is already multiplied. Optional: the HUD
+    /// reads `GameEngine.combo` and the renderer draws `GameEvent.bonus`.
+    func engine(_ engine: GameEngine, didScoreBonus kind: BonusKind, points: Int)
+}
+
+extension GameEngineDelegate {
+    func engine(_ engine: GameEngine, didScoreBonus kind: BonusKind, points: Int) {}
 }
