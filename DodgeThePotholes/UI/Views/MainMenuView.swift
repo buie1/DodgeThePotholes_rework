@@ -94,6 +94,15 @@ struct MainMenuView: View {
             }
             .padding(.horizontal, 32)
         }
+        // A new player picks Tilt or Drag before anything else.
+        .fullScreenCover(isPresented: needsControlChoice) {
+            ControlChoiceView(isTiltAvailable: settingsViewModel.isTiltAvailable,
+                              onChoose: settingsViewModel.chooseControls)
+        }
+    }
+
+    private var needsControlChoice: Binding<Bool> {
+        Binding(get: { settingsViewModel.needsControlChoice }, set: { _ in })
     }
 
     private var titleBlock: some View {

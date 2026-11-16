@@ -64,6 +64,17 @@ final class SettingsViewModel {
 
     var isTiltCalibrated: Bool { persistence.tiltNeutral != 0 }
 
+    // MARK: - First launch
+
+    /// `true` until a new player picks Tilt or Drag.
+    var needsControlChoice: Bool { persistence.needsControlChoice }
+
+    /// The first-launch choice: saves the scheme and doesn't ask again.
+    func chooseControls(_ scheme: ControlScheme) {
+        persistence.controlScheme = scheme
+        persistence.hasChosenControls = true
+    }
+
     // MARK: - Sound
 
     var isMusicEnabled: Bool {

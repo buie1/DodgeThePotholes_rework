@@ -63,6 +63,7 @@ struct ControlSchemeCard: View {
                     .foregroundStyle(isSelected ? .yellow : .white)
                 Text(scheme.summary)
                     .font(.pixel(7))
+                    .lineSpacing(5)
                     .foregroundStyle(.white.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
             }

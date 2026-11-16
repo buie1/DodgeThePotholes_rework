@@ -68,6 +68,7 @@
 		4FC6D265533B0E18D7D464A5 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0348A92201F8A035FB87FA03 /* AudioSettingsView.swift */; };
 		5524644435F9480491F8D435 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A81341E67EC2645EC447D6B /* GameViewModel.swift */; };
 		5D51A56BD37AE288FAFB7D1C /* PowerUpTimerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B578C32053B7A4E2ECD3A20 /* PowerUpTimerBar.swift */; };
+		61FA1A63F2C168D5B9CF0E8B /* ControlChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F274730A0AC7414E3C7282A4 /* ControlChoiceView.swift */; };
 		65C9244319B8ACA5818404E8 /* dog_wimper.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 37ECF6E6F884D64E311AF977 /* dog_wimper.mp3 */; };
 		674A3F3C1EC8784DD66EC1A7 /* PressStart2P.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22D94FA505301C94F69978C3 /* PressStart2P.ttf */; };
 		68AC46007CA215AA209814EE /* text_tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 946F1202D54B6150731E0036 /* text_tone.mp3 */; };
@@ -308,6 +309,7 @@
 		EE7CED3164790603CE5A6C28 /* ShopViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewModelTests.swift; sourceTree = "<group>"; };
 		EEDBE63ADD3D73DD5085338C /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		F169C1D2B2A3FB99DBADE77D /* ControlScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlScheme.swift; sourceTree = "<group>"; };
+		F274730A0AC7414E3C7282A4 /* ControlChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlChoiceView.swift; sourceTree = "<group>"; };
 		F3DB95C921DFADFDBCA20AE1 /* MenuScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuScreen.swift; sourceTree = "<group>"; };
 		F508B4226498081E7697C47A /* DodgeThePotholes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DodgeThePotholes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F64648DEEFB63EEA041C55D0 /* CarSkin+Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CarSkin+Fixtures.swift"; sourceTree = "<group>"; };
@@ -536,6 +538,7 @@
 			children = (
 				0348A92201F8A035FB87FA03 /* AudioSettingsView.swift */,
 				A47D32FE4AF1445606414A4B /* CarSelectView.swift */,
+				F274730A0AC7414E3C7282A4 /* ControlChoiceView.swift */,
 				E62AC93D6E9FFADAEC3DE3B0 /* ControlsSettingsView.swift */,
 				BC92D143A1456D21985E6F6E /* GameOverView.swift */,
 				9937C7BDA93AF4C8CDA05513 /* GameView.swift */,
@@ -891,6 +894,7 @@
 				B4A3FD7BE02FDEC58AA48B7F /* CarSkin.swift in Sources */,
 				6C592630DC3C392D766B4D89 /* Combo.swift in Sources */,
 				97AAD97953DC94F51C442A18 /* ComboMeterView.swift in Sources */,
+				61FA1A63F2C168D5B9CF0E8B /* ControlChoiceView.swift in Sources */,
 				A1FA2BCE22AF8DCE87B9465C /* ControlScheme.swift in Sources */,
 				6E1A5948F8910D9079278864 /* ControlsSettingsView.swift in Sources */,
 				48019483816F73ED7FC17B71 /* DevEventLog.swift in Sources */,

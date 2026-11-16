@@ -166,6 +166,7 @@ final class MockPersistenceService: PersistenceServiceProtocol {
     var isMusicEnabled = true
     var controlScheme: ControlScheme = .tilt
     var tiltNeutral: Double = 0
+    var hasChosenControls = false
     var hasTank = false
     var extraLifePending = false
     var unlocked: Set<String> = []

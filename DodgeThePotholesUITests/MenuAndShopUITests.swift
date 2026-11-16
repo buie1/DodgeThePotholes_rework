@@ -32,6 +32,21 @@ final class MenuAndShopUITests: XCTestCase {
         XCTAssertTrue(app.buttons["NEW GAME"].waitForExistence(timeout: 5))
     }
 
+    // MARK: - First launch
+
+    @MainActor
+    func testFirstLaunchAsksHowToSteer() {
+        let app = launchApp(onboarding: true)
+        let drag = app.buttons["choose.drag"]
+        XCTAssertTrue(drag.waitForExistence(timeout: 5), "a new player is asked first")
+        drag.tap()
+        XCTAssertTrue(app.buttons["NEW GAME"].waitForExistence(timeout: 5))
+
+        app.buttons["SETTINGS"].tap()
+        app.buttons["CONTROLS"].tap()
+        XCTAssertEqual(app.buttons["controls.drag"].value as? String, "selected", "the choice was saved")
+    }
+
     // MARK: - Shop
 
     @MainActor

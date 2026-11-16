@@ -5,11 +5,14 @@ import XCTest
 extension XCTestCase {
 
     /// Launches the app on a fresh profile, plus any extra launch arguments.
-    /// - Parameter bank: Money on the fresh profile (`-devBank`).
+    /// - Parameters:
+    ///   - bank: Money on the fresh profile (`-devBank`).
+    ///   - onboarding: Show the first-launch onboarding, as a brand-new player sees it.
     @MainActor
-    func launchApp(_ arguments: [String] = [], bank: Int? = nil) -> XCUIApplication {
+    func launchApp(_ arguments: [String] = [], bank: Int? = nil, onboarding: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-freshProfile"] + (bank.map { ["-devBank", String($0)] } ?? []) + arguments
+        app.launchArguments = ["-freshProfile"] + (onboarding ? [] : ["-skipOnboarding"])
+            + (bank.map { ["-devBank", String($0)] } ?? []) + arguments
         app.launch()
         return app
     }

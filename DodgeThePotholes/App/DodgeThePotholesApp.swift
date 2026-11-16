@@ -33,6 +33,10 @@ struct DodgeThePotholesApp: App {
                let amount = Int(arguments[index + 1]) {
                 store.devSetMoney(amount)
             }
+            // Dev runs and UI tests start past the first-launch onboarding unless they test it.
+            if launchScenario != nil || arguments.contains("-skipOnboarding") {
+                store.hasChosenControls = true
+            }
             _persistence = State(initialValue: store)
             return
         }

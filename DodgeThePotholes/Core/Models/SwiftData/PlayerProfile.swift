@@ -21,6 +21,8 @@ final class PlayerProfile {
     var controlSchemeKey: String = ControlScheme.tilt.rawValue
     /// Sideways tilt (in g) the player holds the phone at when steering straight.
     var tiltNeutral: Double = 0
+    /// Set once the player has picked Tilt or Drag on first launch.
+    var hasChosenControls: Bool = false
 
     @Relationship(deleteRule: .cascade) var unlocks: [UnlockRecord] = []
     @Relationship(deleteRule: .cascade) var scoreHistory: [ScoreEntry] = []

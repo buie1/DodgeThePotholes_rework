@@ -35,6 +35,18 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(motion.stopCount, 1)
     }
 
+    func testNewPlayersChooseControlsOnce() {
+        XCTAssertTrue(viewModel.needsControlChoice)
+        viewModel.chooseControls(.drag)
+        XCTAssertEqual(persistence.controlScheme, .drag)
+        XCTAssertFalse(viewModel.needsControlChoice, "asked once")
+    }
+
+    func testExistingPlayersSkipTheChoice() {
+        persistence.recordRun(score: 100, moneyEarned: 1)
+        XCTAssertFalse(viewModel.needsControlChoice, "they already know the game")
+    }
+
     func testTogglesSaveThroughPersistence() {
         viewModel.isMusicEnabled = false
         viewModel.isSFXEnabled = false

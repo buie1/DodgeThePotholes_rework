@@ -34,6 +34,8 @@ protocol PersistenceServiceProtocol: AnyObject {
     var controlScheme: ControlScheme { get set }
     /// Sideways tilt (in g) that counts as straight ahead.
     var tiltNeutral: Double { get set }
+    /// Set once the player has picked Tilt or Drag on first launch.
+    var hasChosenControls: Bool { get set }
 
     /// `true` once the tank is bought. It replaces the monster-truck sprite.
     var hasTank: Bool { get }
@@ -61,6 +63,10 @@ protocol PersistenceServiceProtocol: AnyObject {
 
 extension PersistenceServiceProtocol {
     func isUnlocked(_ item: ShopItem) -> Bool { isUnlocked(item.id) }
+
+    /// A new player who hasn't picked controls yet. Players with finished runs (e.g. from
+    /// before the choice existed) already know the game, so they skip it.
+    var needsControlChoice: Bool { !hasChosenControls && bestRuns(limit: 1).isEmpty }
 
     /// A car with no unlock key is free; the others need their unlock.
     func isUnlocked(_ car: CarSkin) -> Bool {
@@ -154,6 +160,11 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
     var tiltNeutral: Double {
         get { profile.tiltNeutral }
         set { profile.tiltNeutral = newValue; save() }
+    }
+
+    var hasChosenControls: Bool {
+        get { profile.hasChosenControls }
+        set { profile.hasChosenControls = newValue; save() }
     }
 
     // MARK: - Shop
