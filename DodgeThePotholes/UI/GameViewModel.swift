@@ -204,9 +204,13 @@ final class GameViewModel: GameEngineDelegate {
 
         tiltInput = 0
         dragInput = nil
-        motionService.start { [weak self] tilt in
-            self?.tiltInput = tilt
-            self?.applySteering()
+        // Drag players never get tilt input; tilt players can still drag to override.
+        if persistence.controlScheme == .tilt {
+            motionService.neutralTilt = persistence.tiltNeutral
+            motionService.start { [weak self] tilt in
+                self?.tiltInput = tilt
+                self?.applySteering()
+            }
         }
 
         let extraLives = persistence.consumeExtraLife() ? 1 : 0

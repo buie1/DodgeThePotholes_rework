@@ -17,6 +17,10 @@ final class PlayerProfile {
     var selectedSongFilename: String = GameSound.hotPursuit.rawValue
     /// A bought extra life waiting to be used. The next run spends it.
     var extraLifePending: Bool = false
+    /// `ControlScheme.rawValue`: tilt (the legacy default) or drag.
+    var controlSchemeKey: String = ControlScheme.tilt.rawValue
+    /// Sideways tilt (in g) the player holds the phone at when steering straight.
+    var tiltNeutral: Double = 0
 
     @Relationship(deleteRule: .cascade) var unlocks: [UnlockRecord] = []
     @Relationship(deleteRule: .cascade) var scoreHistory: [ScoreEntry] = []

@@ -94,6 +94,21 @@ final class MenuAndShopUITests: XCTestCase {
     }
 
     @MainActor
+    func testControlChoiceSticks() {
+        let app = launchApp()
+        app.buttons["SETTINGS"].tap()
+        app.buttons["CONTROLS"].tap()
+        XCTAssertEqual(app.buttons["controls.tilt"].value as? String, "selected", "tilt is the default")
+        app.buttons["controls.drag"].tap()
+        XCTAssertEqual(app.buttons["controls.drag"].value as? String, "selected")
+
+        goBack(app)
+        app.buttons["CONTROLS"].tap()
+        XCTAssertEqual(app.buttons["controls.drag"].value as? String, "selected", "the choice was saved")
+        XCTAssertFalse(app.buttons["CALIBRATE"].exists, "calibration only shows for tilt")
+    }
+
+    @MainActor
     func testAudioSettingsStick() {
         let app = launchApp()
         app.buttons["SETTINGS"].tap()

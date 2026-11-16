@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// `@Observable` state for the Settings, Audio and Car Select screens.
+/// `@Observable` state for the Settings, Audio, Controls and Car Select screens.
 ///
 /// Reads and writes the player's preferences through `PersistenceServiceProtocol`,
 /// so changes are saved immediately and picked up by the next run.
@@ -11,14 +11,58 @@ final class SettingsViewModel {
 
     private let persistence: any PersistenceServiceProtocol
     private let catalog: GameCatalog
+    private let motion: any MotionServiceProtocol
 
     /// - Parameters:
     ///   - persistence: Saved preferences and owned items.
     ///   - catalog: The cars and songs to choose from.
-    init(persistence: any PersistenceServiceProtocol, catalog: GameCatalog = .bundled) {
+    ///   - motion: The accelerometer, for the Controls screen's tilt preview and calibration.
+    init(persistence: any PersistenceServiceProtocol, catalog: GameCatalog = .bundled,
+         motion: any MotionServiceProtocol = MotionService()) {
         self.persistence = persistence
         self.catalog = catalog
+        self.motion = motion
     }
+
+    // MARK: - Controls
+
+    var controlScheme: ControlScheme {
+        get { persistence.controlScheme }
+        set { persistence.controlScheme = newValue }
+    }
+
+    /// `false` without an accelerometer (e.g. the Simulator), where only drag works.
+    var isTiltAvailable: Bool { motion.isAvailable }
+
+    /// Live steering from the current tilt in [-1, 1], while the preview runs.
+    private(set) var tiltPreview: Double = 0
+
+    /// Starts showing live tilt, relative to the saved neutral angle.
+    func startTiltPreview() {
+        motion.neutralTilt = persistence.tiltNeutral
+        motion.start { [weak self] steering in self?.tiltPreview = steering }
+    }
+
+    func stopTiltPreview() {
+        motion.stop()
+        tiltPreview = 0
+    }
+
+    /// Makes the phone's current angle count as straight ahead.
+    func calibrateTilt() {
+        guard let raw = motion.rawTilt else { return }
+        persistence.tiltNeutral = raw
+        motion.neutralTilt = raw
+        tiltPreview = 0
+    }
+
+    /// Forgets calibration: holding the phone level is straight ahead again.
+    func resetTiltCalibration() {
+        persistence.tiltNeutral = 0
+        motion.neutralTilt = 0
+    }
+
+    var isTiltCalibrated: Bool { persistence.tiltNeutral != 0 }
 
     // MARK: - Sound
 

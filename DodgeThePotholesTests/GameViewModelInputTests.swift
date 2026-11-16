@@ -19,6 +19,27 @@ final class GameViewModelInputTests: XCTestCase {
 
     private var playerX: Double { viewModel.engine!.player.position.x }
 
+    func testDragPlayersNeverGetTilt() {
+        let persistence = MockPersistenceService()
+        persistence.controlScheme = .drag
+        let motion = MockMotionService()
+        let vm = GameViewModel(persistence: persistence, audio: MockAudioService(), haptics: MockHapticService(),
+                               motion: motion, leaderboard: MockLeaderboardService())
+        vm.startGame(screenSize: CGSize(width: 402, height: 874))
+        XCTAssertEqual(motion.startCount, 0, "the accelerometer stays off")
+    }
+
+    func testTiltUsesTheCalibratedNeutral() {
+        let persistence = MockPersistenceService()
+        persistence.tiltNeutral = 0.3
+        let motion = MockMotionService()
+        let vm = GameViewModel(persistence: persistence, audio: MockAudioService(), haptics: MockHapticService(),
+                               motion: motion, leaderboard: MockLeaderboardService())
+        vm.startGame(screenSize: CGSize(width: 402, height: 874))
+        XCTAssertEqual(motion.startCount, 1)
+        XCTAssertEqual(motion.neutralTilt, 0.3)
+    }
+
     func testTiltSteersTheCar() {
         motion.tilt(0.5)
         viewModel.engine!.update(deltaTime: 0.05)
@@ -68,6 +89,8 @@ final class GameViewModelInputTests: XCTestCase {
 
 final class MockMotionService: MotionServiceProtocol {
     let isAvailable: Bool
+    var neutralTilt: Double = 0
+    var rawTilt: Double?
     private(set) var startCount = 0
     private(set) var stopCount = 0
     private var handler: (@MainActor (Double) -> Void)?
@@ -138,6 +161,8 @@ final class MockPersistenceService: PersistenceServiceProtocol {
     var selectedSong: GameSound = .hotPursuit
     var isSFXEnabled = true
     var isMusicEnabled = true
+    var controlScheme: ControlScheme = .tilt
+    var tiltNeutral: Double = 0
     var hasTank = false
     var extraLifePending = false
     var unlocked: Set<String> = []

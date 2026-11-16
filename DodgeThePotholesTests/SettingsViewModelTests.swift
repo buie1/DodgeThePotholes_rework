@@ -16,6 +16,25 @@ final class SettingsViewModelTests: XCTestCase {
         viewModel = SettingsViewModel(persistence: persistence)
     }
 
+    func testControlSchemeAndCalibrationSave() {
+        let motion = MockMotionService()
+        let viewModel = SettingsViewModel(persistence: persistence, motion: motion)
+        viewModel.controlScheme = .drag
+        XCTAssertEqual(persistence.controlScheme, .drag)
+
+        viewModel.startTiltPreview()
+        motion.rawTilt = 0.25                     // the player holds the phone tipped right
+        viewModel.calibrateTilt()
+        XCTAssertEqual(persistence.tiltNeutral, 0.25)
+        XCTAssertEqual(motion.neutralTilt, 0.25)
+        XCTAssertTrue(viewModel.isTiltCalibrated)
+
+        viewModel.resetTiltCalibration()
+        XCTAssertEqual(persistence.tiltNeutral, 0)
+        viewModel.stopTiltPreview()
+        XCTAssertEqual(motion.stopCount, 1)
+    }
+
     func testTogglesSaveThroughPersistence() {
         viewModel.isMusicEnabled = false
         viewModel.isSFXEnabled = false

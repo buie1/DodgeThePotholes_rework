@@ -31,6 +31,9 @@ protocol PersistenceServiceProtocol: AnyObject {
     var selectedSong: GameSound { get set }
     var isSFXEnabled: Bool { get set }
     var isMusicEnabled: Bool { get set }
+    var controlScheme: ControlScheme { get set }
+    /// Sideways tilt (in g) that counts as straight ahead.
+    var tiltNeutral: Double { get set }
 
     /// `true` once the tank is bought. It replaces the monster-truck sprite.
     var hasTank: Bool { get }
@@ -141,6 +144,16 @@ final class SwiftDataPersistenceService: PersistenceServiceProtocol {
     var isMusicEnabled: Bool {
         get { profile.isMusicEnabled }
         set { profile.isMusicEnabled = newValue; save() }
+    }
+
+    var controlScheme: ControlScheme {
+        get { ControlScheme(rawValue: profile.controlSchemeKey) ?? .tilt }
+        set { profile.controlSchemeKey = newValue.rawValue; save() }
+    }
+
+    var tiltNeutral: Double {
+        get { profile.tiltNeutral }
+        set { profile.tiltNeutral = newValue; save() }
     }
 
     // MARK: - Shop

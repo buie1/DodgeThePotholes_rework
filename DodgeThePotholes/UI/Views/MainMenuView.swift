@@ -5,6 +5,7 @@ enum MenuDestination: Hashable {
     case settings
     case audio
     case carSelect
+    case controls
     case shop
     case leaderboard
 }
@@ -70,6 +71,7 @@ struct MainMenuView: View {
         case .settings: SettingsView()
         case .audio:     AudioSettingsView(viewModel: settingsViewModel)
         case .carSelect: CarSelectView(viewModel: settingsViewModel)
+        case .controls:  ControlsSettingsView(viewModel: settingsViewModel)
         case .shop:        ShopView(viewModel: shopViewModel)
         case .leaderboard: LeaderboardView(viewModel: leaderboardViewModel)
         }
