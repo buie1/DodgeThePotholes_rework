@@ -28,10 +28,20 @@ enum GameSound: String, CaseIterable {
 }
 
 /// Semantic haptic patterns the engine can request.
-/// The HapticsManager maps these to CoreHaptics events.
-enum HapticPattern {
-    case collision
+/// `HapticService` maps these to CoreHaptics events.
+enum HapticPattern: Equatable {
+    /// Losing a life to a crash: a heavy thud.
+    case crash
+    /// Losing a life to a spin-out: a rumble that follows the spin.
+    case spinOut
+    /// The monster truck or a missile destroying something: a short punch, not a hurt.
+    case explosion
+    /// A light tick; rate-limited so coin patterns don't buzz.
     case coinPickup
     case powerUpActivated
     case lifeGained
+    /// The horn scaring a dog or person away: a light double tap.
+    case hornScare
+    /// The last life lost: a long, fading thud.
+    case gameOver
 }

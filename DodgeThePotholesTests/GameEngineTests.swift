@@ -255,6 +255,7 @@ final class GameEngineTests: XCTestCase {
 @MainActor
 final class RecordingDelegate: GameEngineDelegate {
     var sounds: [GameSound] = []
+    var haptics: [HapticPattern] = []
     var alerts: [GameAlert] = []
     var lyricIndices: [Int] = []
     var lives: [Int] = []
@@ -270,5 +271,5 @@ final class RecordingDelegate: GameEngineDelegate {
     func engine(_ engine: GameEngine, didRaiseAlert alert: GameAlert) { alerts.append(alert) }
     func engineDidEnd(_ engine: GameEngine, finalScore: Int, moneyEarned: Int) { didEnd = true }
     func engine(_ engine: GameEngine, requestsSound sound: GameSound) { sounds.append(sound) }
-    func engine(_ engine: GameEngine, requestsHaptic pattern: HapticPattern) {}
+    func engine(_ engine: GameEngine, requestsHaptic pattern: HapticPattern) { haptics.append(pattern) }
 }

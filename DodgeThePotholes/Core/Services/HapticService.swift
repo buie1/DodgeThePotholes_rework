@@ -25,6 +25,7 @@ final class HapticService: HapticServiceProtocol {
 
     private var engine: CHHapticEngine?
     private let supportsHaptics: Bool
+    private var throttle = HapticThrottle()
 
     // MARK: - Init
 
@@ -36,6 +37,7 @@ final class HapticService: HapticServiceProtocol {
     // MARK: - HapticServiceProtocol
 
     func play(_ pattern: HapticPattern) {
+        guard throttle.allows(pattern, at: CACurrentMediaTime()) else { return }
         supportsHaptics ? playCoreHaptic(pattern) : playFallback(pattern)
     }
 
@@ -66,18 +68,31 @@ final class HapticService: HapticServiceProtocol {
         let events: [CHHapticEvent]
 
         switch pattern {
-        case .collision:
-            // Sharp heavy hit followed by a shorter decay thud.
+        case .crash:
+            // A sharp crack, then a heavy body and a shorter decay thud.
             events = [
-                makeEvent(intensity: 1.0, sharpness: 0.8, duration: 0.25),
-                makeEvent(intensity: 0.5, sharpness: 0.3, duration: 0.15, at: 0.20),
+                makeTransient(intensity: 1.0, sharpness: 0.9),
+                makeEvent(intensity: 0.9, sharpness: 0.3, duration: 0.2),
+                makeEvent(intensity: 0.4, sharpness: 0.2, duration: 0.15, at: 0.22),
+            ]
+
+        case .spinOut:
+            // A low rumble with fading bumps, timed to the 0.75 s spin.
+            events = [makeEvent(intensity: 0.35, sharpness: 0.2, duration: 0.6)]
+                + (0..<6).map { i in
+                    makeTransient(intensity: 0.8 - 0.1 * Float(i), sharpness: 0.4, at: 0.1 * Double(i))
+                }
+
+        case .explosion:
+            // A short, crisp punch: powerful, not painful.
+            events = [
+                makeTransient(intensity: 0.8, sharpness: 1.0),
+                makeEvent(intensity: 0.5, sharpness: 0.6, duration: 0.12),
             ]
 
         case .coinPickup:
             // Brief crisp tick — light, high sharpness.
-            events = [
-                makeEvent(intensity: 0.35, sharpness: 1.0, duration: 0.06),
-            ]
+            events = [makeTransient(intensity: 0.35, sharpness: 1.0)]
 
         case .powerUpActivated:
             // Rising three-pulse burst.
@@ -93,11 +108,38 @@ final class HapticService: HapticServiceProtocol {
                 makeEvent(intensity: 0.5, sharpness: 0.5, duration: 0.10),
                 makeEvent(intensity: 0.7, sharpness: 0.7, duration: 0.12, at: 0.16),
             ]
+
+        case .hornScare:
+            // A light double tap, like a honk's two notes.
+            events = [
+                makeTransient(intensity: 0.45, sharpness: 0.8),
+                makeTransient(intensity: 0.45, sharpness: 0.8, at: 0.08),
+            ]
+
+        case .gameOver:
+            // A long thud that fades out, after the crash that caused it.
+            events = [
+                makeEvent(intensity: 0.8, sharpness: 0.2, duration: 0.25, at: 0.3),
+                makeEvent(intensity: 0.5, sharpness: 0.15, duration: 0.25, at: 0.55),
+                makeEvent(intensity: 0.25, sharpness: 0.1, duration: 0.3, at: 0.8),
+            ]
         }
 
         guard let hapticPattern = try? CHHapticPattern(events: events, parameters: []) else { return }
         guard let player = try? engine.makePlayer(with: hapticPattern) else { return }
         try? player.start(atTime: CHHapticTimeImmediate)
+    }
+
+    /// Convenience builder for a crisp `.hapticTransient` tap.
+    private func makeTransient(intensity: Float, sharpness: Float, at relativeTime: TimeInterval = 0) -> CHHapticEvent {
+        CHHapticEvent(
+            eventType: .hapticTransient,
+            parameters: [
+                CHHapticEventParameter(parameterID: .hapticIntensity, value: intensity),
+                CHHapticEventParameter(parameterID: .hapticSharpness, value: sharpness),
+            ],
+            relativeTime: relativeTime
+        )
     }
 
     /// Convenience builder for a `.hapticContinuous` event.
@@ -122,14 +164,34 @@ final class HapticService: HapticServiceProtocol {
 
     private func playFallback(_ pattern: HapticPattern) {
         switch pattern {
-        case .collision:
+        case .crash, .spinOut:
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-        case .coinPickup:
+        case .explosion:
+            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+        case .coinPickup, .hornScare:
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        case .powerUpActivated:
+        case .powerUpActivated, .lifeGained:
             UINotificationFeedbackGenerator().notificationOccurred(.success)
-        case .lifeGained:
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        case .gameOver:
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
         }
+    }
+}
+
+// MARK: - Throttle
+
+/// Drops haptics that would fire too close together to feel distinct.
+struct HapticThrottle {
+    /// Coin ticks closer together than this blur into a buzz when driving through a pattern.
+    static let coinInterval: TimeInterval = 0.07
+
+    private var lastCoin: TimeInterval = -.infinity
+
+    /// Whether `pattern` should play at `time` (seconds); records it if so.
+    mutating func allows(_ pattern: HapticPattern, at time: TimeInterval) -> Bool {
+        guard pattern == .coinPickup else { return true }
+        guard time - lastCoin >= Self.coinInterval else { return false }
+        lastCoin = time
+        return true
     }
 }

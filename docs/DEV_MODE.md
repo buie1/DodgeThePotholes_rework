@@ -133,6 +133,7 @@ video through the `clock` field on snapshots.
 | `powerUpOn` / `powerUpOff` | `type` (and `seconds`) |
 | `alert`, `textMessage` | `message` / `index` |
 | `sound` | `name` (coin pickups left out); shows hits, explosions, honks |
+| `haptic` | `pattern` (coin ticks left out), since the simulator can't play haptics |
 | `gameOver` | `score`, `money` |
 
 The log starts fresh each app launch.

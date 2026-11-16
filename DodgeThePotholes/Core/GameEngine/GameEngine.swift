@@ -358,7 +358,7 @@ final class GameEngine {
             obstacles[index].isRemoved = true
             frameEvents.append(.explosion(at: obstacles[index].position))
             delegate?.engine(self, requestsSound: .explosion)
-            delegate?.engine(self, requestsHaptic: .collision)
+            delegate?.engine(self, requestsHaptic: .explosion)
             return
         }
         // Recovering cars pass through obstacles (legacy `Recover` physics category).
@@ -388,10 +388,11 @@ final class GameEngine {
         case .cone, .barricade:
             obstacles[index].isRemoved = true
         }
-        if !obstacles[index].type.causesSpinOut {
+        let isSpinOut = obstacles[index].type.causesSpinOut
+        if !isSpinOut {
             frameEvents.append(.crash(at: obstacles[index].position))
         }
-        delegate?.engine(self, requestsHaptic: .collision)
+        delegate?.engine(self, requestsHaptic: isSpinOut ? .spinOut : .crash)
         loseLife()
     }
 
@@ -405,6 +406,7 @@ final class GameEngine {
         obstacles[index].phase = .fleeing
         obstacles[index].facing = -side
         frameEvents.append(.scared(at: position))
+        delegate?.engine(self, requestsHaptic: .hornScare)
         obstacles[index].velocity = CGVector(
             dx: (targetX - position.x) / (GameConfig.fleeDuration * 0.25),
             dy: (targetY - position.y) / (GameConfig.fleeDuration / 2)
@@ -494,6 +496,7 @@ final class GameEngine {
         if player.lives <= 0 {
             state = .gameOver
             stopLoop()
+            delegate?.engine(self, requestsHaptic: .gameOver)
             delegate?.engineDidEnd(self, finalScore: score, moneyEarned: money)
             return
         }

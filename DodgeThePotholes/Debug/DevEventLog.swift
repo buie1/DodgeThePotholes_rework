@@ -91,6 +91,7 @@ final class DevEventLog: GameEngineDelegate {
     }
 
     func engine(_ engine: GameEngine, requestsHaptic pattern: HapticPattern) {
+        if pattern != .coinPickup { write(engine, "haptic", ["pattern": "\(pattern)"]) }
         forward?.engine(engine, requestsHaptic: pattern)
     }
 
