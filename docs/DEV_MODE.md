@@ -162,7 +162,9 @@ The log starts fresh each app launch.
 
 The tests run with `-freshProfile`, which starts the app on an empty throwaway profile
 without starting a scenario, so they never touch real saves. `-devBank <amount>` funds that
-profile. Shared steps live in `UITestSupport.swift`.
+profile. `-skipOnboarding` starts past the first-launch Tilt/Drag choice and the tutorial
+(dev-scenario launches skip them too); `launchApp(onboarding: true)` leaves it out to test
+them. Shared steps live in `UITestSupport.swift`.
 
 ```sh
 # Everything (unit + UI tests; the UI tests take a few minutes)

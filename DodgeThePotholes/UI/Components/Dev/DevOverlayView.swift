@@ -106,6 +106,8 @@ struct DevOverlayView: View {
                 .background(Color.white.opacity(0.15), in: Capsule())
                 .foregroundStyle(.white)
         }
+        // e.g. "dev.pause": the HUD has its own Pause button.
+        .accessibilityIdentifier("dev.\(title.lowercased())")
     }
 }
 

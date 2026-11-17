@@ -18,7 +18,7 @@ final class GameFlowUITests: XCTestCase {
         XCTAssertTrue(playAgain.waitForExistence(timeout: 30), "the run ends")
         XCTAssertTrue(app.staticTexts["NEAR MISSES"].exists, "the game-over stats show")
         playAgain.tap()
-        XCTAssertTrue(playAgain.waitForNonExistence(timeout: 5), "Play Again starts a new run")
+        XCTAssertTrue(app.buttons["hud.pause"].waitForExistence(timeout: 1), "Play Again restarts within a second")
 
         XCTAssertTrue(playAgain.waitForExistence(timeout: 30), "the second run ends too")
         app.buttons["MAIN MENU"].tap()

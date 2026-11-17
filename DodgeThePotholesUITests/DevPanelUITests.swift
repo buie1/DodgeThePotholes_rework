@@ -28,17 +28,18 @@ final class DevPanelUITests: XCTestCase {
     @MainActor
     func testPauseStepAndSpeedJump() {
         let app = launchRun()
-        app.buttons["+30 s"].tap()
+        // The panel's buttons by identifier: the HUD has its own "Pause" button.
+        app.buttons["dev.+30 s"].tap()
         XCTAssertTrue(waitForReadout("travel 1.70s", in: app), readout(app))
 
-        app.buttons["Pause"].tap()
-        XCTAssertTrue(app.buttons["Resume"].waitForExistence(timeout: 2))
+        app.buttons["dev.pause"].tap()
+        XCTAssertTrue(app.buttons["dev.resume"].waitForExistence(timeout: 2))
         let paused = readout(app)
         sleep(1)
         XCTAssertEqual(readout(app).prefix(8), paused.prefix(8), "time stands still while paused")
-        app.buttons["Step"].tap()
-        app.buttons["Resume"].tap()
-        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 2))
+        app.buttons["dev.step"].tap()
+        app.buttons["dev.resume"].tap()
+        XCTAssertTrue(app.buttons["dev.pause"].waitForExistence(timeout: 2))
         XCTAssertTrue(readout(app).contains("honks 0"))
     }
 
